@@ -26,8 +26,6 @@ package ob.commands.files
     
     import nail.commands.Command;
     
-    import otlib.core.Version;
-    
     public class LoadFilesCommand extends Command
     {
         //--------------------------------------------------------------------------
@@ -36,14 +34,16 @@ package ob.commands.files
         
         public function LoadFilesCommand(datFile:File,
                                          sprFile:File,
-                                         version:Version,
+                                         datSignature:uint,
+                                         sprSignature:uint,
                                          extended:Boolean,
                                          transparency:Boolean,
                                          improvedAnimations:Boolean)
         {
             super(datFile.nativePath, 
                   sprFile.nativePath,
-                  version,
+                  datSignature,
+                  sprSignature,
                   extended,
                   transparency,
                   improvedAnimations);

@@ -93,6 +93,7 @@ package ob.core
     import ob.utils.SpritesFinder;
     import ob.utils.SpritesOptimizer;
     
+    import otlib.core.IVersionStorage;
     import otlib.core.Version;
     import otlib.core.VersionStorage;
     import otlib.events.ProgressEvent;
@@ -130,6 +131,7 @@ package ob.core
         //--------------------------------------------------------------------------
         
         private var _communicator:ICommunicator;
+        private var _versions:IVersionStorage;
         private var _things:ThingTypeStorage;
         private var _sprites:SpriteStorage;
         private var _datFile:File;
@@ -179,6 +181,7 @@ package ob.core
             Resources.manager = ResourceManager.getInstance();
             
             _communicator = new Communicator();
+            _versions = VersionStorage.getInstance();
             _thingListAmount = 100;
             _spriteListAmount = 100;
             
@@ -223,7 +226,8 @@ package ob.core
         {
             this.onCompileAs(_datFile.nativePath,
                             _sprFile.nativePath,
-                            _version,
+                            _version.datSignature,
+                            _version.sprSignature,
                             _extended,
                             _transparency,
                             _improvedAnimations);
@@ -261,7 +265,6 @@ package ob.core
         {
             // Register classes.
             registerClassAlias("ObjectBuilderSettings", ObjectBuilderSettings);
-            registerClassAlias("Version", Version);
             registerClassAlias("ClientInfo", ClientInfo);
             registerClassAlias("ThingType", ThingType);
             registerClassAlias("ThingData", ThingData);
@@ -325,7 +328,7 @@ package ob.core
             if (isNullOrEmpty(path))
                 throw new NullOrEmptyArgumentError("path");
             
-            VersionStorage.getInstance().load( new File(path) );
+            _versions.load( new File(path) );
         }
         
         private function onSettings(settings:ObjectBuilderSettings):void
@@ -344,9 +347,13 @@ package ob.core
                                           transparency:Boolean,
                                           improvedAninations:Boolean):void
         {
+            var clientVersion:Version = _versions.getBySignatures(datSignature, sprSignature);
+            if (!clientVersion)
+                throw new ArgumentError(StringUtil.format("Invalid client signatures. Dat=0x{0}, Spr=0x{1}", datSignature.toString(16), sprSignature.toString(16)));
+            
             this.onUnloadFiles();
             
-            _version = VersionStorage.getInstance().getBySignatures(datSignature, sprSignature);
+            _version = clientVersion;
             _extended = (extended || _version.value >= 960);
             _transparency = transparency;
             _improvedAnimations = (improvedAninations || _version.value >= 1050);
@@ -384,7 +391,8 @@ package ob.core
         
         private function onLoadFiles(datPath:String,
                                      sprPath:String,
-                                     version:Version,
+                                     datSignature:uint,
+                                     sprSignature:uint,
                                      extended:Boolean,
                                      transparency:Boolean,
                                      improvedAnimations:Boolean):void
@@ -395,14 +403,15 @@ package ob.core
             if (isNullOrEmpty(sprPath))
                 throw new NullOrEmptyArgumentError("sprPath");
             
-            if (!version)
-                throw new NullArgumentError("version");
+            var clientVersion:Version = _versions.getBySignatures(datSignature, sprSignature);
+            if (!clientVersion)
+                throw new ArgumentError(StringUtil.format("Invalid client signatures. Dat=0x{0}, Spr=0x{1}", datSignature.toString(16), sprSignature.toString(16)));
             
             this.onUnloadFiles();
             
             _datFile = new File(datPath);
             _sprFile = new File(sprPath);
-            _version = version;
+            _version = clientVersion;
             _extended = (extended || _version.value >= 960);
             _transparency = transparency;
             _improvedAnimations = (improvedAnimations || _version.value >= 1050);
@@ -418,7 +427,8 @@ package ob.core
         
         private function onCompileAs(datPath:String,
                                      sprPath:String,
-                                     version:Version,
+                                     datSignature:uint,
+                                     sprSignature:uint,
                                      extended:Boolean,
                                      transparency:Boolean,
                                      improvedAnimations:Boolean):void
@@ -429,8 +439,9 @@ package ob.core
             if (isNullOrEmpty(sprPath))
                 throw new NullOrEmptyArgumentError("sprPath");
             
-            if (!version)
-                throw new NullArgumentError("version");
+            var clientVersion:Version = _versions.getBySignatures(datSignature, sprSignature);
+            if (!clientVersion)
+                throw new ArgumentError(StringUtil.format("Invalid client signatures. Dat=0x{0}, Spr=0x{1}", datSignature.toString(16), sprSignature.toString(16)));
             
             if (!_things || !_things.loaded)
                 throw new Error(Resources.getString("metadataNotLoaded"));
@@ -447,8 +458,8 @@ package ob.core
             
             sendCommand(new ShowProgressBarCommand(ProgressBarID.DAT_SPR, title));
             
-            if (!_things.compile(dat, version, extended, improvedAnimations) ||
-                !_sprites.compile(spr, version, extended, transparency)) {
+            if (!_things.compile(dat, clientVersion, extended, improvedAnimations) ||
+                !_sprites.compile(spr, clientVersion, extended, transparency)) {
                 return;
             }
             
@@ -468,7 +479,7 @@ package ob.core
             // If extended or alpha channel was changed need to reload.
             if (FileUtil.equals(dat, _datFile) && FileUtil.equals(spr, _sprFile)) {
                 if (structureChanged)
-                    sendCommand(new NeedToReloadCommand(extended, transparency));
+                    sendCommand(new NeedToReloadCommand(extended, transparency, improvedAnimations));
                 else
                     sendClientInfo();
             }
@@ -633,7 +644,8 @@ package ob.core
         private function onExportThing(list:Vector.<PathHelper>,
                                        category:String,
                                        obdVersion:uint,
-                                       clientVersion:Version,
+                                       datSignature:uint,
+                                       sprSignature:uint,
                                        spriteSheetFlag:uint,
                                        transparentBackground:Boolean,
                                        jpegQuality:uint):void
@@ -644,8 +656,9 @@ package ob.core
             if (!ThingCategory.getCategory(category))
                 throw new ArgumentError(Resources.getString("invalidCategory"));
             
+            var clientVersion:Version = _versions.getBySignatures(datSignature, sprSignature);
             if (!clientVersion)
-                throw new NullArgumentError("version");
+                throw new ArgumentError(StringUtil.format("Invalid client signatures. Dat=0x{0}, Spr=0x{1}", datSignature.toString(16), sprSignature.toString(16)));
             
             var length:uint = list.length;
             if (length == 0) return;
@@ -1395,7 +1408,8 @@ package ob.core
         {
             onLoadFiles(_datFile.nativePath,
                         _sprFile.nativePath,
-                        _version,
+                        _version.datSignature,
+                        _version.sprSignature,
                         extended,
                         transparency,
                         improvedAnimations);
@@ -1688,7 +1702,8 @@ package ob.core
                 _errorMessage = event.text;
                 onLoadFiles(_datFile.nativePath,
                             _sprFile.nativePath,
-                            _version,
+                            _version.datSignature,
+                            _version.sprSignature,
                             true,
                             _transparency,
                             _improvedAnimations);

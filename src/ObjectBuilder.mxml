@@ -374,7 +374,8 @@ THE SOFTWARE.
                         
                         sendCommand(new LoadFilesCommand(window.datFile,
                                                          window.sprFile,
-                                                         window.version,
+                                                         window.version.datSignature,
+                                                         window.version.sprSignature,
                                                          window.extended,
                                                          window.transparency,
                                                          window.improvedAnimations));
@@ -424,7 +425,8 @@ THE SOFTWARE.
                         
                         sendCommand(new CompileAsCommand(window.datFile,
                                                          window.sprFile,
-                                                         window.version,
+                                                         window.version.datSignature,
+                                                         window.version.sprSignature,
                                                          window.extended,
                                                          window.transparency,
                                                          window.improvedAnimations));
@@ -635,7 +637,7 @@ THE SOFTWARE.
                 for (var i:uint = 0; i < length; i++) {
                     list[i] = new PathHelper(fileDataList[i].nativePath, fileDataList[i].data as uint);
                 }
-                sendCommand(new ExportThingCommand(list, category, obdVersion, clientVersion, spriteSheetFlags, transparentBackground, jpegQuality));
+                sendCommand(new ExportThingCommand(list, category, obdVersion, clientVersion.datSignature, clientVersion.sprSignature, spriteSheetFlags, transparentBackground, jpegQuality));
             }
             
             public function replaceThings(list:Vector.<ThingData>):void
@@ -789,7 +791,6 @@ THE SOFTWARE.
             public function register():void
             {
                 registerClassAlias("ObjectBuilderSettings", ObjectBuilderSettings);
-                registerClassAlias("Version", Version);
                 registerClassAlias("ThingType", ThingType);
                 registerClassAlias("ClientInfo", ClientInfo);
                 registerClassAlias("ThingData", ThingData);
@@ -1056,7 +1057,7 @@ THE SOFTWARE.
                 spritesList.selectedIds = selectedIds;
             }
             
-            private function onNeedToReload(extended:Boolean, transparency:Boolean):void
+            private function onNeedToReload(extended:Boolean, transparency:Boolean, improvedAnimations:Boolean):void
             {
                 Alert.show(
                     resourceManager.getString("strings", "needToReload"),
@@ -1068,7 +1069,7 @@ THE SOFTWARE.
                 function alertCloseHandler(event:CloseEvent):void
                 {
                     if (event.detail == Alert.YES) {
-                        sendCommand(new NeedToReloadCommand(extended, transparency));
+                        sendCommand(new NeedToReloadCommand(extended, transparency, improvedAnimations));
                     }
                 }
             }

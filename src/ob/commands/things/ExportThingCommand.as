@@ -24,7 +24,6 @@ package ob.commands.things
 {
     import nail.commands.Command;
     
-    import otlib.core.Version;
     import otlib.loaders.PathHelper;
     
     public class ExportThingCommand extends Command
@@ -36,7 +35,8 @@ package ob.commands.things
         public function ExportThingCommand(list:Vector.<PathHelper>,
                                            category:String,
                                            obdVersion:uint,
-                                           clientVersion:Version,
+                                           datSignature:uint,
+                                           sprSignature:uint,
                                            spriteSheetFlag:uint,
                                            transparentBackground:Boolean,
                                            jpegQuality:uint)
@@ -44,7 +44,8 @@ package ob.commands.things
             super(list,
                   category,
                   obdVersion,
-                  clientVersion,
+                  datSignature,
+                  sprSignature,
                   spriteSheetFlag,
                   transparentBackground,
                   jpegQuality);

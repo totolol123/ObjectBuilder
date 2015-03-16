@@ -26,8 +26,6 @@ package ob.commands.files
     
     import nail.commands.Command;
     
-    import otlib.core.Version;
-    
     public class CompileAsCommand extends Command
     {
         //--------------------------------------------------------------------------
@@ -36,14 +34,16 @@ package ob.commands.files
         
         public function CompileAsCommand(datFile:File,
                                          sprFile:File,
-                                         version:Version,
+                                         datSignature:uint,
+                                         sprSignature:uint,
                                          extended:Boolean, 
                                          transparency:Boolean,
                                          improvedAniamtions:Boolean)
         {
             super(datFile.nativePath,
                   sprFile.nativePath,
-                  version,
+                  datSignature,
+                  sprSignature,
                   extended,
                   transparency,
                   improvedAniamtions);
