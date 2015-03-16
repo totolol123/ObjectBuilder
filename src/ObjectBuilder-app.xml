@@ -6,9 +6,6 @@
 	<name>Object Builder</name>
 	<versionNumber>0.5.0</versionNumber>
 	<versionLabel>0.5</versionLabel>
-	<copyright>
-		<![CDATA[Copyright (c) 2015 <a href="https://github.com/Mignari/ObjectBuilder/graphs/contributors">Contributors</a>]]>
-	</copyright>
 	
 	<initialWindow>
 		<content>[This value will be overwritten by Flash Builder in the output app.xml]</content>

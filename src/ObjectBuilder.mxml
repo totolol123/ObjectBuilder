@@ -49,6 +49,7 @@ THE SOFTWARE.
     
     <fx:Script>
         <![CDATA[
+            import ob.components.AboutWindow;
             import flash.net.registerClassAlias;
             
             import mx.core.UIComponent;
@@ -68,7 +69,6 @@ THE SOFTWARE.
             import nail.commands.Communicator;
             import nail.commands.ICommunicator;
             import nail.commands.LogCommand;
-            import nail.components.controls.AboutWindow;
             import nail.components.controls.Alert;
             import nail.core.nail_internal;
             import nail.errors.NullArgumentError;
@@ -1234,7 +1234,7 @@ THE SOFTWARE.
             
             private function onAboutApplication():void
             {
-                var window : AboutWindow = new AboutWindow();
+                var window:AboutWindow = new AboutWindow();
                 window.open();
                 
                 PopUpWindowManager.addWindow(window);
