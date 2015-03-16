@@ -39,6 +39,9 @@ package otlib.assets
         // STATIC
         //--------------------------------------------------------------------------
         
+        [Embed(source="../../../assets/icons/object_builder.png", mimeType="image/png")]
+        public static const OB:Class;
+        
         [Embed(source="../../../assets/icons/export.png", mimeType="image/png")]
         public static const EXPORT:Class;
         

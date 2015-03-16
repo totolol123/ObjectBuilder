@@ -39,12 +39,6 @@ THE SOFTWARE.
           alwaysInFront="true"
           creationComplete="creationCompleteHandler(event)">
     
-    <fx:Declarations>
-        <s:Animate id="animation" target="{gradient}" duration="6000" repeatCount="0">
-            <s:SimpleMotionPath property="rotation" valueFrom="0" valueTo="360"/>
-        </s:Animate>
-    </fx:Declarations>
-    
     <fx:Script>
         <![CDATA[
             import mx.events.FlexEvent;
@@ -52,15 +46,14 @@ THE SOFTWARE.
             import nail.utils.Descriptor;
             import nail.utils.WindowUtil;
             
+            import otlib.assets.Assets;
+            
             //--------------------------------------------------------------------------
             // PROPERTIES
             //--------------------------------------------------------------------------
             
-            [Embed(source="../assets/icons/object_builder.png", mimeType="image/png")]
-            private const OBJECT_BUILDER_ICON:Class;
-            
-            private var _timer:Timer;
-            private var _complete:Boolean;
+            private var m_timer:Timer;
+            private var m_complete:Boolean;
             
             //--------------------------------------------------------------------------
             // METHODS
@@ -76,7 +69,7 @@ THE SOFTWARE.
                     progressBar.setProgress(loaded, total);
                 
                 if (loaded != 0 && total != 0 && loaded == total)
-                    _complete = true;
+                    m_complete = true;
             }
             
             //--------------------------------------
@@ -90,19 +83,17 @@ THE SOFTWARE.
                 versionDisplay.text = Descriptor.getVersionLabel();
                 licenceDisplay.text = resourceManager.getString("strings", "splashMessage");
                 
-                animation.play();
-                
-                _timer = new Timer(3000);
-                _timer.addEventListener(TimerEvent.TIMER, timerHandler);
-                _timer.start();
+                m_timer = new Timer(3000);
+                m_timer.addEventListener(TimerEvent.TIMER, timerHandler);
+                m_timer.start();
             }
             
             protected function timerHandler(event:TimerEvent):void
             {
-                if (_complete) {
-                    _timer.stop();
-                    _timer.removeEventListener(TimerEvent.TIMER, timerHandler);
-                    _timer = null;
+                if (m_complete) {
+                    m_timer.stop();
+                    m_timer.removeEventListener(TimerEvent.TIMER, timerHandler);
+                    m_timer = null;
                     
                     this.close();
                 }
@@ -111,13 +102,13 @@ THE SOFTWARE.
         ]]>
     </fx:Script>
     
-    <!-- effect fill -->
+    <!-- background fill -->
     <s:Rect left="0" right="0" top="0" bottom="0">
         <s:fill>
-            <s:LinearGradient id="gradient"
-                              rotation="0">
-                <s:GradientEntry color="0xFFFFFF"/>
-                <s:GradientEntry color="0x272727"/>
+            <s:LinearGradient rotation="90">
+                <s:GradientEntry color="0x686868"/>
+                <s:GradientEntry color="0x535353"/>
+                <s:GradientEntry color="0x454545"/>
             </s:LinearGradient>
         </s:fill>
         <s:stroke>
@@ -125,47 +116,28 @@ THE SOFTWARE.
         </s:stroke>
     </s:Rect>
     
-    <!-- fill -->
-    <s:Rect left="1" right="1" top="1" bottom="1" alpha="0.7">
-        <s:fill>
-            <s:LinearGradient rotation="90">
-                <s:GradientEntry color="0x626262"/>
-                <s:GradientEntry color="0x4B4B4B"/>
-            </s:LinearGradient>
-        </s:fill>
-    </s:Rect>
-    
     <s:Image id="image"
-             source="{OBJECT_BUILDER_ICON}"
+             source="{Assets.OB}"
              horizontalCenter="0"
-             top="55">
-        
-        <s:filters>
-            <s:DropShadowFilter color="0x636363"
-                                distance="2"
-                                blurX="2"
-                                blurY="2"/>
-        </s:filters>
-    </s:Image>
+             top="55"/>
     
     <nail:ShadowLabel id="versionDisplay"
-                      right="55"
+                      right="50"
                       top="115"
-                      color="0xCCCCCC"
-                      shadowColor="0x535353"
+                      color="0xDFDFDF"
+                      shadowColor="0x272727"
                       fontSize="12"
                       fontWeight="bold"/>
     
-    <nail:ShadowLabel id="statusDisplay"
-                      left="10"
-                      top="170"
-                      shadowColor="0x272727"
-                      text="{status}"/>
+    <s:Label id="statusDisplay"
+             left="10"
+             top="170"
+             text="{status}"/>
     
     <mx:ProgressBar id="progressBar"
                     left="-1"
                     right="-1"
-                    top="160"
+                    top="161"
                     label=""
                     labelPlacement="top"
                     mode="manual"
@@ -175,7 +147,7 @@ THE SOFTWARE.
                 left="1"
                 right="1"
                 bottom="1"
-                top="190"
+                top="192"
                 paddingLeft="30"
                 paddingRight="30"
                 focusEnabled="false"
