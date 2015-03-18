@@ -102,23 +102,13 @@ package ob.settings
         
         public function getIODirectory():File
         {
-            if (isNullOrEmpty(lastIODirectory)) return null;
-            
-            var directory:File;
-            try 
-            {
-                directory = new File(lastIODirectory);
-            } catch(error:Error) {
-                return null;
-            }
-            return directory;
+            return PathUtil.toFile(this.lastIODirectory) || File.documentsDirectory;
         }
         
         public function setIODirectory(file:File):void
         {
-            if (file) {
+            if (file)
                 this.lastIODirectory = FileUtil.getDirectory(file).nativePath;
-            }
         }
         
         public function getLastExportThingFormat():String

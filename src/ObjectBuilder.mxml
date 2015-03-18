@@ -1723,7 +1723,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var filter:FileFilter = new FileFilter("Object Builder Data", "*.obd;");
-                var file:File = _settings.getIODirectory() || File.userDirectory;
+                var file:File = _settings.getIODirectory();
                 file.addEventListener(FileListEvent.SELECT_MULTIPLE, selectMultipleHandler);
                 file.browseForOpenMultiple(resourceManager.getString("strings", "selectFiles"), [filter]);
                 
@@ -1761,7 +1761,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var filter:FileFilter = new FileFilter("Object Builder Data", "*.obd;");
-                var file:File = _settings.getIODirectory() || File.userDirectory;
+                var file:File = _settings.getIODirectory();
                 file.addEventListener(FileListEvent.SELECT_MULTIPLE, selectMultipleHandler);
                 file.browseForOpenMultiple(resourceManager.getString("strings", "selectFiles"), [filter]);
                 
@@ -2004,7 +2004,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var filters:Array = ObUtils.createImagesFileFilter();
-                var file:File = _settings.getIODirectory() || File.userDirectory;
+                var file:File = _settings.getIODirectory();
                 file.addEventListener(FileListEvent.SELECT_MULTIPLE, multipleSelectHandler);
                 file.browseForOpenMultiple(resourceManager.getString("strings", "selectImages"), filters);
                 
@@ -2045,7 +2045,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var filters:Array = ObUtils.createImagesFileFilter();
-                var file:File = _settings.getIODirectory() || File.userDirectory;
+                var file:File = _settings.getIODirectory();
                 file.addEventListener(FileListEvent.SELECT_MULTIPLE, multipleSelectHandler);
                 file.browseForOpenMultiple(resourceManager.getString("strings", "selectImages"), filters);
                 
