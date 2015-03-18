@@ -48,8 +48,12 @@ package ob.core
     import nail.utils.VectorUtils;
     import nail.utils.isNullOrEmpty;
     
+    import ob.commands.CompileProjectAsCommand;
+    import ob.commands.CompileProjectCommand;
+    import ob.commands.CreateNewProjectCommand;
     import ob.commands.FindResultCommand;
     import ob.commands.HideProgressBarCommand;
+    import ob.commands.LoadProjectCommand;
     import ob.commands.LoadVersionsCommand;
     import ob.commands.NeedToReloadCommand;
     import ob.commands.ProgressBarID;
@@ -57,11 +61,7 @@ package ob.core
     import ob.commands.SetClientInfoCommand;
     import ob.commands.SettingsCommand;
     import ob.commands.ShowProgressBarCommand;
-    import ob.commands.files.CompileProjectAsCommand;
-    import ob.commands.files.CompileProjectCommand;
-    import ob.commands.files.CreateNewProjectCommand;
-    import ob.commands.files.LoadProjectCommand;
-    import ob.commands.files.UnloadProjectCommand;
+    import ob.commands.UnloadProjectCommand;
     import ob.commands.sprites.ExportSpritesCommand;
     import ob.commands.sprites.FindSpritesCommand;
     import ob.commands.sprites.GetSpriteListCommand;

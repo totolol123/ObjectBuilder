@@ -20,17 +20,17 @@
 *  THE SOFTWARE.
 */
 
-package ob.commands.files
+package ob.commands
 {
     import nail.commands.Command;
-    
-    public class UnloadProjectCommand extends Command
+
+    public class CompileProjectCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function UnloadProjectCommand()
+        public function CompileProjectCommand()
         {
             super();
         }

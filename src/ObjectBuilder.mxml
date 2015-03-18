@@ -87,7 +87,11 @@ THE SOFTWARE.
             import nail.utils.isNullOrEmpty;
             
             import ob.animationeditor.AnimationEditor;
+            import ob.commands.CompileProjectAsCommand;
+            import ob.commands.CompileProjectCommand;
+            import ob.commands.CreateNewProjectCommand;
             import ob.commands.HideProgressBarCommand;
+            import ob.commands.LoadProjectCommand;
             import ob.commands.LoadVersionsCommand;
             import ob.commands.NeedToReloadCommand;
             import ob.commands.ProgressBarID;
@@ -95,11 +99,7 @@ THE SOFTWARE.
             import ob.commands.SetClientInfoCommand;
             import ob.commands.SettingsCommand;
             import ob.commands.ShowProgressBarCommand;
-            import ob.commands.files.CompileProjectAsCommand;
-            import ob.commands.files.CompileProjectCommand;
-            import ob.commands.files.CreateNewProjectCommand;
-            import ob.commands.files.LoadProjectCommand;
-            import ob.commands.files.UnloadProjectCommand;
+            import ob.commands.UnloadProjectCommand;
             import ob.commands.sprites.ExportSpritesCommand;
             import ob.commands.sprites.GetSpriteListCommand;
             import ob.commands.sprites.ImportSpritesCommand;

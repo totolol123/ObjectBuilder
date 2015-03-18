@@ -20,19 +20,27 @@
 *  THE SOFTWARE.
 */
 
-package ob.commands.files
+package ob.commands
 {
     import nail.commands.Command;
-
-    public class CompileProjectCommand extends Command
+    
+    public class CreateNewProjectCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function CompileProjectCommand()
+        public function CreateNewProjectCommand(datSignature:uint,
+                                                sprSignature:uint, 
+                                                extended:Boolean,
+                                                transparency:Boolean,
+                                                improvedAnimations:Boolean)
         {
-            super();
+            super(datSignature,
+                  sprSignature,
+                  extended,
+                  transparency,
+                  improvedAnimations);
         }
     }
 }

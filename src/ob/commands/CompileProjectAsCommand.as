@@ -20,25 +20,25 @@
 *  THE SOFTWARE.
 */
 
-package ob.commands.files
+package ob.commands
 {
     import flash.filesystem.File;
     
     import nail.commands.Command;
     
-    public class LoadProjectCommand extends Command
+    public class CompileProjectAsCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function LoadProjectCommand(datFile:File,
-                                           sprFile:File,
-                                           datSignature:uint,
-                                           sprSignature:uint,
-                                           extended:Boolean,
-                                           transparency:Boolean,
-                                           improvedAnimations:Boolean)
+        public function CompileProjectAsCommand(datFile:File,
+                                                sprFile:File,
+                                                datSignature:uint,
+                                                sprSignature:uint,
+                                                extended:Boolean, 
+                                                transparency:Boolean,
+                                                improvedAniamtions:Boolean)
         {
             super(datFile.nativePath,
                   sprFile.nativePath,
@@ -46,7 +46,7 @@ package ob.commands.files
                   sprSignature,
                   extended,
                   transparency,
-                  improvedAnimations);
+                  improvedAniamtions);
         }
     }
 }

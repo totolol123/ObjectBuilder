@@ -20,33 +20,19 @@
 *  THE SOFTWARE.
 */
 
-package ob.commands.files
+package ob.commands
 {
-    import flash.filesystem.File;
-    
     import nail.commands.Command;
     
-    public class CompileProjectAsCommand extends Command
+    public class UnloadProjectCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function CompileProjectAsCommand(datFile:File,
-                                                sprFile:File,
-                                                datSignature:uint,
-                                                sprSignature:uint,
-                                                extended:Boolean, 
-                                                transparency:Boolean,
-                                                improvedAniamtions:Boolean)
+        public function UnloadProjectCommand()
         {
-            super(datFile.nativePath,
-                  sprFile.nativePath,
-                  datSignature,
-                  sprSignature,
-                  extended,
-                  transparency,
-                  improvedAniamtions);
+            super();
         }
     }
 }

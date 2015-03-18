@@ -20,23 +20,29 @@
 *  THE SOFTWARE.
 */
 
-package ob.commands.files
+package ob.commands
 {
+    import flash.filesystem.File;
+    
     import nail.commands.Command;
     
-    public class CreateNewProjectCommand extends Command
+    public class LoadProjectCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function CreateNewProjectCommand(datSignature:uint,
-                                                sprSignature:uint, 
-                                                extended:Boolean,
-                                                transparency:Boolean,
-                                                improvedAnimations:Boolean)
+        public function LoadProjectCommand(datFile:File,
+                                           sprFile:File,
+                                           datSignature:uint,
+                                           sprSignature:uint,
+                                           extended:Boolean,
+                                           transparency:Boolean,
+                                           improvedAnimations:Boolean)
         {
-            super(datSignature,
+            super(datFile.nativePath,
+                  sprFile.nativePath,
+                  datSignature,
                   sprSignature,
                   extended,
                   transparency,
