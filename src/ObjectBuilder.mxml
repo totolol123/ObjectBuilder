@@ -864,6 +864,8 @@ THE SOFTWARE.
                 
                 if (_settings.maximized)
                     this.maximize();
+                else
+                    WindowUtil.centralizeWindowOnScreen(this);
                 
                 previewPanel.width = Math.max(previewPanel.minWidth, _settings.previewContainerWidth);
                 thingsPanel.width = Math.max(thingsPanel.minWidth, _settings.thingListContainerWidth);
