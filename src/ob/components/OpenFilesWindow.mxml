@@ -85,6 +85,9 @@ THE SOFTWARE.
             public function get clientDirectory():File { return m_clientDirectory; }
             public function set clientDirectory(value:File):void
             {
+                if (value && !value.isDirectory)
+                    value = FileUtil.getDirectory(value);
+                
                 if (!FileUtil.equals(m_clientDirectory, value))
                 {
                     m_clientDirectory = value;
