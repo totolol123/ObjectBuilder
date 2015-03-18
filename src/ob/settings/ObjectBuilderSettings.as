@@ -28,6 +28,7 @@ package ob.settings
     
     import nail.image.ImageFormat;
     import nail.utils.FileUtil;
+    import nail.utils.PathUtil;
     import nail.utils.isNullOrEmpty;
     
     import ob.core.IObjectBuilder;
@@ -47,9 +48,8 @@ package ob.settings
         public var lastIODirectory:String;
         public var exportThingFormat:String;
         public var exportSpriteFormat:String;
-        public var datSignature:int;
-        public var sprSignature:int;
         public var autosaveThingChanges:Boolean;
+        public var loadFilesOnStartup:Boolean;
         public var maximized:Boolean = true;
         public var previewContainerWidth:Number = 0;
         public var thingListContainerWidth:Number = 0;
@@ -58,9 +58,6 @@ package ob.settings
         public var showThingsPanel:Boolean = true;
         public var showSpritesPanel:Boolean = true;
         public var language:String = "en_US";
-        public var extended:Boolean;
-        public var transparency:Boolean;
-        public var improvedAnimations:Boolean;
         public var savingSpriteSheet:Number = 0;
         public var findWindowWidth:Number = 0;
         public var findWindowHeight:Number = 0;
@@ -71,6 +68,15 @@ package ob.settings
         public var spritesListAmount:Number = 100;
         public var exportWithTransparentBackground:Boolean = false;
         public var jpegQuality:Number = 100;
+        
+        // default settings for startup
+        public var datSignature:int;
+        public var sprSignature:int;
+        public var extended:Boolean;
+        public var transparency:Boolean;
+        public var improvedAnimations:Boolean;
+        public var datPath:String;
+        public var sprPath:String;
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -88,25 +94,10 @@ package ob.settings
         // Public
         //--------------------------------------
         
-        public function getLastDirectory():File
+        public function getClientDirectory():File
         {
-            if (isNullOrEmpty(lastDirectory)) return null;
-            
-            var directory:File;
-            try
-            {
-                directory = new File(lastDirectory);
-            } catch(error:Error) {
-                return null;
-            }
-            return directory;
-        }
-        
-        public function setLastDirectory(file:File):void
-        {
-            if (file) {
-                this.lastDirectory = FileUtil.getDirectory(file).nativePath;
-            }
+            var file:File = PathUtil.toFile(datPath);
+            return (file != null) ? FileUtil.getDirectory(file) : null;
         }
         
         public function getIODirectory():File

@@ -26,7 +26,7 @@ THE SOFTWARE.
           xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:nail="library://ns.nail.com/naillib"
           width="400"
-          height="300"
+          height="330"
           resizable="false"
           showStatusBar="false"
           backgroundColor="0x494949"
@@ -119,6 +119,7 @@ THE SOFTWARE.
                 setLanguage(settings.language);
                 confirmButton.enabled = (settings != null);
                 autosaveChangesCheckBox.selected = settings.autosaveThingChanges;
+                loadFilesOnStartupCheckBox.selected = settings.loadFilesOnStartup;
                 extendedCheckBox.selected = settings.extended;
                 transparencyCheckBox.selected = settings.transparency;
                 setSavePropertiesValue(settings.savingSpriteSheet);
@@ -198,6 +199,7 @@ THE SOFTWARE.
                 _detail = DialogDetail.CONFIRM;
                 _settings.language = getLanguage();
                 _settings.autosaveThingChanges = autosaveChangesCheckBox.selected;
+                _settings.loadFilesOnStartup = loadFilesOnStartupCheckBox.selected;
                 _settings.extended = extendedCheckBox.selected;
                 _settings.transparency = transparencyCheckBox.selected;
                 _settings.savingSpriteSheet = getSavePropertiesValue();
@@ -223,6 +225,20 @@ THE SOFTWARE.
                                   paddingTop="20"
                                   paddingBottom="10"/>
             </s:layout>
+            
+            <nail:GroupBox width="100%">
+                <nail:layout>
+                    <s:VerticalLayout gap="10"
+                                      paddingLeft="10"
+                                      paddingRight="10"
+                                      paddingTop="10"
+                                      paddingBottom="10"/>
+                </nail:layout>
+                
+                <s:CheckBox id="loadFilesOnStartupCheckBox"
+                            label="@Resource(key='loadFilesOnStartup', bundle='strings')"/>
+            </nail:GroupBox>
+            
             <nail:GroupBox width="100%"
                            label="@Resource(key='language', bundle='strings')">
                 <nail:layout>

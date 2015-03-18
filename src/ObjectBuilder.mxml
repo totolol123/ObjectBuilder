@@ -49,7 +49,6 @@ THE SOFTWARE.
     
     <fx:Script>
         <![CDATA[
-            import ob.components.AboutWindow;
             import flash.net.registerClassAlias;
             
             import mx.core.UIComponent;
@@ -82,6 +81,7 @@ THE SOFTWARE.
             import nail.utils.FileData;
             import nail.utils.FileQueueHelper;
             import nail.utils.FileUtil;
+            import nail.utils.PathUtil;
             import nail.utils.StringUtil;
             import nail.utils.WindowUtil;
             import nail.utils.isNullOrEmpty;
@@ -121,6 +121,7 @@ THE SOFTWARE.
             import ob.commands.things.SetThingDataCommand;
             import ob.commands.things.SetThingListCommand;
             import ob.commands.things.UpdateThingCommand;
+            import ob.components.AboutWindow;
             import ob.components.CompileFilesWindow;
             import ob.components.ErrorWindow;
             import ob.components.NewFilesWindow;
@@ -347,7 +348,7 @@ THE SOFTWARE.
                 
                 if (PopUpWindowManager.currentWindow is OpenFilesWindow) {
                     window = OpenFilesWindow(PopUpWindowManager.currentWindow);
-                    window.clientDirectory = directory || _settings.getLastDirectory();
+                    window.clientDirectory = directory || _settings.getClientDirectory();
                     window.extended = _settings.extended;
                     window.transparency = _settings.transparency;
                     window.improvedAnimations = _settings.improvedAnimations;
@@ -355,7 +356,7 @@ THE SOFTWARE.
                 else 
                 {
                     window = new OpenFilesWindow();
-                    window.clientDirectory = directory || _settings.getLastDirectory();
+                    window.clientDirectory = directory || _settings.getClientDirectory();
                     window.extended = _settings.extended;
                     window.transparency = _settings.transparency;
                     window.improvedAnimations = _settings.improvedAnimations;
@@ -369,7 +370,13 @@ THE SOFTWARE.
                 {
                     if (window.detail == DialogDetail.CONFIRM)
                     {
-                        _settings.setLastDirectory(window.datFile);
+                        _settings.datSignature = window.version.datSignature;
+                        _settings.sprSignature = window.version.sprSignature;
+                        _settings.datPath = window.datFile.nativePath;
+                        _settings.sprPath = window.sprFile.nativePath;
+                        _settings.extended = window.extended;
+                        _settings.transparency = window.transparency;
+                        _settings.improvedAnimations = window.improvedAnimations;
                         _filesName = FileUtil.getName(window.datFile);
                         
                         sendCommand(new LoadFilesCommand(window.datFile,
@@ -403,7 +410,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var window:CompileFilesWindow = new CompileFilesWindow();
-                window.directory = _settings.getLastDirectory();
+                window.directory = _settings.getClientDirectory();
                 window.version = _versionStorage.getFromClientInfo(_clientInfo);
                 window.extended = _clientInfo.extended;
                 window.transparency = _clientInfo.transparency;
@@ -416,7 +423,13 @@ THE SOFTWARE.
                 
                 function windowCloseHandler(event:Event):void
                 {
-                    _settings.setLastDirectory(window.directory);
+                    _settings.datSignature = window.version.datSignature;
+                    _settings.sprSignature = window.version.sprSignature;
+                    _settings.datPath = window.datFile.nativePath;
+                    _settings.sprPath = window.sprFile.nativePath;
+                    _settings.extended = window.extended;
+                    _settings.transparency = window.transparency;
+                    _settings.improvedAnimations = window.improvedAnimations;
                     
                     if (window.detail == DialogDetail.CONFIRM)
                     {
@@ -879,7 +892,8 @@ THE SOFTWARE.
                 if (_invokeArgs) {
                     setInvokeArgs(_invokeArgs);
                     _invokeArgs = null;
-                }
+                } else if (_settings.loadFilesOnStartup)
+                    autoLoadProject();
                 
                 _creationComplete = true;
             }
@@ -1503,6 +1517,20 @@ THE SOFTWARE.
                 else if (PopUpWindowManager.currentWindow is ErrorWindow)
                 {
                     ErrorWindow(PopUpWindowManager.currentWindow).appendMessage(message);
+                }
+            }
+            
+            private function autoLoadProject():void
+            {
+                var version:Version = _versionStorage.getBySignatures(_settings.datSignature, _settings.sprSignature);
+                if (version) {
+                    var datFile:File = PathUtil.toFile(_settings.datPath);
+                    var sprFile:File = PathUtil.toFile(_settings.sprPath);
+                    if (datFile && sprFile)
+                        sendCommand(new LoadFilesCommand(datFile,
+                                                         sprFile,
+                                                         version.datSignature,
+                                                         version.sprSignature, _settings.extended, _settings.transparency, _settings.improvedAnimations));
                 }
             }
             
