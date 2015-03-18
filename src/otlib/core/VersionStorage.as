@@ -264,10 +264,11 @@ package otlib.core
         
         public function getBySignatures(datSignature:uint, sprSignature:uint):Version
         {
-            for each (var version:Version in _versions) {
-                if (version.sprSignature == sprSignature &&
-                    version.datSignature == datSignature)
-                    return version;
+            if (datSignature != 0 && sprSignature != 0) {
+                for each (var version:Version in _versions) {
+                    if (version.sprSignature == sprSignature && version.datSignature == datSignature)
+                        return version;
+                }
             }
             return null;
         }
