@@ -24,15 +24,23 @@ package ob.commands.files
 {
     import nail.commands.Command;
     
-    public class UnloadFilesCommand extends Command
+    public class CreateNewProjectCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function UnloadFilesCommand()
+        public function CreateNewProjectCommand(datSignature:uint,
+                                                sprSignature:uint, 
+                                                extended:Boolean,
+                                                transparency:Boolean,
+                                                improvedAnimations:Boolean)
         {
-            super();
+            super(datSignature,
+                  sprSignature,
+                  extended,
+                  transparency,
+                  improvedAnimations);
         }
     }
 }

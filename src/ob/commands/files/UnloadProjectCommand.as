@@ -23,14 +23,14 @@
 package ob.commands.files
 {
     import nail.commands.Command;
-
-    public class CompileCommand extends Command
+    
+    public class UnloadProjectCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function CompileCommand()
+        public function UnloadProjectCommand()
         {
             super();
         }

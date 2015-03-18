@@ -95,11 +95,11 @@ THE SOFTWARE.
             import ob.commands.SetClientInfoCommand;
             import ob.commands.SettingsCommand;
             import ob.commands.ShowProgressBarCommand;
-            import ob.commands.files.CompileAsCommand;
-            import ob.commands.files.CompileCommand;
-            import ob.commands.files.CreateNewFilesCommand;
-            import ob.commands.files.LoadFilesCommand;
-            import ob.commands.files.UnloadFilesCommand;
+            import ob.commands.files.CompileProjectAsCommand;
+            import ob.commands.files.CompileProjectCommand;
+            import ob.commands.files.CreateNewProjectCommand;
+            import ob.commands.files.LoadProjectCommand;
+            import ob.commands.files.UnloadProjectCommand;
             import ob.commands.sprites.ExportSpritesCommand;
             import ob.commands.sprites.GetSpriteListCommand;
             import ob.commands.sprites.ImportSpritesCommand;
@@ -333,7 +333,7 @@ THE SOFTWARE.
                     {
                         // TODO: check if it's changed/compiled
                         
-                        sendCommand(new CreateNewFilesCommand(window.version.datSignature,
+                        sendCommand(new CreateNewProjectCommand(window.version.datSignature,
                                                               window.version.sprSignature,
                                                               window.extended,
                                                               window.transparency,
@@ -379,7 +379,7 @@ THE SOFTWARE.
                         _settings.improvedAnimations = window.improvedAnimations;
                         _filesName = FileUtil.getName(window.datFile);
                         
-                        sendCommand(new LoadFilesCommand(window.datFile,
+                        sendCommand(new LoadProjectCommand(window.datFile,
                                                          window.sprFile,
                                                          window.version.datSignature,
                                                          window.version.sprSignature,
@@ -402,7 +402,7 @@ THE SOFTWARE.
                 if (_settings.autosaveThingChanges)
                     saveThingChanges();
                 
-                sendCommand(new CompileCommand());
+                sendCommand(new CompileProjectCommand());
             }
             
             public function compileProjectAs():void
@@ -436,7 +436,7 @@ THE SOFTWARE.
                         if (_settings.autosaveThingChanges)
                             saveThingChanges();
                         
-                        sendCommand(new CompileAsCommand(window.datFile,
+                        sendCommand(new CompileProjectAsCommand(window.datFile,
                                                          window.sprFile,
                                                          window.version.datSignature,
                                                          window.version.sprSignature,
@@ -451,7 +451,7 @@ THE SOFTWARE.
             {
                 if (!this.clientLoaded) return;
                 this.clear();
-                sendCommand(new UnloadFilesCommand());
+                sendCommand(new UnloadProjectCommand());
             }
             
             public function openPreferencesWindow():void
@@ -1527,7 +1527,7 @@ THE SOFTWARE.
                     var datFile:File = PathUtil.toFile(_settings.datPath);
                     var sprFile:File = PathUtil.toFile(_settings.sprPath);
                     if (datFile && sprFile)
-                        sendCommand(new LoadFilesCommand(datFile,
+                        sendCommand(new LoadProjectCommand(datFile,
                                                          sprFile,
                                                          version.datSignature,
                                                          version.sprSignature, _settings.extended, _settings.transparency, _settings.improvedAnimations));

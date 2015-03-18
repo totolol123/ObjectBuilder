@@ -22,21 +22,27 @@
 
 package ob.commands.files
 {
+    import flash.filesystem.File;
+    
     import nail.commands.Command;
     
-    public class CreateNewFilesCommand extends Command
+    public class LoadProjectCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function CreateNewFilesCommand(datSignature:uint,
-                                              sprSignature:uint, 
-                                              extended:Boolean,
-                                              transparency:Boolean,
-                                              improvedAnimations:Boolean)
+        public function LoadProjectCommand(datFile:File,
+                                           sprFile:File,
+                                           datSignature:uint,
+                                           sprSignature:uint,
+                                           extended:Boolean,
+                                           transparency:Boolean,
+                                           improvedAnimations:Boolean)
         {
-            super(datSignature,
+            super(datFile.nativePath,
+                  sprFile.nativePath,
+                  datSignature,
                   sprSignature,
                   extended,
                   transparency,

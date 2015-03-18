@@ -26,27 +26,27 @@ package ob.commands.files
     
     import nail.commands.Command;
     
-    public class LoadFilesCommand extends Command
+    public class CompileProjectAsCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function LoadFilesCommand(datFile:File,
-                                         sprFile:File,
-                                         datSignature:uint,
-                                         sprSignature:uint,
-                                         extended:Boolean,
-                                         transparency:Boolean,
-                                         improvedAnimations:Boolean)
+        public function CompileProjectAsCommand(datFile:File,
+                                                sprFile:File,
+                                                datSignature:uint,
+                                                sprSignature:uint,
+                                                extended:Boolean, 
+                                                transparency:Boolean,
+                                                improvedAniamtions:Boolean)
         {
-            super(datFile.nativePath, 
+            super(datFile.nativePath,
                   sprFile.nativePath,
                   datSignature,
                   sprSignature,
                   extended,
                   transparency,
-                  improvedAnimations);
+                  improvedAniamtions);
         }
     }
 }

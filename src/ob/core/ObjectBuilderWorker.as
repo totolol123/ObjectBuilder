@@ -57,11 +57,11 @@ package ob.core
     import ob.commands.SetClientInfoCommand;
     import ob.commands.SettingsCommand;
     import ob.commands.ShowProgressBarCommand;
-    import ob.commands.files.CompileAsCommand;
-    import ob.commands.files.CompileCommand;
-    import ob.commands.files.CreateNewFilesCommand;
-    import ob.commands.files.LoadFilesCommand;
-    import ob.commands.files.UnloadFilesCommand;
+    import ob.commands.files.CompileProjectAsCommand;
+    import ob.commands.files.CompileProjectCommand;
+    import ob.commands.files.CreateNewProjectCommand;
+    import ob.commands.files.LoadProjectCommand;
+    import ob.commands.files.UnloadProjectCommand;
     import ob.commands.sprites.ExportSpritesCommand;
     import ob.commands.sprites.FindSpritesCommand;
     import ob.commands.sprites.GetSpriteListCommand;
@@ -283,11 +283,11 @@ package ob.core
             registerCallback(LoadVersionsCommand, onLoadClientVersions);
             
             // File commands
-            registerCallback(CreateNewFilesCommand, onCreateNewFiles);
-            registerCallback(LoadFilesCommand, onLoadFiles);
-            registerCallback(CompileCommand, onCompile);
-            registerCallback(CompileAsCommand, onCompileAs);
-            registerCallback(UnloadFilesCommand, onUnloadFiles);
+            registerCallback(CreateNewProjectCommand, onCreateNewFiles);
+            registerCallback(LoadProjectCommand, onLoadFiles);
+            registerCallback(CompileProjectCommand, onCompile);
+            registerCallback(CompileProjectAsCommand, onCompileAs);
+            registerCallback(UnloadProjectCommand, onUnloadFiles);
             
             // Thing commands
             registerCallback(NewThingCommand, onNewThing);

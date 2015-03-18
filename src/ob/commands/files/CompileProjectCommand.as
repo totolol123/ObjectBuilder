@@ -22,31 +22,17 @@
 
 package ob.commands.files
 {
-    import flash.filesystem.File;
-    
     import nail.commands.Command;
-    
-    public class CompileAsCommand extends Command
+
+    public class CompileProjectCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function CompileAsCommand(datFile:File,
-                                         sprFile:File,
-                                         datSignature:uint,
-                                         sprSignature:uint,
-                                         extended:Boolean, 
-                                         transparency:Boolean,
-                                         improvedAniamtions:Boolean)
+        public function CompileProjectCommand()
         {
-            super(datFile.nativePath,
-                  sprFile.nativePath,
-                  datSignature,
-                  sprSignature,
-                  extended,
-                  transparency,
-                  improvedAniamtions);
+            super();
         }
     }
 }
