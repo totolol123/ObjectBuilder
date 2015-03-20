@@ -32,10 +32,8 @@ package otlib.core
     import nail.errors.FileNotFoundError;
     import nail.errors.NullArgumentError;
     import nail.errors.SingletonClassError;
+    import nail.utils.StringUtil;
     import nail.utils.isNullOrEmpty;
-    
-    import otlib.utils.ClientInfo;
-    import otlib.utils.OTFormat;
     
     [Event(name="change", type="flash.events.Event")]
     
@@ -45,18 +43,18 @@ package otlib.core
         // PROPERTIES
         //--------------------------------------------------------------------------
         
-        private var _file:File;
-        private var _versions:Dictionary;
-        private var _changed:Boolean;
-        private var _loaded:Boolean;
+        private var m_file:File;
+        private var m_versions:Dictionary;
+        private var m_changed:Boolean;
+        private var m_loaded:Boolean;
         
         //--------------------------------------
         // Getters / Setters
         //--------------------------------------
         
-        public function get file():File { return _file; }
-        public function get changed():Boolean { return _changed; }
-        public function get loaded():Boolean { return _loaded; }
+        public function get file():File { return m_file; }
+        public function get changed():Boolean { return m_changed; }
+        public function get loaded():Boolean { return m_loaded; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -64,11 +62,11 @@ package otlib.core
         
         public function VersionStorage()
         {
-            if (_instance)
+            if (s_instance)
                 throw new SingletonClassError(VersionStorage);
             
-            _instance = this;
-            _versions = new Dictionary();
+            s_instance = this;
+            m_versions = new Dictionary();
         }
         
         //--------------------------------------------------------------------------
@@ -91,139 +89,136 @@ package otlib.core
                 unload();
             
             var stream:FileStream = new FileStream();
-            stream.open(file, FileMode.READ);
-            var xml:XML = XML( stream.readUTFBytes(stream.bytesAvailable) );
-            stream.close();
+            var xml:XML;
+            
+            try
+            {
+                stream.open(file, FileMode.READ);
+                xml = XML( stream.readUTFBytes(stream.bytesAvailable) );
+            }
+            catch(error:Error)
+            {
+                stream.close();
+                return false;
+            }
             
             if (xml.localName() != "versions")
                 throw new Error("Invalid versions XML.");
             
             for each (var versionXML:XML in xml.version) {
                 
-                var version:Version = new Version();
-                version.unserialize(versionXML);
+                if (!versionXML.hasOwnProperty("@value"))
+                    throw new Error("Version.unserialize: Missing 'value' attribute.");
                 
-                _versions[version.valueStr] = version;
+                if (!versionXML.hasOwnProperty("@string"))
+                    throw new Error("Version.unserialize: Missing 'string' attribute.");
+                
+                if (!versionXML.hasOwnProperty("@dat"))
+                    throw new Error("Version.unserialize: Missing 'dat' attribute.");
+                
+                if (!versionXML.hasOwnProperty("@spr"))
+                    throw new Error("Version.unserialize: Missing 'spr' attribute.");
+                
+                if (!versionXML.hasOwnProperty("@otb"))
+                    throw new Error("Version.unserialize: Missing 'otb' attribute.");
+                
+                var value:uint = uint(versionXML.@value);
+                var description:String = String(versionXML.@string);
+                var dat:uint = uint(StringUtil.format("0x{0}", versionXML.@dat));
+                var spr:uint = uint(StringUtil.format("0x{0}", versionXML.@spr));
+                var otb:uint = uint(versionXML.@otb);
+                m_versions[description] = new Version(value, description, dat, spr, otb);
             }
             
-            _file = file;
-            _changed = false;
-            _loaded = true;
+            m_file = file;
+            m_changed = false;
+            m_loaded = true;
             dispatchEvent(new Event(Event.COMPLETE));
-            
-            return _loaded;
+            return m_loaded;
         }
         
-        public function addVersion(value:uint, dat:uint, spr:uint, otb:uint):Version
-        {
-            if (value == 0)
-                throw new ArgumentError("VersionStorage.addVersion: Invalid value.");
-            
-            if (dat == 0)
-                throw new ArgumentError("VersionStorage.addVersion: Invalid dat.");
-            
-            if (spr == 0)
-                throw new ArgumentError("VersionStorage.addVersion: Invalid spr.");
-            
-            var version:Version = getBySignatures(dat, spr) as Version;
-            
-            // Se a versão do cliente já existe, apenas atualizar a versão do otb.
-            if (version && version.value == value) {
-                if (version.otbVersion !== otb) {
-                    version.otbVersion = otb;
-                    _changed = true;
-                    
-                    if (hasEventListener(Event.CHANGE))
-                        dispatchEvent(new Event(Event.CHANGE));
-                }
-                
-                return version;
-            }
-            
-            var vstr:String = int(value / 100) + "." + (value % 100);
-            var index:uint = 1;
-            var valueStr:String = vstr;
-            
-            for each (version in _versions) {
-                
-                if (version.valueStr === valueStr) {
-                    index++;
-                    valueStr = vstr + " v" + index;
-                }
-            }
-            
-            version = new Version();
-            version.value = value;
-            version.valueStr = valueStr;
-            version.datSignature = dat;
-            version.sprSignature = spr;
-            version.otbVersion = otb;
-            
-            _versions[valueStr] = version;
-            _changed = true;
-            
-            if (hasEventListener(Event.CHANGE))
-                dispatchEvent(new Event(Event.CHANGE));
-            
-            return version;
-        }
-        
-        public function removeVersion(version:Version):Version
+        public function addVersion(version:Version):Boolean
         {
             if (!version)
                 throw new NullArgumentError("version");
             
-            for each (var v:Version in _versions) {
-                if (v === version) {
-                    delete _versions[v.valueStr];
-                    
-                    _changed = true;
-                    
-                    if (hasEventListener(Event.CHANGE))
-                        dispatchEvent(new Event(Event.CHANGE));
-                    
-                    return v;
+            if (getBySignatures(version.datSignature, version.sprSignature) != null)
+                return false;
+            
+            var desc:String = Version.valueToDescription(version.value);
+            var description:String = desc;
+            var index:uint = 1;
+            while (m_versions[description] !== undefined)
+                description = desc + 'v' + (++index);
+            
+            version.m_description = description;
+            m_versions[description] = version;
+            
+            m_changed = true;
+            if (hasEventListener(Event.CHANGE))
+                dispatchEvent(new Event(Event.CHANGE));
+            
+            return true;
+        }
+        
+        public function removeVersion(version:Version):Boolean
+        {
+            if (!version)
+                throw new NullArgumentError("version");
+            
+            var removed:Boolean = false;
+            for each (var v:Version in m_versions) {
+                if (v.equals(version)) {
+                    delete m_versions[v.description];
+                    removed = true;
                 }
             }
             
-            return null;
+            m_changed = (m_changed || removed);
+            if (removed && hasEventListener(Event.CHANGE))
+                dispatchEvent(new Event(Event.CHANGE));
+            
+            return removed;
         }
         
-        public function save(file:File):void
+        public function save():Boolean
         {
-            if (!file)
-                throw new NullArgumentError("file");
-            
-            if (file.extension !== OTFormat.XML)
-                throw new Error("VersionStorage.save: Invalid extension");
-            
-            if (!_changed) return;
+            if (!m_loaded || !m_changed)
+                return false;
             
             var xml:XML = <versions/>;
             var list:Array = getList();
             var length:uint = list.length;
             
             for (var i:uint = 0; i < length; i++)
-                xml.appendChild( list[i].serialize() );
+                xml.appendChild(serializeVersion(list[i]));
             
             var xmlStr:String = '<?xml version="1.0" encoding="utf-8"?>' +
                 File.lineEnding +
                 xml.toXMLString();
             
-            var stream:FileStream = new FileStream();
-            stream.open(file, FileMode.WRITE);
-            stream.writeUTFBytes(xmlStr);
-            stream.close();
+            try
+            {
+                var stream:FileStream = new FileStream();
+                stream.open(m_file, FileMode.WRITE);
+                stream.writeUTFBytes(xmlStr);
+                stream.close();
+            }
+            catch(error:Error)
+            {
+                return false;
+            }
             
-            _changed = false;
+            m_changed = false;
+            return true;
         }
         
         public function getList():Array
         {
             var list:Array = [];
             
-            for each (var version:Version in _versions)
-            list[list.length] = version;
+            for each (var version:Version in m_versions)
+                list[list.length] = version;
             
             if (list.length > 1)
                 list.sortOn("value", Array.NUMERIC | Array.DESCENDING);
@@ -231,42 +226,30 @@ package otlib.core
             return list;
         }
         
-        public function getFromClientInfo(info:ClientInfo):Version
-        {
-            for each (var version:Version in _versions) {
-                if (version.value == info.clientVersion &&
-                    version.datSignature == info.datSignature &&
-                    version.sprSignature == info.sprSignature)
-                    return version;
-            }
-            return null;
-        }
-        
         public function getByValue(value:uint):Vector.<Version>
         {
             var list:Vector.<Version> = new Vector.<Version>();
-            
-            for each (var version:Version in _versions) {
+            for each (var version:Version in m_versions) {
                 if (version.value == value)
                     list[list.length] = version;
             }
             return list;
         }
         
-        public function getByValueString(value:String):Version
+        public function getByDescription(description:String):Version
         {
-            if (!isNullOrEmpty(value)) {
-                if (_versions[value] !== undefined)
-                    return _versions[value];
+            if (!isNullOrEmpty(description)) {
+                if (m_versions[description] !== undefined)
+                    return m_versions[description];
             }
             return null;
         }
         
-        public function getBySignatures(datSignature:uint, sprSignature:uint):Version
+        public function getBySignatures(dat:uint, spr:uint):Version
         {
-            if (datSignature != 0 && sprSignature != 0) {
-                for each (var version:Version in _versions) {
-                    if (version.sprSignature == sprSignature && version.datSignature == datSignature)
+            if (dat != 0 && spr != 0) {
+                for each (var version:Version in m_versions) {
+                    if (version.sprSignature == spr && version.datSignature == dat)
                         return version;
                 }
             }
@@ -276,8 +259,7 @@ package otlib.core
         public function getByOtbVersion(otb:uint):Vector.<Version>
         {
             var list:Vector.<Version> = new Vector.<Version>();
-            
-            for each (var version:Version in _versions) {
+            for each (var version:Version in m_versions) {
                 if (version.otbVersion == otb)
                     list[list.length] = version;
             }
@@ -286,23 +268,38 @@ package otlib.core
         
         public function unload():void
         {
-            _file = null;
-            _versions = new Dictionary();
-            _changed = false;
-            _loaded = false;
+            m_file = null;
+            m_versions = new Dictionary();
+            m_changed = false;
+            m_loaded = false;
+        }
+        
+        //--------------------------------------
+        // Private
+        //--------------------------------------
+        
+        private function serializeVersion(version:Version):XML
+        {
+            var xml:XML = <version/>;
+            xml.@value = version.value;
+            xml.@string = version.description;
+            xml.@dat = version.datSignature.toString(16).toUpperCase();
+            xml.@spr = version.sprSignature.toString(16).toUpperCase();
+            xml.@otb = version.otbVersion;
+            return xml;
         }
         
         //--------------------------------------------------------------------------
         // STATIC
         //--------------------------------------------------------------------------
         
-        private static var _instance:IVersionStorage;
+        private static var s_instance:IVersionStorage;
         public static function getInstance():IVersionStorage
         {
-            if (!_instance)
+            if (!s_instance)
                 new VersionStorage();
             
-            return _instance;
+            return s_instance;
         }
     }
 }

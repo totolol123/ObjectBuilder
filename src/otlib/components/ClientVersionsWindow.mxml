@@ -25,23 +25,14 @@ THE SOFTWARE.
           xmlns:s="library://ns.adobe.com/flex/spark"
           xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:nail="library://ns.nail.com/naillib"
-          minWidth="600" 
+          minWidth="600"
           minHeight="500"
-          type="utility"
-          alwaysInFront="true"
           backgroundColor="0x494949"
           showStatusBar="false"
           fontSize="11"
           title="@Resource(key='versions', bundle='strings')"
           creationComplete="creationCompleteHandler(event)"
           closing="closingHandler(event)">
-    
-    <s:layout>
-        <s:VerticalLayout paddingLeft="10"
-                          paddingRight="10"
-                          paddingTop="10"
-                          paddingBottom="10"/>
-    </s:layout>
     
     <fx:Script>
         <![CDATA[
@@ -50,10 +41,10 @@ THE SOFTWARE.
             import mx.events.FlexEvent;
             
             import spark.events.GridSelectionEvent;
+            import spark.events.TextOperationEvent;
             
             import nail.components.controls.Alert;
             import nail.utils.StringUtil;
-            import nail.utils.isNullOrEmpty;
             
             import otlib.assets.Assets;
             import otlib.core.IVersionStorage;
@@ -64,11 +55,11 @@ THE SOFTWARE.
             // PROPERTIES
             //--------------------------------------------------------------------------
             
-            private var _versionStorage:IVersionStorage;
-            private var _value:uint;
-            private var _datSignature:uint;
-            private var _sprSignature:uint;
-            private var _otbversion:uint;
+            private var m_versionStorage:IVersionStorage;
+            private var m_value:uint;
+            private var m_datSignature:uint;
+            private var m_sprSignature:uint;
+            private var m_otbversion:uint;
             
             //--------------------------------------------------------------------------
             // METHODS
@@ -78,52 +69,27 @@ THE SOFTWARE.
             // Private
             //--------------------------------------
             
-            private function checkVersion():void
+            private function updateVersions():void
             {
-                var versionValueText:String = versionValueComboBox.selectedItem;
-                if (isNullOrEmpty(versionValueText)) return;
-                
-                while (versionValueText.indexOf(".") != -1)
-                    versionValueText = versionValueText.replace(".", "");
-                
-                _value = uint(versionValueText);
-                if (_value < 710) return;
-                
-                var datText:String = datTextInput.text;
-                if (datText.length != 8) return;
-                
-                _datSignature = uint("0x" + datText);
-                
-                var sprText:String = sprTextInput.text;
-                if (sprText.length != 8) return;
-                
-                _sprSignature = uint("0x" + sprText);
-                _otbversion = otbVersionNumericStepper.value;
-                
-                var version:Version = _versionStorage.getBySignatures(_datSignature, _sprSignature);
-                if (version && version.otbVersion == _otbversion) {
-                    addVersionButton.enabled = false;
-                    removeVersionButton.enabled = true;
-                    versionsDataGrid.selectedIndex = versionsDataGrid.dataProvider.getItemIndex(version);
-                } else {
-                    addVersionButton.enabled = true;
-                    removeVersionButton.enabled = false;
-                    versionsDataGrid.selectedIndex = -1;
-                }
+                versionsDataGrid.dataProvider = new ArrayCollection(m_versionStorage.getList());
+                versionsDataGrid.selectedIndex = -1;
             }
             
-            private function setVersions():void
+            private function checkVersion():void
             {
-                var versions:ArrayCollection = new ArrayCollection( _versionStorage.getList() );
-                versionsDataGrid.dataProvider = versions;
-                versionsDataGrid.selectedIndex = -1;
-                versionValueComboBox.dataProvider = versions;
-                versionValueComboBox.selectedIndex = -1;
-                datTextInput.text = "";
-                sprTextInput.text = "";
-                otbVersionNumericStepper.value = 0;
+                m_value = uint(valueTextInput.text);
+                m_datSignature = uint("0x" + datTextInput.text);
+                m_sprSignature = uint("0x" + sprTextInput.text);
+                m_otbversion = uint(otbTextInput.text);
+                
                 addVersionButton.enabled = false;
                 removeVersionButton.enabled = false;
+                
+                var version:Version = m_versionStorage.getBySignatures(m_datSignature, m_sprSignature);
+                if (version)
+                    removeVersionButton.enabled = (version.value == m_value);
+                else
+                    addVersionButton.enabled = (m_value >= Version.MIN_VERSION && m_value <= Version.MAX_VERSION);
             }
             
             //--------------------------------------
@@ -132,71 +98,79 @@ THE SOFTWARE.
             
             protected function creationCompleteHandler(event:FlexEvent):void
             {
-                _versionStorage = VersionStorage.getInstance();
-                _versionStorage.addEventListener(Event.CHANGE, storageChangeHandler);
-                setVersions();
+                m_versionStorage = VersionStorage.getInstance();
+                m_versionStorage.addEventListener(Event.CHANGE, storageChangeHandler);
+                updateVersions();
             }
             
             protected function closingHandler(event:Event):void
             {
-                _versionStorage.removeEventListener(Event.CHANGE, storageChangeHandler);
+                m_versionStorage.removeEventListener(Event.CHANGE, storageChangeHandler);
             }
             
             protected function addVersionButtonClickHandler(event:MouseEvent):void
             {
-                if (_value != 0 && _datSignature != 0 && _sprSignature != 0)
-                    _versionStorage.addVersion(_value, _datSignature, _sprSignature, _otbversion)
+                m_versionStorage.addVersion(Version.create(m_value, m_datSignature, m_sprSignature, m_otbversion));
             }
             
             protected function removeVersionButtonClickHandler(event:MouseEvent):void
             {
-                var version:Version = versionsDataGrid.selectedItem as Version;
+                var version:Version = Version(versionsDataGrid.selectedItem);
                 if (!version) return;
                 
-                var message:String = StringUtil.format(
-                    resourceManager.getString("strings", "wantToRemove"),
-                    resourceManager.getString("strings", "version").toLowerCase(),
-                    version);
+                var message:String = StringUtil.format(resourceManager.getString("strings", "wantToRemove"),
+                                                       resourceManager.getString("strings", "version").toLowerCase(),
+                                                       version);
                 
-                Alert.show(
-                    message,
-                    resourceManager.getString("strings", "remove"),
-                    Alert.YES | Alert.NO,
-                    this,
-                    closeHandler);
+                Alert.show(message,
+                           resourceManager.getString("strings", "remove"),
+                           Alert.YES | Alert.NO,
+                           this,
+                           closeHandler,
+                           null,
+                           Alert.NO);
                 
                 function closeHandler(event:CloseEvent):void
                 {
                     if (event.detail == Alert.YES)
-                        _versionStorage.removeVersion(version);
+                        m_versionStorage.removeVersion(version);
                 }
             }
             
             protected function versionsDataGridSelectionChangeHandler(event:GridSelectionEvent):void
             {
-                var version:Version = versionsDataGrid.selectedItem as Version;
+                var version:Version = Version(versionsDataGrid.selectedItem);
                 if (version) {
-                    versionValueComboBox.selectedItem = version;
+                    valueTextInput.text = version.value.toString();
                     datTextInput.text = version.datSignature.toString(16).toUpperCase();
                     sprTextInput.text = version.sprSignature.toString(16).toUpperCase();
-                    otbVersionNumericStepper.value = version.otbVersion;
+                    otbTextInput.text = version.otbVersion.toString();
                     removeVersionButton.enabled = true;
-                } else {
-                    versionValueComboBox.selectedIndex = -1;
-                    datTextInput.text = "";
-                    sprTextInput.text = "";
-                    otbVersionNumericStepper.value = 0;
-                    removeVersionButton.enabled = false;
                 }
+                checkVersion();
             }
             
             protected function storageChangeHandler(event:Event):void
             {
-                setVersions();
+                updateVersions();
+                m_versionStorage.save();
+            }
+            
+            protected function openVersionXMLButtonClickHandler(event:MouseEvent):void
+            {
+                if (m_versionStorage.file)
+                    m_versionStorage.file.openWithDefaultApplication();
             }
             
         ]]>
     </fx:Script>
+    
+    <s:layout>
+        <s:VerticalLayout paddingLeft="10"
+                          paddingRight="10"
+                          paddingTop="10"
+                          paddingBottom="10"/>
+    </s:layout>
     
     <s:DataGrid id="versionsDataGrid"
                 width="100%"
@@ -206,7 +180,7 @@ THE SOFTWARE.
         <s:columns>
             <s:ArrayList>
                 <s:GridColumn dataField="value" headerText="@Resource(key='value', bundle='strings')"/>
-                <s:GridColumn dataField="valueStr" headerText="String"/>
+                <s:GridColumn dataField="description" headerText="String"/>
                 <s:GridColumn dataField="datSignature" headerText="Dat"
                               itemRenderer="otlib.components.renders.SignatureItemRenderer"/>
                 <s:GridColumn dataField="sprSignature" headerText="Spr"
@@ -221,6 +195,7 @@ THE SOFTWARE.
     <s:HGroup width="100%"
               horizontalAlign="left"
               verticalAlign="middle">
+        
         <s:Button id="addVersionButton"
                   toolTip="@Resource(key='addVersion', bundle='strings')"
                   width="19"
@@ -238,13 +213,19 @@ THE SOFTWARE.
                   click="removeVersionButtonClickHandler(event)"/>
         
         <nail:ShadowLine height="100%"/>
+        
         <s:Label text="{resourceManager.getString('strings', 'value') + ':'}"/>
-        <s:ComboBox id="versionValueComboBox"
-                    width="70"
-                    change="checkVersion()"/>
+        
+        <s:TextInput id="valueTextInput"
+                     width="80"
+                     maxChars="4"
+                     restrict="0-9"
+                     change="checkVersion()"/>
         
         <nail:ShadowLine height="100%"/>
+        
         <s:Label text="Dat:"/>
+        
         <s:TextInput id="datTextInput"
                      width="80"
                      maxChars="8"
@@ -252,7 +233,9 @@ THE SOFTWARE.
                      change="checkVersion()"/>
         
         <nail:ShadowLine height="100%"/>
+        
         <s:Label text="Spr:"/>
+        
         <s:TextInput id="sprTextInput"
                      width="80"
                      maxChars="8"
@@ -260,11 +243,14 @@ THE SOFTWARE.
                      change="checkVersion()"/>
         
         <nail:ShadowLine height="100%"/>
+        
         <s:Label text="Otb:"/>
-        <s:NumericStepper id="otbVersionNumericStepper"
-                          minimum="0"
-                          maximum="1000"
-                          change="checkVersion()"/>
+        
+        <s:TextInput id="otbTextInput"
+                     width="80"
+                     maxChars="3"
+                     restrict="0-9"
+                     change="checkVersion()"/>
     </s:HGroup>
     
     <nail:ShadowLine width="100%"/>
@@ -272,6 +258,10 @@ THE SOFTWARE.
     <s:HGroup width="100%"
               horizontalAlign="right"
               verticalAlign="middle">
+        
+        <s:Button label="@Resource(key='openVersionsFile', bundle='strings')"
+                  minWidth="70"
+                  click="openVersionXMLButtonClickHandler(event)"/>
         
         <s:Button label="@Resource(key='close', bundle='strings')"
                   minWidth="70"

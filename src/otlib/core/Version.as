@@ -24,8 +24,9 @@
 
 package otlib.core
 {
-    import nail.errors.NullArgumentError;
+    import nail.errors.NullOrEmptyArgumentError;
     import nail.utils.StringUtil;
+    import nail.utils.isNullOrEmpty;
     
     public final class Version
     {
@@ -33,18 +34,45 @@ package otlib.core
         // PROPERTIES
         //--------------------------------------------------------------------------
         
-        public var value:uint;
-        public var valueStr:String;
-        public var datSignature:uint;
-        public var sprSignature:uint;
-        public var otbVersion:uint;
+        internal var m_value:uint;
+        internal var m_description:String;
+        internal var m_datSignature:uint;
+        internal var m_sprSignature:uint;
+        internal var m_otbVersion:uint;
+        
+        //--------------------------------------
+        // Getters / Setters
+        //--------------------------------------
+        
+        public function get value():uint { return m_value; }
+        public function get description():String { return m_description; }
+        public function get datSignature():uint { return m_datSignature; }
+        public function get sprSignature():uint { return m_sprSignature; }
+        public function get otbVersion():uint { return m_otbVersion; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function Version()
+        public function Version(value:uint, description:String, datSignature:uint, sprSignature:uint, otbVersion:uint)
         {
+            if (value < Version.MIN_VERSION)
+                throw new ArgumentError(StringUtil.format("Invalid client version '{0}'.", value));
+            
+            if (isNullOrEmpty(description))
+                throw new NullOrEmptyArgumentError("description");
+            
+            if (datSignature == 0)
+                throw new ArgumentError("Invalid DAT signature.");
+            
+            if (sprSignature == 0)
+                throw new ArgumentError("Invalid SPR signature.");
+            
+            m_value = value;
+            m_description = description;
+            m_datSignature = datSignature;
+            m_sprSignature = sprSignature;
+            m_otbVersion = otbVersion;
         }
         
         //----------------------------------------------------
@@ -57,69 +85,39 @@ package otlib.core
         
         public function toString():String
         {
-            return valueStr;
+            return m_description;
         }
         
         public function equals(version:Version):Boolean
         {
-            if (version &&
-                version.value == this.value &&
-                version.valueStr == this.valueStr &&
-                version.datSignature == this.datSignature &&
-                version.sprSignature == this.sprSignature &&
-                version.otbVersion == this.otbVersion) {
-                return true;
-            }
-            return false;
+            return(version &&
+                   version.value == m_value &&
+                   version.description == m_description &&
+                   version.datSignature == m_datSignature &&
+                   version.sprSignature == m_sprSignature &&
+                   version.otbVersion == m_otbVersion);
         }
         
         public function clone():Version
         {
-            var version:Version = new Version();
-            version.value = this.value;
-            version.valueStr = this.valueStr;
-            version.datSignature = this.datSignature;
-            version.sprSignature = this.sprSignature;
-            version.otbVersion = this.otbVersion;
-            return version;
+            return new Version(m_value, m_description, m_datSignature, m_sprSignature, m_otbVersion);
         }
         
-        public function serialize():XML
+        //--------------------------------------------------------------------------
+        // STATIC
+        //--------------------------------------------------------------------------
+        
+        public static const MIN_VERSION:uint = 710;
+        public static const MAX_VERSION:uint = 1056;
+        
+        public static function valueToDescription(value:uint):String
         {
-            var xml:XML = <version/>;
-            xml.@value = this.value;
-            xml.@string = this.valueStr;
-            xml.@dat = this.datSignature.toString(16).toUpperCase();
-            xml.@spr = sprSignature.toString(16).toUpperCase();
-            xml.@otb = this.otbVersion;
-            return xml;
+            return int(value / 100) + "." + (value % 100);
         }
         
-        public function unserialize(xml:XML):void
+        public static function create(value:uint, dat:uint, spr:uint, otb:uint):Version
         {
-            if (!xml)
-                throw new NullArgumentError("xml");
-            
-            if (!xml.hasOwnProperty("@value"))
-                throw new Error("Version.unserialize: Missing 'value' attribute.");
-            
-            if (!xml.hasOwnProperty("@string"))
-                throw new Error("Version.unserialize: Missing 'string' attribute.");
-            
-            if (!xml.hasOwnProperty("@dat"))
-                throw new Error("Version.unserialize: Missing 'dat' attribute.");
-            
-            if (!xml.hasOwnProperty("@spr"))
-                throw new Error("Version.unserialize: Missing 'spr' attribute.");
-            
-            if (!xml.hasOwnProperty("@otb"))
-                throw new Error("Version.unserialize: Missing 'otb' attribute.");
-            
-            this.value = uint(xml.@value);
-            this.valueStr = String(xml.@string);
-            this.datSignature = uint(StringUtil.format("0x{0}", xml.@dat));
-            this.sprSignature = uint(StringUtil.format("0x{0}", xml.@spr));
-            this.otbVersion = uint(xml.@otb);
+            return new Version(value, valueToDescription(value), dat, spr, otb);
         }
     }
 }

@@ -411,7 +411,7 @@ THE SOFTWARE.
                 
                 var window:CompileFilesWindow = new CompileFilesWindow();
                 window.directory = _settings.getClientDirectory();
-                window.version = _versionStorage.getFromClientInfo(_clientInfo);
+                window.version = _versionStorage.getBySignatures(_clientInfo.datSignature, _clientInfo.sprSignature);
                 window.extended = _clientInfo.extended;
                 window.transparency = _clientInfo.transparency;
                 window.improvedAnimations = _clientInfo.improvedAnimations;
@@ -983,9 +983,7 @@ THE SOFTWARE.
             
             private function saveVersions():void
             {
-                var file:File = File.applicationStorageDirectory.resolvePath("versions.xml");
-                
-                _versionStorage.save(file);
+                _versionStorage.save();
             }
             
             private function firstRun():void
@@ -1793,7 +1791,7 @@ THE SOFTWARE.
                 
                 var version:Version = _settings.getLastExportThingVersion();
                 if (!version) {
-                    version = _versionStorage.getFromClientInfo(_clientInfo);
+                    version = _versionStorage.getBySignatures(_clientInfo.datSignature, _clientInfo.sprSignature);
                 }
                 
                 var window:ExportWindow = new ExportWindow();

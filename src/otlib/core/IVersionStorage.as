@@ -25,8 +25,6 @@ package otlib.core
     import flash.events.IEventDispatcher;
     import flash.filesystem.File;
     
-    import otlib.utils.ClientInfo;
-
     public interface IVersionStorage extends IEventDispatcher
     {
         function get file():File;
@@ -34,13 +32,12 @@ package otlib.core
         function get loaded():Boolean;
         
         function load(file:File):Boolean;
-        function addVersion(value:uint, dat:uint, spr:uint, otb:uint):Version;
-        function removeVersion(version:Version):Version;
-        function save(file:File):void;
+        function addVersion(version:Version):Boolean;
+        function removeVersion(version:Version):Boolean;
+        function save():Boolean;
         function getList():Array;
-        function getFromClientInfo(info:ClientInfo):Version;
         function getByValue(value:uint):Vector.<Version>;
-        function getByValueString(value:String):Version;
+        function getByDescription(value:String):Version;
         function getBySignatures(datSignature:uint, sprSignature:uint):Version;
         function getByOtbVersion(otb:uint):Vector.<Version>;
         function unload():void;

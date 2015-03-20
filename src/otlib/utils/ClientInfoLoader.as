@@ -200,7 +200,7 @@ package otlib.utils
             }
             
             m_clientInfo.clientVersion = version.value;
-            m_clientInfo.clientVersionStr = version.valueStr;
+            m_clientInfo.clientVersionStr = version.description;
             
             if (m_clientInfo.extended || version.value >= 960)
             {

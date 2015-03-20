@@ -1494,7 +1494,7 @@ package ob.core
             if (info.loaded)
             {
                 info.clientVersion = _version.value;
-                info.clientVersionStr = _version.valueStr;
+                info.clientVersionStr = _version.description;
                 info.datSignature = _things.signature;
                 info.minItemId = ThingTypeStorage.MIN_ITEM_ID;
                 info.maxItemId = _things.itemsCount;

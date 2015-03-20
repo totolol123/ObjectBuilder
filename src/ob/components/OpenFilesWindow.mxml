@@ -254,7 +254,7 @@ THE SOFTWARE.
                     
                     m_datFile = dat;
                     m_sprFile = spr;
-                    m_version = VersionStorage.getInstance().getFromClientInfo(info);
+                    m_version = VersionStorage.getInstance().getBySignatures(info.datSignature, info.sprSignature);
                     updateProperties();
                 }
                 
