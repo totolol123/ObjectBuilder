@@ -182,9 +182,9 @@ THE SOFTWARE.
                 <s:GridColumn dataField="value" headerText="@Resource(key='value', bundle='strings')"/>
                 <s:GridColumn dataField="description" headerText="String"/>
                 <s:GridColumn dataField="datSignature" headerText="Dat"
-                              itemRenderer="otlib.components.renders.SignatureItemRenderer"/>
+                              itemRenderer="ob.components.renders.SignatureItemRenderer"/>
                 <s:GridColumn dataField="sprSignature" headerText="Spr"
-                              itemRenderer="otlib.components.renders.SignatureItemRenderer"/>
+                              itemRenderer="ob.components.renders.SignatureItemRenderer"/>
                 <s:GridColumn dataField="otbVersion" headerText="Otb"/>
             </s:ArrayList>
         </s:columns>

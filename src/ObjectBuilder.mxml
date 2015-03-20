@@ -133,7 +133,7 @@ THE SOFTWARE.
             import ob.utils.ObUtils;
             
             import otlib.assets.Assets;
-            import otlib.components.ClientVersionsWindow;
+            import ob.components.ClientVersionsWindow;
             import otlib.components.DatSprProgressBar;
             import otlib.components.DefaultProgressBar;
             import otlib.components.ExportWindow;
