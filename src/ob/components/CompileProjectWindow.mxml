@@ -35,7 +35,7 @@ THE SOFTWARE.
           backgroundColor="0x494949"
           showStatusBar="false"
           type="utility"
-          title="@Resource(key='compileClientFiles', bundle='strings')"
+          title="@Resource(key='compileProject', bundle='strings')"
           creationComplete="creationCompleteHandler(event)"
           closing="windowClosingHandler(event)">
     
@@ -134,8 +134,7 @@ THE SOFTWARE.
             public function get improvedAnimations():Boolean { return m_improvedAnimations; }
             public function set improvedAnimations(value:Boolean):void
             {
-                if (value != m_improvedAnimations)
-                { 
+                if (value != m_improvedAnimations) {
                     m_improvedAnimations = value;
                     m_improvedAnimationsChanged = true;
                     invalidateProperties();
@@ -207,18 +206,14 @@ THE SOFTWARE.
             private function updateProperties():void
             {
                 var done:Boolean = (m_datFile && m_sprFile && m_version);
-                
-                if (done)
-                {
+                if (done) {
                     m_extended = (m_extended || m_version.value >= 960);
                     m_improvedAnimations = (m_improvedAnimations || m_version.value >= 1050);
                     
                     extendedCheckBox.enabled = (m_version.value < 960);
                     transparencyCheckBox.enabled = true;
                     improvedAnimationsCheckBox.enabled = (m_version.value < 1050);
-                }
-                else
-                {
+                } else {
                     extendedCheckBox.enabled = false;
                     transparencyCheckBox.enabled = false;
                     improvedAnimationsCheckBox.enabled = false;
@@ -309,7 +304,7 @@ THE SOFTWARE.
         ]]>
     </fx:Script>
     
-    <s:Group width="100%" 
+    <s:Group width="100%"
              height="100%">
         <s:layout>
             <s:VerticalLayout gap="10"
@@ -331,6 +326,7 @@ THE SOFTWARE.
                                     paddingTop="10" 
                                     paddingBottom="10"/>
             </nail:layout>
+            
             <s:TextInput id="nameTextInput"
                          width="100%"
                          change="nameTextInputChangeHandler(event)"/>
@@ -367,6 +363,7 @@ THE SOFTWARE.
                                     paddingBottom="10"
                                     verticalAlign="middle"/>
             </nail:layout>
+            
             <s:DropDownList id="versionsDropDownList"
                             width="100%"
                             height="21"
@@ -406,11 +403,13 @@ THE SOFTWARE.
         <s:HGroup width="100%"
                   verticalAlign="middle"
                   horizontalAlign="right">
+            
             <s:Button id="confirmButton"
                       label="@Resource(key='confirm', bundle='strings')"
                       minWidth="70"
                       enabled="false"
                       click="confirmButtonClickHandler(event)"/>
+            
             <s:Button id="cancelButton"
                       label="@Resource(key='cancel', bundle='strings')"
                       minWidth="70"
