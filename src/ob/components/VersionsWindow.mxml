@@ -31,6 +31,7 @@ THE SOFTWARE.
           showStatusBar="false"
           fontSize="11"
           title="@Resource(key='versions', bundle='strings')"
+          preinitialize="preinitializeHandler(event)"
           creationComplete="creationCompleteHandler(event)"
           closing="closingHandler(event)">
     
@@ -50,6 +51,7 @@ THE SOFTWARE.
             import otlib.core.IVersionStorage;
             import otlib.core.Version;
             import otlib.core.VersionStorage;
+            import otlib.events.StorageEvent;
             
             //--------------------------------------------------------------------------
             // PROPERTIES
@@ -60,10 +62,53 @@ THE SOFTWARE.
             private var m_datSignature:uint;
             private var m_sprSignature:uint;
             private var m_otbversion:uint;
+            private var m_signatureChanged:Boolean;
+            
+            //--------------------------------------
+            // Getters / Setters
+            //--------------------------------------
+            
+            public function get datSignature():uint { return m_datSignature; }
+            public function set datSignature(value:uint):void
+            {
+                if (m_datSignature != value) {
+                    m_datSignature = value;
+                    m_signatureChanged = true;
+                    invalidateProperties();
+                }
+            }
+            
+            public function get sprSignature():uint { return m_sprSignature; }
+            public function set sprSignature(value:uint):void
+            {
+                if (m_sprSignature != value) {
+                    m_sprSignature = value;
+                    m_signatureChanged = true;
+                    invalidateProperties();
+                }
+            }
             
             //--------------------------------------------------------------------------
             // METHODS
             //--------------------------------------------------------------------------
+            
+            //--------------------------------------
+            // Override Protected
+            //--------------------------------------
+            
+            override protected function commitProperties():void
+            {
+                super.commitProperties();
+                
+                if (m_signatureChanged) {
+                    m_signatureChanged = false;
+                    valueTextInput.text = "0";
+                    datTextInput.text = m_datSignature.toString(16).toUpperCase();
+                    sprTextInput.text = m_sprSignature.toString(16).toUpperCase();
+                    otbTextInput.text = "0";
+                    checkVersion();
+                }
+            }
             
             //--------------------------------------
             // Private
@@ -71,7 +116,12 @@ THE SOFTWARE.
             
             private function updateVersions():void
             {
-                versionsDataGrid.dataProvider = new ArrayCollection(m_versionStorage.getList());
+                if (versionsDataGrid.dataProvider)
+                    ArrayCollection(versionsDataGrid.dataProvider).source = m_versionStorage.getList();
+                else
+                    versionsDataGrid.dataProvider = new ArrayCollection(m_versionStorage.getList());
+                
+                saveVersionsButton.enabled = (m_versionStorage.loaded && m_versionStorage.changed);
                 versionsDataGrid.selectedIndex = -1;
             }
             
@@ -96,16 +146,45 @@ THE SOFTWARE.
             // Event Handlers
             //--------------------------------------
             
-            protected function creationCompleteHandler(event:FlexEvent):void
+            protected function preinitializeHandler(event:FlexEvent):void
             {
                 m_versionStorage = VersionStorage.getInstance();
-                m_versionStorage.addEventListener(Event.CHANGE, storageChangeHandler);
+                m_versionStorage.addEventListener(StorageEvent.CHANGE, storageChangeHandler);
+                m_versionStorage.addEventListener(StorageEvent.COMPILE, storageCompileHandler);
+            }
+            
+            protected function creationCompleteHandler(event:FlexEvent):void
+            {
                 updateVersions();
             }
             
             protected function closingHandler(event:Event):void
             {
-                m_versionStorage.removeEventListener(Event.CHANGE, storageChangeHandler);
+                if (m_versionStorage.changed) {
+                    event.preventDefault();
+                    Alert.show(StringUtil.format(resourceManager.getString("strings", "wantToSave"), "'versions.xml'"),
+                               resourceManager.getString("strings", "save"),
+                               Alert.YES | Alert.NO | Alert.CANCEL,
+                               this,
+                               alertCloseHandler,
+                               null,
+                               Alert.CANCEL);
+                } else {
+                    m_versionStorage.removeEventListener(StorageEvent.CHANGE, storageChangeHandler);
+                    m_versionStorage.removeEventListener(StorageEvent.COMPILE, storageCompileHandler);
+                }
+                
+                function alertCloseHandler(event:CloseEvent):void
+                {
+                    if (event.detail == Alert.YES)
+                        m_versionStorage.save();
+                    else if (event.detail == Alert.CANCEL)
+                       return;
+                    
+                    m_versionStorage.removeEventListener(StorageEvent.CHANGE, storageChangeHandler);
+                    m_versionStorage.removeEventListener(StorageEvent.COMPILE, storageCompileHandler);
+                    nativeWindow.close();
+                }
             }
             
             protected function addVersionButtonClickHandler(event:MouseEvent):void
@@ -116,13 +195,8 @@ THE SOFTWARE.
             protected function removeVersionButtonClickHandler(event:MouseEvent):void
             {
                 var version:Version = Version(versionsDataGrid.selectedItem);
-                if (!version) return;
                 
-                var message:String = StringUtil.format(resourceManager.getString("strings", "wantToRemove"),
-                                                       resourceManager.getString("strings", "version").toLowerCase(),
-                                                       version);
-                
-                Alert.show(message,
+                Alert.show(StringUtil.format(resourceManager.getString("strings", "wantToRemoveVersion"), version),
                            resourceManager.getString("strings", "remove"),
                            Alert.YES | Alert.NO,
                            this,
@@ -150,16 +224,25 @@ THE SOFTWARE.
                 checkVersion();
             }
             
-            protected function storageChangeHandler(event:Event):void
+            protected function storageChangeHandler(event:StorageEvent):void
             {
                 updateVersions();
-                m_versionStorage.save();
+            }
+            
+            protected function storageCompileHandler(event:StorageEvent):void
+            {
+                updateVersions();
             }
             
             protected function openVersionXMLButtonClickHandler(event:MouseEvent):void
             {
                 if (m_versionStorage.file)
                     m_versionStorage.file.openWithDefaultApplication();
+            }
+            
+            protected function saveVersionsButtonClickHandler(event:MouseEvent):void
+            {
+                m_versionStorage.save();
             }
             
         ]]>
@@ -262,6 +345,12 @@ THE SOFTWARE.
         <s:Button label="@Resource(key='openVersionsFile', bundle='strings')"
                   minWidth="70"
                   click="openVersionXMLButtonClickHandler(event)"/>
+        
+        <s:Button id="saveVersionsButton"
+                  label="@Resource(key='save', bundle='strings')"
+                  minWidth="70"
+                  enabled="false"
+                  click="saveVersionsButtonClickHandler(event)"/>
         
         <s:Button label="@Resource(key='close', bundle='strings')"
                   minWidth="70"

@@ -69,6 +69,11 @@ package ob.settings
         public var exportWithTransparentBackground:Boolean = false;
         public var jpegQuality:Number = 100;
         
+        // versions window
+        public var versionsWindowMaximized:Boolean = true;
+        public var versionsWindowWidth:Number = 0;
+        public var versionsWindowHeight:Number = 0;
+        
         // default settings for startup
         public var datSignature:int;
         public var sprSignature:int;

@@ -144,6 +144,7 @@ THE SOFTWARE.
             import otlib.core.IVersionStorage;
             import otlib.core.Version;
             import otlib.core.VersionStorage;
+            import otlib.events.StorageEvent;
             import otlib.events.ThingEditorEvent;
             import otlib.geom.Size;
             import otlib.loaders.PathHelper;
@@ -594,6 +595,29 @@ THE SOFTWARE.
                 PopUpWindowManager.addWindow(window);
             }
             
+            public function openVersionsWindow(datSignature:uint = 0, sprSignature:uint = 0):void
+            {
+                var window:VersionsWindow = new VersionsWindow();
+                window.datSignature = datSignature;
+                window.sprSignature = sprSignature;
+                window.addEventListener(Event.CLOSING, windowClosingHandler);
+                window.open();
+                
+                if (_settings.versionsWindowMaximized)
+                    window.maximize();
+                else {
+                    window.width = _settings.versionsWindowWidth;
+                    window.height = _settings.versionsWindowHeight;
+                    WindowUtil.centralizeWindowOnScreen(window);
+                }
+                
+                function windowClosingHandler(event:Event):void
+                {
+                    window.removeEventListener(Event.CLOSING, windowClosingHandler);
+                    _settings.versionsWindowMaximized = (window.nativeWindow.displayState == NativeWindowDisplayState.MAXIMIZED);
+                }
+            }
+            
             public function openLogWindow():void
             {
                 if (_logWindow)
@@ -975,7 +999,6 @@ THE SOFTWARE.
             private function loadVersions():void
             {
                 var file:File = File.applicationStorageDirectory.resolvePath("versions.xml");
-                
                 _versionStorage.load(file);
                 
                 sendCommand(new LoadVersionsCommand(file));
@@ -1212,26 +1235,6 @@ THE SOFTWARE.
                     _lookGenerator.removeEventListener(Event.CLOSE, lookGeneratorCloseHandler);
                     _lookGenerator.close();
                     _lookGenerator = null;
-                }
-            }
-            
-            private function openVersionsWindow():void
-            {
-                var window:VersionsWindow = new VersionsWindow();
-                window.addEventListener(Event.CLOSE, closeHandler);
-                window.open();
-                
-                WindowUtil.centralizeWindowOnScreen(window);
-                
-                function closeHandler(event:Event):void
-                {
-                    window.removeEventListener(Event.CLOSE, closeHandler);
-                    
-                    if (_versionStorage.changed) {
-                        saveSettings();
-                        
-                        sendCommand(new LoadVersionsCommand(_versionStorage.file));
-                    }
                 }
             }
             
@@ -1554,6 +1557,7 @@ THE SOFTWARE.
                 _logger = mx.logging.Log.getLogger("ObjectBuilder");
                 _settingsManager = SettingsManager.getInstance();
                 _versionStorage = VersionStorage.getInstance();
+                _versionStorage.addEventListener(StorageEvent.COMPILE, versionStorageCompileHandler);
                 _category = ThingCategory.ITEM;
                 
                 createLogging();
@@ -2198,6 +2202,12 @@ THE SOFTWARE.
             protected function splashScreenCloseHandler(event:Event):void
             {
                 applicationLoadComplete();
+            }
+            
+            protected function versionStorageCompileHandler(event:StorageEvent):void
+            {
+                var file:File = File.applicationStorageDirectory.resolvePath("versions.xml");
+                sendCommand(new LoadVersionsCommand(file));
             }
             
             protected function nativeMenuSelectedHandler(event:MenuEvent):void

@@ -328,7 +328,8 @@ package ob.core
             if (isNullOrEmpty(path))
                 throw new NullOrEmptyArgumentError("path");
             
-            _versions.load( new File(path) );
+            _versions.unload();
+            _versions.load(new File(path));
         }
         
         private function onSettings(settings:ObjectBuilderSettings):void

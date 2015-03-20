@@ -77,6 +77,8 @@ package ob.core
         
         function openSpritesOptimizer():void;
         
+        function openVersionsWindow(datSignature:uint = 0, sprSignature:uint = 0):void;
+            
         function openLogWindow():void;
         function closeLogWindow():void;
     }

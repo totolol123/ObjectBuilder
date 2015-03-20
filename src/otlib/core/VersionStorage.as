@@ -22,7 +22,6 @@
 
 package otlib.core
 {
-    import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.filesystem.File;
     import flash.filesystem.FileMode;
@@ -35,7 +34,13 @@ package otlib.core
     import nail.utils.StringUtil;
     import nail.utils.isNullOrEmpty;
     
-    [Event(name="change", type="flash.events.Event")]
+    import otlib.events.StorageEvent;
+    
+    [Event(name="load", type="otlib.events.StorageEvent")]
+    [Event(name="compile", type="otlib.events.StorageEvent")]
+    [Event(name="change", type="otlib.events.StorageEvent")]
+    [Event(name="unloading", type="otlib.events.StorageEvent")]
+    [Event(name="unload", type="otlib.events.StorageEvent")]
     
     public class VersionStorage extends EventDispatcher implements IVersionStorage
     {
@@ -85,8 +90,7 @@ package otlib.core
             if (!file.exists)
                 throw new FileNotFoundError(file);
             
-            if (this.loaded)
-                unload();
+            if (this.loaded) return true;
             
             var stream:FileStream = new FileStream();
             var xml:XML;
@@ -133,7 +137,10 @@ package otlib.core
             m_file = file;
             m_changed = false;
             m_loaded = true;
-            dispatchEvent(new Event(Event.COMPLETE));
+            
+            if (hasEventListener(StorageEvent.LOAD))
+                dispatchEvent(new StorageEvent(StorageEvent.LOAD));
+            
             return m_loaded;
         }
         
@@ -155,8 +162,8 @@ package otlib.core
             m_versions[description] = version;
             
             m_changed = true;
-            if (hasEventListener(Event.CHANGE))
-                dispatchEvent(new Event(Event.CHANGE));
+            if (hasEventListener(StorageEvent.CHANGE))
+                dispatchEvent(new StorageEvent(StorageEvent.CHANGE));
             
             return true;
         }
@@ -175,8 +182,8 @@ package otlib.core
             }
             
             m_changed = (m_changed || removed);
-            if (removed && hasEventListener(Event.CHANGE))
-                dispatchEvent(new Event(Event.CHANGE));
+            if (hasEventListener(StorageEvent.CHANGE))
+                dispatchEvent(new StorageEvent(StorageEvent.CHANGE));
             
             return removed;
         }
@@ -210,6 +217,9 @@ package otlib.core
             }
             
             m_changed = false;
+            if (hasEventListener(StorageEvent.COMPILE))
+                dispatchEvent(new StorageEvent(StorageEvent.COMPILE));
+            
             return true;
         }
         
@@ -268,10 +278,19 @@ package otlib.core
         
         public function unload():void
         {
+            if (!m_loaded) return;
+            
+            var event:StorageEvent = new StorageEvent(StorageEvent.UNLOADING, false, true);
+            dispatchEvent(event);
+            if (event.isDefaultPrevented()) return;
+            
             m_file = null;
             m_versions = new Dictionary();
             m_changed = false;
             m_loaded = false;
+            
+            if (hasEventListener(StorageEvent.UNLOAD))
+                dispatchEvent(new StorageEvent(StorageEvent.UNLOAD));
         }
         
         //--------------------------------------
