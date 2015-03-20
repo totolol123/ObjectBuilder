@@ -26,13 +26,13 @@ THE SOFTWARE.
           xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:nail="library://ns.nail.com/naillib"
           width="400"
-          height="250"
+          height="220"
           resizable="false"
           showStatusBar="false"
           backgroundColor="0x494949"
           type="utility"
           fontSize="11"
-          title="@Resource(key='newClientFiles', bundle='strings')"
+          title="@Resource(key='newProject', bundle='strings')"
           creationComplete="creationCompleteHandler(event)"
           closing="closingHandler(event)">
     
@@ -93,8 +93,7 @@ THE SOFTWARE.
             public function get transparency():Boolean { return m_transparency; }
             public function set transparency(value:Boolean):void
             {
-                if (value != m_transparency)
-                {
+                if (value != m_transparency) {
                     m_transparency = value;
                     m_transparencyChanged = true;
                     invalidateProperties();
@@ -104,8 +103,7 @@ THE SOFTWARE.
             public function get improvedAnimations():Boolean { return m_improvedAnimations; }
             public function set improvedAnimations(value:Boolean):void
             {
-                if (value != m_improvedAnimations)
-                { 
+                if (value != m_improvedAnimations) {
                     m_improvedAnimations = value;
                     m_improvedAnimationsChanged = true;
                     invalidateProperties();
@@ -153,21 +151,17 @@ THE SOFTWARE.
             
             private function updateProperties():void
             {
-                var done:Boolean = (m_version != null);
-                
                 versionsDropDownList.selectedItem = m_version;
                 
-                if (done)
-                {
+                var done:Boolean = (m_version != null);
+                if (done) {
                     m_extended = (m_extended || m_version.value >= 960);
                     m_improvedAnimations = (m_improvedAnimations || m_version.value >= 1050);
                     
                     extendedCheckBox.enabled = (m_version.value < 960);
                     transparencyCheckBox.enabled = true;
                     improvedAnimationsCheckBox.enabled = (m_version.value < 1050);
-                }
-                else
-                {
+                } else {
                     extendedCheckBox.enabled = false;
                     transparencyCheckBox.enabled = false;
                     improvedAnimationsCheckBox.enabled = false;
