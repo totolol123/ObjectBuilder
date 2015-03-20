@@ -424,16 +424,15 @@ THE SOFTWARE.
                 
                 function windowCloseHandler(event:Event):void
                 {
-                    _settings.datSignature = window.version.datSignature;
-                    _settings.sprSignature = window.version.sprSignature;
-                    _settings.datPath = window.datFile.nativePath;
-                    _settings.sprPath = window.sprFile.nativePath;
-                    _settings.extended = window.extended;
-                    _settings.transparency = window.transparency;
-                    _settings.improvedAnimations = window.improvedAnimations;
-                    
-                    if (window.detail == DialogDetail.CONFIRM)
-                    {
+                    if (window.detail == DialogDetail.CONFIRM) {
+                        _settings.datSignature = window.version.datSignature;
+                        _settings.sprSignature = window.version.sprSignature;
+                        _settings.datPath = window.datFile.nativePath;
+                        _settings.sprPath = window.sprFile.nativePath;
+                        _settings.extended = window.extended;
+                        _settings.transparency = window.transparency;
+                        _settings.improvedAnimations = window.improvedAnimations;
+                        
                         if (_settings.autosaveThingChanges)
                             saveThingChanges();
                         
