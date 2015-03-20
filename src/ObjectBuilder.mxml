@@ -129,11 +129,11 @@ THE SOFTWARE.
             import ob.components.PreferencesWindow;
             import ob.components.SplashScreen;
             import ob.components.SpritesOptimizerWindow;
+            import ob.components.VersionsWindow;
             import ob.settings.ObjectBuilderSettings;
             import ob.utils.ObUtils;
             
             import otlib.assets.Assets;
-            import ob.components.ClientVersionsWindow;
             import otlib.components.DatSprProgressBar;
             import otlib.components.DefaultProgressBar;
             import otlib.components.ExportWindow;
@@ -1217,7 +1217,7 @@ THE SOFTWARE.
             
             private function openVersionsWindow():void
             {
-                var window:ClientVersionsWindow = new ClientVersionsWindow();
+                var window:VersionsWindow = new VersionsWindow();
                 window.addEventListener(Event.CLOSE, closeHandler);
                 window.open();
                 
