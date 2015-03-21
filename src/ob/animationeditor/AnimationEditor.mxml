@@ -72,7 +72,7 @@ THE SOFTWARE.
             import ob.utils.ObUtils;
             
             import otlib.assets.Assets;
-            import otlib.components.ExportWindow;
+            import ob.components.ExportWindow;
             import otlib.components.SurfaceCells;
             import otlib.geom.Size;
             import otlib.obd.OBDEncoder;

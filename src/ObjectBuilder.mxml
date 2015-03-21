@@ -124,6 +124,7 @@ THE SOFTWARE.
             import ob.components.AboutWindow;
             import ob.components.CompileProjectWindow;
             import ob.components.ErrorWindow;
+            import ob.components.ExportWindow;
             import ob.components.NewProjectWindow;
             import ob.components.OpenProjectWindow;
             import ob.components.PreferencesWindow;
@@ -136,7 +137,6 @@ THE SOFTWARE.
             import otlib.assets.Assets;
             import otlib.components.DatSprProgressBar;
             import otlib.components.DefaultProgressBar;
-            import otlib.components.ExportWindow;
             import otlib.components.FindWindow;
             import otlib.components.LogWindow;
             import otlib.components.LookGenerator;
