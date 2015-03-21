@@ -35,6 +35,7 @@ package ob.settings
     
     import otlib.core.IVersionStorage;
     import otlib.core.Version;
+    import otlib.obd.OBDVersions;
     import otlib.settings.Settings;
     import otlib.utils.OTFormat;
     
@@ -46,8 +47,6 @@ package ob.settings
         
         public var lastDirectory:String;
         public var lastIODirectory:String;
-        public var exportThingFormat:String;
-        public var exportSpriteFormat:String;
         public var autosaveThingChanges:Boolean;
         public var loadFilesOnStartup:Boolean;
         public var maximized:Boolean = true;
@@ -68,6 +67,11 @@ package ob.settings
         public var spritesListAmount:Number = 100;
         public var exportWithTransparentBackground:Boolean = false;
         public var jpegQuality:Number = 100;
+        
+        // import / export
+        public var exportThingFormat:String;
+        public var exportOBDVersion:uint = OBDVersions.OBD_VERSION_2;
+        public var exportSpriteFormat:String;
         
         // versions window
         public var versionsWindowMaximized:Boolean = true;
@@ -116,7 +120,7 @@ package ob.settings
                 this.lastIODirectory = FileUtil.getDirectory(file).nativePath;
         }
         
-        public function getLastExportThingFormat():String
+        public function getExportThingFormat():String
         {
             if (!isNullOrEmpty(exportThingFormat)) {
                 if (ImageFormat.hasImageFormat(exportThingFormat) || exportThingFormat == OTFormat.OBD) {
@@ -126,25 +130,25 @@ package ob.settings
             return null;
         }
         
-        public function setLastExportThingFormat(format:String):void
+        public function setExportThingFormat(format:String):void
         {
             format = format ? format.toLowerCase() : "";
             this.exportThingFormat = format;
         }
         
-        public function getLastExportThingVersion():Version
+        public function getExportThingVersion():Version
         {
             var versionStorage:IVersionStorage = IObjectBuilder(FlexGlobals.topLevelApplication).versionStorage;
             return versionStorage.getBySignatures(datSignature, sprSignature);
         }
         
-        public function setLastExportThingVersion(version:Version):void
+        public function setExportThingVersion(version:Version):void
         {
             this.datSignature = !version ? 0 : version.datSignature;
             this.sprSignature = !version ? 0 : version.sprSignature;
         }
         
-        public function getLastExportSpriteFormat():String
+        public function getExportSpriteFormat():String
         {
             if (ImageFormat.hasImageFormat(exportSpriteFormat)) {
                 return exportSpriteFormat;
@@ -152,7 +156,7 @@ package ob.settings
             return null;
         }
         
-        public function setLastExportSpriteFormat(format:String):void
+        public function setExportSpriteFormat(format:String):void
         {
             format = !format ? "" : format.toLowerCase();
             this.exportSpriteFormat = format;

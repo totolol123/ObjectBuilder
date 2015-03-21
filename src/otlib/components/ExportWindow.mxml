@@ -21,11 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
-          xmlns:s="library://ns.adobe.com/flex/spark" 
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
           xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:nail="library://ns.nail.com/naillib"
-          xmlns:otlib="nail.otlib.components.*"
+          xmlns:otlib="otlib.components.*"
           showStatusBar="false"
           backgroundColor="0x494949"
           width="400"
@@ -35,25 +35,12 @@ THE SOFTWARE.
           type="utility"
           title="@Resource(key='export', bundle='strings')"
           preinitialize="preinitializeHandler(event)"
-          closing="windowClosingHandler(event)" xmlns:components="otlib.components.*">
-    
-    <s:layout>
-        <s:VerticalLayout gap="10"
-                          paddingLeft="10"
-                          paddingRight="10"
-                          paddingTop="10"
-                          paddingBottom="10"
-                          horizontalAlign="right"/>
-    </s:layout>
+          creationComplete="creationCompleteHandler(event)"
+          closing="closingHandler(event)">
     
     <fx:Metadata>
         [ResourceBundle("strings")]
     </fx:Metadata>
-    
-    <fx:Declarations>
-        <s:RadioButtonGroup id="formatRadioButtonGroup"
-                            change="formatRadioButtonGroupChangeHandler(event)"/>
-    </fx:Declarations>
     
     <fx:Script>
         <![CDATA[
@@ -77,98 +64,119 @@ THE SOFTWARE.
             // PROPERTIES
             //--------------------------------------------------------------------------
             
-            [Bindable]
-            public var transparentBackground:Boolean = false;
-            
-            [Bindable]
-            public var jpegQuality:Number = 100;
-            
-            [Bindable]
-            private var _versionCollection:ArrayCollection;
-            private var _fileName:String;
-            private var _fileNameChanged:Boolean;
-            private var _directory:File;
-            private var _directoryChanged:Boolean;
-            private var _format:String;
-            private var _formatChanged:Boolean;
-            private var _enableObdFormat:Boolean;
-            private var _enableObdFormatChanged:Boolean;
-            private var _version:Version;
-            private var _versionChanged:Boolean;
-            private var _obdVersion:uint = OBDVersions.OBD_VERSION_2;
-            private var _obdVersionChanged:Boolean;
-            private var _detail:uint;
+            private var m_versions:ArrayCollection;
+            private var m_formats:ArrayCollection;
+            private var m_prefix:String;
+            private var m_prefixChanged:Boolean;
+            private var m_directory:File;
+            private var m_directoryChanged:Boolean;
+            private var m_format:String;
+            private var m_formatChanged:Boolean;
+            private var m_obdFormatEnabled:Boolean = true;
+            private var m_obdFormatEnabledChanged:Boolean;
+            private var m_clientVersion:Version;
+            private var m_clientVersionChanged:Boolean;
+            private var m_obdVersion:uint = OBDVersions.OBD_VERSION_2;
+            private var m_obdVersionChanged:Boolean;
+            private var m_transparentBackground:Boolean = true;
+            private var m_transparentBackgroundChanged:Boolean;
+            private var m_jpegQuality:uint = 100;
+            private var m_jpegQualityChanged:Boolean;
+            private var m_detail:uint;
             
             //--------------------------------------
             // Getters / Setters 
             //--------------------------------------
             
-            public function get fileName():String { return _fileName; }
-            public function set fileName(value:String):void
+            public function get prefix():String { return m_prefix; }
+            public function set prefix(value:String):void
             {
-                if (_fileName != value) {
-                    _fileName = value;
-                    _fileNameChanged = true;
+                if (m_prefix != value) {
+                    m_prefix = value;
+                    m_prefixChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get directory():File { return _directory; }
+            public function get directory():File { return m_directory; }
             public function set directory(value:File):void
             {
-                if (_directory != value) {
-                    _directory = value;
-                    _directoryChanged = true;
+                if (m_directory != value) {
+                    m_directory = value;
+                    m_directoryChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get format():String { return _format; }
+            public function get format():String { return m_format; }
             public function set format(value:String):void
             {
-                if (isNullOrEmpty(value) || !_enableObdFormat && value == OTFormat.OBD)
-                    value = ImageFormat.PNG;
-                else 
+                if (!isNullOrEmpty(value)) {
+                    if (!m_obdFormatEnabled && value == OTFormat.OBD)
+                        value = ImageFormat.PNG;
+                    
                     value = value.toLowerCase();
+                }
                 
-                if (_format != value) {
-                    _format = value;
-                    _formatChanged = true;
+                if (m_format != value) {
+                    m_format = value;
+                    m_formatChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get enableObdFormat():Boolean { return _enableObdFormat; }
-            public function set enableObdFormat(value:Boolean):void
+            public function get obdFormatEnabled():Boolean { return m_obdFormatEnabled; }
+            public function set obdFormatEnabled(value:Boolean):void
             {
-                if (_enableObdFormat != value) {
-                    _enableObdFormat = value;
-                    _enableObdFormatChanged = true;
+                if (m_obdFormatEnabled != value) {
+                    m_obdFormatEnabled = value;
+                    m_obdFormatEnabledChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get version():Version { return _version; }
-            public function set version(value:Version):void
+            public function get clientVersion():Version { return m_clientVersion; }
+            public function set clientVersion(value:Version):void
             {
-                if (_version != value) {
-                    _version = value;
-                    _versionChanged = true;
+                if (m_clientVersion != value) {
+                    m_clientVersion = value;
+                    m_clientVersionChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get obdVersion():uint { return _obdVersion; }
+            public function get obdVersion():uint { return m_obdVersion; }
             public function set obdVersion(value:uint):void
             {
-                if (_obdVersion != value) {
-                    _obdVersion = value;
-                    _obdVersionChanged = true;
+                if (m_obdVersion != value) {
+                    m_obdVersion = value;
+                    m_obdVersionChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get detail():uint { return _detail; }
+            public function get transparentBackground():Boolean { return m_transparentBackground; }
+            public function set transparentBackground(value:Boolean):void
+            {
+                if (m_transparentBackground != value) {
+                    m_transparentBackground = value;
+                    m_transparentBackgroundChanged = true;
+                    invalidateProperties();
+                }
+            }
+            
+            public function get jpegQuality():uint { return m_jpegQuality; }
+            public function set jpegQuality(value:uint):void
+            {
+                value = value > 100 ? 100 : value;
+                if (m_jpegQuality != value) {
+                    m_jpegQuality = value;
+                    m_jpegQualityChanged = true;
+                    invalidateProperties();
+                }
+            }
+            
+            public function get detail():uint { return m_detail; }
             
             //--------------------------------------------------------------------------
             // METHODS
@@ -182,43 +190,54 @@ THE SOFTWARE.
             {
                 super.commitProperties();
                 
-                if (_fileNameChanged) {
-                    nameTextInput.text = _fileName;
-                    _fileNameChanged = false;
+                if (m_prefixChanged) {
+                    prefixTextInput.text = m_prefix;
+                    m_prefixChanged = false;
                     check();
                 }
                 
-                if (_directoryChanged) {
-                    directoryTextInput.file = _directory;
-                    _directoryChanged = false;
+                if (m_directoryChanged) {
+                    directoryTextInput.file = m_directory;
+                    m_directoryChanged = false;
                     check();
                 }
                 
-                if (_formatChanged) {
-                    setFormat(_format);
-                    _formatChanged = false;
+                if (m_formatChanged) {
+                    var formatIndex:int = getFormatIndex(m_format);
+                    formatList.selectedIndex = formatIndex;
+                    stackView.selectedIndex = m_obdFormatEnabled ? formatIndex : formatIndex + 1;
+                    m_formatChanged = false;
                     check();
                 }
                 
-                if (_enableObdFormatChanged) {
-                    obdFormatRadioButton.visible = _enableObdFormat;
-                    _enableObdFormatChanged = false;
+                if (m_obdFormatEnabledChanged) {
+                    m_obdFormatEnabledChanged = false;
                     check();
                 }
                 
-                if (_versionChanged) {
-                    versionDropDownList.selectedIndex = _versionCollection.getItemIndex(_version);
-                    _versionChanged = false;
+                if (m_clientVersionChanged) {
+                    clientVersionsDropDownList.selectedIndex = m_versions.getItemIndex(m_clientVersion);
+                    m_clientVersionChanged = false;
                     check();
                 }
                 
-                if (_obdVersionChanged) {
-                    if (_obdVersion == OBDVersions.OBD_VERSION_2) 
+                if (m_obdVersionChanged) {
+                    if (m_obdVersion == OBDVersions.OBD_VERSION_2) 
                         obdVersionDropDownList.selectedIndex = 0;
-                    else if (_obdVersion == OBDVersions.OBD_VERSION_1)
+                    else if (m_obdVersion == OBDVersions.OBD_VERSION_1)
                         obdVersionDropDownList.selectedIndex = 1;
                     
-                    _obdVersionChanged = false;
+                    m_obdVersionChanged = false;
+                }
+                
+                if (m_transparentBackgroundChanged) {
+                    transparentBackgroundCheckBox.selected = m_transparentBackground;
+                    m_transparentBackgroundChanged = false;
+                }
+                
+                if (m_jpegQualityChanged) {
+                    jpegQualityHSlider.value = m_jpegQuality;
+                    m_jpegQualityChanged = false;
                 }
             }
             
@@ -226,34 +245,28 @@ THE SOFTWARE.
             // Public
             //--------------------------------------
             
-            private function setFormat(format:String):void
+            private function getFormatIndex(format:String):int
             {
-                switch(format.toLowerCase()) {
-                    case ImageFormat.PNG:
-                        pngFormatRadioButton.selected = true;
-                        stackView.selectedIndex = 0;
-                        break;
-                    case ImageFormat.BMP:
-                        bmpFormatRadioButton.selected = true;
-                        stackView.selectedIndex = 1;
-                        break;
-                    case ImageFormat.JPG:
-                        jpgFormatRadioButton.selected = true;
-                        stackView.selectedIndex = 2;
-                        break;
-                    case OTFormat.OBD:
-                        obdFormatRadioButton.selected = true;
-                        stackView.selectedIndex = 3;
-                        break;
+                if (!isNullOrEmpty(format)) {
+                    for (var i:uint = 0; i < m_formats.length; i++) {
+                        if (m_formats.getItemAt(i).format == format)
+                            return i;
+                    }
                 }
+                return -1;
+            }
+            
+            private function getVersionIndex(version:Version):int
+            {
+                if (m_versions && version)
+                    return m_versions.getItemIndex(version);
+                
+                return -1;
             }
             
             private function check():void
             {
-                confirmButton.enabled = (_fileName != null && _fileName.length != 0 && _directory && _format);
-                
-                if (_enableObdFormat && _format == OTFormat.OBD)
-                    confirmButton.enabled = (confirmButton.enabled && _version);
+                confirmButton.enabled = (!isNullOrEmpty(m_prefix) && m_directory);
             }
             
             //--------------------------------------
@@ -262,12 +275,43 @@ THE SOFTWARE.
             
             protected function preinitializeHandler(event:FlexEvent):void
             {
-                _versionCollection = new ArrayCollection( VersionStorage.getInstance().getList() );
+                m_formats = new ArrayCollection([{label:"PNG - Portable Network Graphics", format:ImageFormat.PNG},
+                                                 {label:"BMP - Windows Bitmap", format:ImageFormat.BMP},
+                                                 {label:"JPG - Bitmaps JPEG", format:ImageFormat.JPG}]);
+                
+                m_versions = new ArrayCollection( VersionStorage.getInstance().getList() );
+            }
+            
+            protected function creationCompleteHandler(event:FlexEvent):void
+            {
+                if (m_obdFormatEnabled)
+                    m_formats.addItemAt({label:"OBD - Object Builder Data", format:OTFormat.OBD}, 0);
+                
+                var formatIndex:int = getFormatIndex(m_format);
+                
+                clientVersionsDropDownList.dataProvider = m_versions;
+                formatList.dataProvider = m_formats;
+                formatList.selectedIndex = formatIndex
+                prefixTextInput.text = m_prefix;
+                directoryTextInput.text = m_directory ? m_directory.nativePath : "";
+                clientVersionsDropDownList.selectedIndex = getVersionIndex(m_clientVersion);
+                stackView.selectedIndex = m_obdFormatEnabled ? formatIndex : formatIndex + 1;
+                focusManager.setFocus(cancelButton);
+                focusManager.showFocus();
+            }
+            
+            protected function closingHandler(event:Event):void
+            {
+                if (m_detail == DialogDetail.CANCEL) {
+                    m_prefix = null;
+                    m_directory = null;
+                    m_clientVersion = null;
+                }
             }
             
             protected function nameTextInputChangeHandler(event:TextOperationEvent):void
             {
-                this.fileName = nameTextInput.text;
+                this.prefix = prefixTextInput.text;
             }
             
             protected function directoryChangeHandler(event:FileTextInputEvent):void
@@ -277,7 +321,7 @@ THE SOFTWARE.
             
             protected function browseButtonClickHandler(event:MouseEvent):void
             {
-                var path:String = _directory ? _directory.nativePath : File.documentsDirectory.nativePath;
+                var path:String = m_directory ? m_directory.nativePath : File.documentsDirectory.nativePath;
                 var dir:File = new File(path);
                 dir.addEventListener(Event.SELECT, fileSelectHandler);
                 dir.browseForDirectory(resourceManager.getString("strings", "selectFolder"));
@@ -288,14 +332,14 @@ THE SOFTWARE.
                 }
             }
             
-            protected function formatRadioButtonGroupChangeHandler(event:Event):void
+            protected function formatListChangeHandler(event:IndexChangeEvent):void
             {
-                this.format = formatRadioButtonGroup.selectedValue as String;
+                this.format = formatList.selectedItem.format;
             }
             
             protected function versionDropDownListChangeHandler(event:IndexChangeEvent):void
             {
-                this.version = versionDropDownList.selectedItem as Version;
+                this.clientVersion = clientVersionsDropDownList.selectedItem as Version;
             }
             
             protected function obdVersionDropDownListChangeHandler(event:IndexChangeEvent):void
@@ -306,38 +350,45 @@ THE SOFTWARE.
                     this.obdVersion = OBDVersions.OBD_VERSION_1;
             }
             
+            protected function transparentBackgroundCheckBoxChangeHandler(event:Event):void
+            {
+                this.transparentBackground = transparentBackgroundCheckBox.selected;
+            }
+            
+            protected function jpegQualityHSliderChangeHandler(event:Event):void
+            {
+                this.jpegQuality = jpegQualityHSlider.value;
+            }
+            
             protected function confirmButtonClickHandler(event:MouseEvent):void
             {
-                _detail = DialogDetail.CONFIRM;
+                m_detail = DialogDetail.CONFIRM;
                 this.close();
             }
             
             protected function cancelButtonClickHandler(event:MouseEvent):void
             {
-                _detail = DialogDetail.CANCEL;
+                m_detail = DialogDetail.CANCEL;
                 this.close();
-            }
-            
-            protected function windowClosingHandler(event:Event):void
-            {
-                if (_detail == DialogDetail.CANCEL) {
-                    _fileName = null;
-                    _format = null;
-                    _directory = null;
-                    _version = null;
-                }
             }
             
         ]]>
     </fx:Script>
     
+    <s:layout>
+        <s:VerticalLayout gap="10"
+                          paddingLeft="10"
+                          paddingRight="10"
+                          paddingTop="10"
+                          paddingBottom="10"
+                          horizontalAlign="right"/>
+    </s:layout>
+    
     <s:Group width="100%">
         
-        <s:Label text="{resourceManager.getString('strings', 'name') + ':'}"
-                 fontSize="11"
-                 color="0xDFDFDF"/>
+        <s:Label text="{resourceManager.getString('strings', 'prefix') + ':'}"/>
         
-        <s:TextInput id="nameTextInput"
+        <s:TextInput id="prefixTextInput"
                      left="0"
                      right="0"
                      top="15"
@@ -346,49 +397,36 @@ THE SOFTWARE.
     
     <s:Group width="100%">
         
-        <s:Label text="{resourceManager.getString('strings', 'outputFolder') + ':'}"
-                 fontSize="11"
-                 color="0xDFDFDF"/>
+        <s:Label text="{resourceManager.getString('strings', 'outputFolder') + ':'}"/>
         
-        <components:FileTextInput id="directoryTextInput"
-                             left="0"
-                             right="65"
-                             top="15"
-                             fileChange="directoryChangeHandler(event)"/>
-        
-        <s:Button id="browseButton"
-                  label="@Resource(key='browse', bundle='strings')"
-                  height="22"
-                  top="15"
-                  right="0"
-                  click="browseButtonClickHandler(event)"/>
+        <s:HGroup width="100%"
+                  verticalAlign="middle"
+                  top="15">
+            <otlib:FileTextInput id="directoryTextInput"
+                                 width="100%"
+                                 fileChange="directoryChangeHandler(event)"/>
+            
+            <s:Button id="browseButton"
+                      label="@Resource(key='browse', bundle='strings')"
+                      minWidth="60"
+                      click="browseButtonClickHandler(event)"/>
+        </s:HGroup>
     </s:Group>
     
     <nail:GroupBox label="@Resource(key='format', bundle='strings')"
                    width="100%">
-        
         <nail:layout>
-            <s:HorizontalLayout gap="20"
-                                paddingLeft="10"
-                                paddingRight="10"
-                                paddingTop="10"
-                                paddingBottom="10"
-                                verticalAlign="middle"/>
+            <s:VerticalLayout gap="10"
+                              paddingLeft="10"
+                              paddingRight="10"
+                              paddingTop="10"
+                              paddingBottom="10"/>
         </nail:layout>
         
-        <s:RadioButton id="pngFormatRadioButton"
-                       label="PNG"
-                       groupName="formatRadioButtonGroup"/>
-        <s:RadioButton id="bmpFormatRadioButton"
-                       label="BMP" 
-                       groupName="formatRadioButtonGroup"/>
-        <s:RadioButton id="jpgFormatRadioButton"
-                       label="JPG"
-                       groupName="formatRadioButtonGroup"/>
-        <s:RadioButton id="obdFormatRadioButton"
-                       label="OBD"
-                       visible="false"
-                       groupName="formatRadioButtonGroup"/>
+        <s:DropDownList id="formatList"
+                        width="100%"
+                        requireSelection="true"
+                        change="formatListChangeHandler(event)"/>
     </nail:GroupBox>
     
     <nail:GroupBox label="@Resource(key='options', bundle='strings')"
@@ -396,8 +434,38 @@ THE SOFTWARE.
         
         <mx:ViewStack id="stackView"
                       width="100%"
-                      creationPolicy="all"
-                      selectedIndex="0">
+                      creationPolicy="all">
+            
+            <!-- OBD options -->
+            <s:NavigatorContent>
+                <s:layout>
+                    <s:HorizontalLayout gap="20"
+                                        paddingLeft="10"
+                                        paddingRight="10"
+                                        paddingTop="10"
+                                        paddingBottom="10"
+                                        verticalAlign="middle"/>
+                </s:layout>
+                
+                <s:Label text="{resourceManager.getString('strings', 'version') + ':'}"/>
+                <s:DropDownList id="clientVersionsDropDownList"
+                                width="100%"
+                                requireSelection="true"
+                                change="versionDropDownListChangeHandler(event)"/>
+                
+                <s:Label text="OBD:"/>
+                <s:DropDownList id="obdVersionDropDownList"
+                                width="100%"
+                                requireSelection="true"
+                                change="obdVersionDropDownListChangeHandler(event)">
+                    <s:dataProvider>
+                        <s:ArrayList>
+                            <fx:String>2</fx:String>
+                            <fx:String>1</fx:String>
+                        </s:ArrayList>
+                    </s:dataProvider>
+                </s:DropDownList>
+            </s:NavigatorContent>
             
             <!-- PNG options -->
             <s:NavigatorContent>
@@ -412,8 +480,8 @@ THE SOFTWARE.
                 
                 <s:CheckBox id="transparentBackgroundCheckBox"
                             label="@Resource(key='transparentBackground', bundle='strings')"
-                            selected="{transparentBackground}"
-                            change="{transparentBackground = transparentBackgroundCheckBox.selected}"/>
+                            selected="true"
+                            change="transparentBackgroundCheckBoxChangeHandler(event)"/>
             </s:NavigatorContent>
             
             <!-- BMP options -->
@@ -432,49 +500,16 @@ THE SOFTWARE.
                 
                 <s:Label text="{resourceManager.getString('strings', 'quality') + ':'}"/>
                 
-                <s:HSlider id="qualityHSlider"
+                <s:HSlider id="jpegQualityHSlider"
                            width="120"
                            minimum="10"
                            maximum="100"
                            stepSize="5"
-                           value="{jpegQuality}"
-                           change="{jpegQuality = qualityHSlider.value}"/>
+                           value="100"
+                           change="jpegQualityHSliderChangeHandler(event)"/>
                 
-                <s:Label text="{qualityHSlider.value + ' %'}"/>
+                <s:Label text="{jpegQualityHSlider.value + ' %'}"/>
                 
-            </s:NavigatorContent>
-                
-            <!-- OBD options -->
-            <s:NavigatorContent>
-                <s:layout>
-                    <s:HorizontalLayout gap="20"
-                                        paddingLeft="10"
-                                        paddingRight="10"
-                                        paddingTop="10"
-                                        paddingBottom="10"
-                                        verticalAlign="middle"/>
-                </s:layout>
-                
-                <s:Label text="{resourceManager.getString('strings', 'version') + ':'}"/>
-                <s:DropDownList id="versionDropDownList"
-                                minWidth="100"
-                                enabled="{obdFormatRadioButton.selected}"
-                                dataProvider="{_versionCollection}"
-                                change="versionDropDownListChangeHandler(event)"/>
-                
-                <s:Label text="OBD:"/>
-                <s:DropDownList id="obdVersionDropDownList"
-                                minWidth="80"
-                                requireSelection="true"
-                                enabled="{obdFormatRadioButton.selected}"
-                                change="obdVersionDropDownListChangeHandler(event)">
-                    <s:dataProvider>
-                        <s:ArrayList>
-                            <fx:String>2</fx:String>
-                            <fx:String>1</fx:String>
-                        </s:ArrayList>
-                    </s:dataProvider>
-                </s:DropDownList>
             </s:NavigatorContent>
         </mx:ViewStack>
     </nail:GroupBox>
@@ -484,11 +519,13 @@ THE SOFTWARE.
     <s:HGroup width="100%"
               verticalAlign="middle"
               horizontalAlign="right">
+        
         <s:Button id="confirmButton"
                   label="@Resource(key='confirm', bundle='strings')"
                   minWidth="70"
                   enabled="false"
                   click="confirmButtonClickHandler(event)"/>
+        
         <s:Button id="cancelButton"
                   label="@Resource(key='cancel', bundle='strings')"
                   minWidth="70"

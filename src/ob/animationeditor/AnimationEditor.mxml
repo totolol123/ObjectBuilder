@@ -356,11 +356,11 @@ THE SOFTWARE.
                     return;
                 
                 var window:ExportWindow = new ExportWindow();
-                window.enableObdFormat = true;
-                window.fileName = getCurrentCategory() + "_" + StringUtil.randomKeyString();
+                window.obdFormatEnabled = true;
+                window.prefix = getCurrentCategory() + "_" + StringUtil.randomKeyString();
                 window.directory = _settings.getLastDirectory();
                 window.format = _settings.getLastExportFormat();
-                window.version = _settings.getLastExportVersion();
+                window.clientVersion = _settings.getLastExportVersion();
                 window.title = resourceManager.getString("strings", "menu.save");
                 window.addEventListener(Event.CLOSE, windowCloseHandler);
                 window.open();
@@ -369,11 +369,11 @@ THE SOFTWARE.
                 
                 function windowCloseHandler(event:Event):void
                 {
-                    if (window.fileName == null || !window.directory || window.format == null) {
+                    if (window.prefix == null || !window.directory || window.format == null) {
                         return;
                     }
                     
-                    var file:File = window.directory.resolvePath(window.fileName + "." + window.format);
+                    var file:File = window.directory.resolvePath(window.prefix + "." + window.format);
                     var backgoundColor:uint = true ? 0x00FF00FF : 0xFFFF00FF;
                     var bytes:ByteArray;
                     var bitmap:BitmapData;
@@ -390,12 +390,12 @@ THE SOFTWARE.
                         bytes = new OBDEncoder().encode(thingView.thingData);
                     }
                     
-                    helper.addFile(bytes, window.fileName, format, file);
+                    helper.addFile(bytes, window.prefix, format, file);
                     helper.save();
                     
                     _settings.setLastDirectory(window.directory);
                     _settings.setLastExportFormat(format);
-                    _settings.setLastExportVersion(window.version);
+                    _settings.setLastExportVersion(window.clientVersion);
                 }
             }
             

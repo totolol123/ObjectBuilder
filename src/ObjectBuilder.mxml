@@ -1110,7 +1110,7 @@ THE SOFTWARE.
                 }
             }
             
-            private function onExportThingData(fileName:String,
+            private function onExportThingData(prefix:String,
                                                format:String,
                                                directory:File,
                                                clientVersion:Version,
@@ -1124,12 +1124,12 @@ THE SOFTWARE.
                 var queue:FileQueueHelper = new FileQueueHelper();
                 queue.parent = this;
                 queue.addEventListener(Event.COMPLETE, completeHandler);
-                var changeName:Boolean = (fileName.indexOf("_") == -1);
+                var changeName:Boolean = (prefix.indexOf("_") == -1);
                 
                 var length:uint = things.length;
                 for (var i:uint = 0; i < length; i++) {
                     var id:uint = things[i].id;
-                    var name:String = !changeName ? fileName : (name = fileName + "_" + id);
+                    var name:String = !changeName ? prefix : (name = prefix + "_" + id);
                     queue.addFile(id, name, format, directory);
                 }
                 queue.start();
@@ -1142,7 +1142,7 @@ THE SOFTWARE.
                 }
             }
             
-            private function onExportSprites(fileName:String,
+            private function onExportSprites(prefix:String,
                                              format:String,
                                              directory:File,
                                              sprites:Vector.<SpriteData>,
@@ -1152,12 +1152,12 @@ THE SOFTWARE.
                 var queue:FileQueueHelper = new FileQueueHelper();
                 queue.parent = this;
                 queue.addEventListener(Event.COMPLETE, completeHandler);
-                var changeName:Boolean = (fileName.indexOf("_") == -1);
+                var changeName:Boolean = (prefix.indexOf("_") == -1);
                 
                 var length:uint = sprites.length;
                 for (var i:uint = 0; i < length; i++) {
                     var id:uint = sprites[i].id;
-                    var name:String = !changeName ? fileName : (name = fileName + "_" + id);
+                    var name:String = !changeName ? prefix : (name = prefix + "_" + id);
                     queue.addFile(id, name, format, directory);
                 }
                 queue.start();
@@ -1792,17 +1792,17 @@ THE SOFTWARE.
                 var things:Vector.<ThingType> = thingList.selectedThings;
                 if (things.length == 0) return;
                 
-                var version:Version = _settings.getLastExportThingVersion();
-                if (!version) {
+                var version:Version = _settings.getExportThingVersion();
+                if (!version)
                     version = _versionStorage.getBySignatures(_clientInfo.datSignature, _clientInfo.sprSignature);
-                }
                 
                 var window:ExportWindow = new ExportWindow();
-                window.enableObdFormat = true;
-                window.fileName = this.currentCategory;
+                window.obdFormatEnabled = true;
+                window.prefix = this.currentCategory;
                 window.directory = _settings.getIODirectory();
-                window.format = _settings.getLastExportThingFormat();
-                window.version = version;
+                window.format = _settings.getExportThingFormat();
+                window.clientVersion = version;
+                window.obdVersion = _settings.exportOBDVersion;
                 window.transparentBackground = _settings.exportWithTransparentBackground;
                 window.jpegQuality = _settings.jpegQuality;
                 window.addEventListener(Event.CLOSE, windowCloseHandler);
@@ -1812,22 +1812,18 @@ THE SOFTWARE.
                 
                 function windowCloseHandler(event:Event):void
                 {
-                    if (window.detail == DialogDetail.CONFIRM &&
-                        window.fileName != null &&
-                        window.directory &&
-                        window.format != null &&
-                        window.version) {
-                        
+                    if (window.detail == DialogDetail.CONFIRM) {
                         _settings.setIODirectory(window.directory);
-                        _settings.setLastExportThingFormat(window.format);
-                        _settings.setLastExportThingVersion(window.version);
+                        _settings.setExportThingFormat(window.format);
+                        _settings.setExportThingVersion(window.clientVersion);
+                        _settings.exportOBDVersion = window.obdVersion;
                         _settings.exportWithTransparentBackground = window.transparentBackground;
                         _settings.jpegQuality = window.jpegQuality;
                         
-                        onExportThingData(window.fileName,
+                        onExportThingData(window.prefix,
                                           window.format,
                                           window.directory,
-                                          window.version,
+                                          window.clientVersion,
                                           window.obdVersion,
                                           things,
                                           thingData.category,
@@ -2079,10 +2075,10 @@ THE SOFTWARE.
                 if (sprites.length == 0) return;
                 
                 var window:ExportWindow = new ExportWindow();
-                window.fileName = "sprite";
-                window.format = _settings.getLastExportSpriteFormat();
+                window.prefix = "sprite";
+                window.format = _settings.getExportSpriteFormat();
                 window.directory = _settings.getIODirectory();
-                window.enableObdFormat = false;
+                window.obdFormatEnabled = false;
                 window.transparentBackground = _settings.exportWithTransparentBackground;
                 window.jpegQuality = _settings.jpegQuality;
                 window.addEventListener(Event.CLOSE, windowCloseHandler);
@@ -2092,17 +2088,13 @@ THE SOFTWARE.
                 
                 function windowCloseHandler(event:Event):void
                 {
-                    if (window.detail == DialogDetail.CONFIRM && 
-                        window.fileName != null &&
-                        window.format != null 
-                        && window.directory) {
-                        
+                    if (window.detail == DialogDetail.CONFIRM) {
                         _settings.setIODirectory(window.directory);
-                        _settings.setLastExportSpriteFormat(window.format);
+                        _settings.setExportSpriteFormat(window.format);
                         _settings.exportWithTransparentBackground = window.transparentBackground;
                         _settings.jpegQuality = window.jpegQuality;
                         
-                        onExportSprites(window.fileName,
+                        onExportSprites(window.prefix,
                                         window.format,
                                         window.directory,
                                         sprites,
