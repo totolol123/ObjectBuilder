@@ -242,7 +242,7 @@ package otlib.things
                 
                 thing.animator = Animator.create(thing.frames,
                                                  0,
-                                                 FrameStrategyType.LOOP,
+                                                 0,
                                                  AnimationMode.SYNCHRONOUS,
                                                  frameDurations);
             }

@@ -1,31 +1,29 @@
-///////////////////////////////////////////////////////////////////////////////////
-// 
-//  Copyright (c) 2015 <https://github.com/Mignari/ObjectBuilder/graphs/contributors>
-// 
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-// 
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-// 
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-//
-///////////////////////////////////////////////////////////////////////////////////
+/*
+*  Copyright (c) 2015 Object Builder <https://github.com/Mignari/ObjectBuilder>
+* 
+*  Permission is hereby granted, free of charge, to any person obtaining a copy
+*  of this software and associated documentation files (the "Software"), to deal
+*  in the Software without restriction, including without limitation the rights
+*  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*  copies of the Software, and to permit persons to whom the Software is
+*  furnished to do so, subject to the following conditions:
+* 
+*  The above copyright notice and this permission notice shall be included in
+*  all copies or substantial portions of the Software.
+* 
+*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+*  THE SOFTWARE.
+*/
 
 package otlib.things
 {
     import flash.utils.getTimer;
-
+    
     public class Animator
     {
         //--------------------------------------------------------------------------
@@ -33,55 +31,48 @@ package otlib.things
         //--------------------------------------------------------------------------
         
         public var animationMode:int;
-        public var frameStrategy:int;
+        public var loopCount:int;
         public var frameDurations:Vector.<FrameDuration>;
         public var frames:uint;
         public var startFrame:int;
-        public var nextFrameStrategy:IFrameStrategy;
         public var skipFirstFrame:Boolean;
         
-        private var _lastTime:Number = 0;
-        private var _currentFrameDuration:uint;
-        private var _isComplete:Boolean;
-        private var _currentFrame:uint;
+        private var m_lastTime:Number = 0;
+        private var m_currentFrameDuration:uint;
+        private var m_currentFrame:uint;
+        private var m_currentLoop:uint;
+        private var m_currentDirection:uint;
+        private var m_isComplete:Boolean;
         
         //--------------------------------------
         // Getters / Setters
         //--------------------------------------
         
-        public function get frame():int
-        {
-            return _currentFrame;
-        }
-        
+        public function get frame():int { return m_currentFrame; }
         public function set frame(value:int):void
         {
-            if (_currentFrame == value) return;
+            if (m_currentFrame == value) return;
             
             if (this.animationMode == AnimationMode.ASYNCHRONOUS) {
                 
                 if (value == FRAME_ASYNCHRONOUS)
-                    _currentFrame = 0;
+                    m_currentFrame = 0;
                 else if (value == FRAME_RANDOM)
-                    _currentFrame = Math.floor(Math.random() * this.frames);
+                    m_currentFrame = Math.floor(Math.random() * this.frames);
                 else if (value >= 0 && value < this.frames)
-                    _currentFrame = value;
+                    m_currentFrame = value;
                 else
-                    _currentFrame = this.getStartFrame();
+                    m_currentFrame = this.getStartFrame();
                 
-                _isComplete = false;
-                _lastTime = getTimer();
-                _currentFrameDuration = this.frameDurations[_currentFrame].duration;
+                m_isComplete = false;
+                m_lastTime = getTimer();
+                m_currentFrameDuration = this.frameDurations[m_currentFrame].duration;
             
-            } else {
+            } else
                 this.calculateSynchronous();
-            }
         }
         
-        public function get isComplete():Boolean
-        {
-            return _isComplete;
-        }
+        public function get isComplete():Boolean { return m_isComplete; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -101,30 +92,24 @@ package otlib.things
         
         public function update(time:Number):void
         {
-            if (time != _lastTime && !_isComplete) {
-                
-                var elapsed:Number = time - _lastTime;
-                if (elapsed >= _currentFrameDuration) {
-                    var frame:uint = this.nextFrameStrategy.getNextFrame(_currentFrame, this.frames);
-                    if (_currentFrame != frame) {
-                        
-                        var duration:int = this.frameDurations[frame].duration - (elapsed - _currentFrameDuration);
-                        if (duration < 0 && this.animationMode == AnimationMode.SYNCHRONOUS) {
+            if (time != m_lastTime && !m_isComplete) {
+                var elapsed:Number = time - m_lastTime;
+                if (elapsed >= m_currentFrameDuration) {
+                    var frame:uint = loopCount < 0 ? getPingPongFrame() : getLoopFrame();
+                    if (m_currentFrame != frame) {
+                        var duration:int = this.frameDurations[frame].duration - (elapsed - m_currentFrameDuration);
+                        if (duration < 0 && this.animationMode == AnimationMode.SYNCHRONOUS)
                             this.calculateSynchronous();
-                        } else {
-                            _currentFrame = skipFirstFrame && frame == 0 ? 1 % frames : frame;
-                            _currentFrameDuration = Math.max(0, duration);
+                        else {
+                            m_currentFrame = skipFirstFrame && frame == 0 ? 1 % frames : frame;
+                            m_currentFrameDuration = Math.max(0, duration);
                         }
-                        
-                    } else {
-                        _isComplete = true;
-                    }
-                    
-                } else {
-                    _currentFrameDuration = _currentFrameDuration - elapsed;
-                }
+                    } else
+                        m_isComplete = true;
+                } else
+                    m_currentFrameDuration = m_currentFrameDuration - elapsed;
                 
-                _lastTime = time;
+                m_lastTime = time;
             }
         }
         
@@ -134,13 +119,11 @@ package otlib.things
                 return this;
             
             var clone:Animator = new Animator();
-            clone.frameStrategy = frameStrategy;
+            clone.loopCount = loopCount;
             clone.frames = frames;
             clone.startFrame = startFrame;
-            clone.nextFrameStrategy = nextFrameStrategy;
             clone.animationMode = animationMode;
             clone.frameDurations = frameDurations;
-            clone.nextFrameStrategy = this.nextFrameStrategy.clone();
             clone.skipFirstFrame = skipFirstFrame;
             clone.frame = FRAME_AUTOMATIC;
             return clone;
@@ -157,8 +140,9 @@ package otlib.things
         public function reset():void
         {
             frame = FRAME_AUTOMATIC;
-            nextFrameStrategy.reset();
-            _isComplete = false;
+            m_currentLoop = 0;
+            m_currentDirection = FORWARD;
+            m_isComplete = false;
         }
         
         //--------------------------------------
@@ -168,7 +152,6 @@ package otlib.things
         private function calculateSynchronous():void
         {
             var totalDuration:Number = 0;
-            
             for (var i:uint = 0; i < frames; i++)
                 totalDuration += frameDurations[i].duration;
             
@@ -179,16 +162,41 @@ package otlib.things
             for (i = 0; i < frames; i++) {
                 var duration:Number = this.frameDurations[i].duration;
                 if (elapsed >= totalTime && elapsed < totalTime + duration) {
-                    _currentFrame = i;
+                    m_currentFrame = i;
                     var timeDiff:Number = elapsed - totalTime;
-                    _currentFrameDuration = duration - timeDiff;
+                    m_currentFrameDuration = duration - timeDiff;
                     break;
                 }
-                
                 totalTime += duration;
             }
+            m_lastTime = time;
+        }
+        
+        private function getLoopFrame():uint
+        {
+            var nextFrame:uint = (m_currentFrame + 1);
+            if (nextFrame < frames)
+                return nextFrame;
             
-            _lastTime = time;
+            if (loopCount == 0)
+                return 0;
+            
+            if (m_currentLoop < (loopCount - 1)) {
+                m_currentLoop++;
+                return 0;
+            }
+            return m_currentFrame;
+        }
+        
+        private function getPingPongFrame():uint
+        {
+            var count:int = m_currentDirection == FORWARD ? 1 : -1;
+            var nextFrame:int = m_currentFrame + count;
+            if (m_currentFrame + count < 0 || nextFrame >= frames) {
+                m_currentDirection = m_currentDirection == FORWARD ? BACKWARD : FORWARD;
+                count *= -1;
+            }
+            return m_currentFrame + count;
         }
         
         //--------------------------------------------------------------------------
@@ -198,10 +206,12 @@ package otlib.things
         public static const FRAME_AUTOMATIC:int = -1;
         public static const FRAME_RANDOM:int = 0xFE;
         public static const FRAME_ASYNCHRONOUS:int = 0xFF;
+        public static const FORWARD:uint = 0;
+        public static const BACKWARD:uint = 1;
         
         public static function create(frames:uint,
                                       startFrame:int,
-                                      frameStrategy:int,
+                                      loopCount:int,
                                       animationMode:int,
                                       frameDurations:Vector.<FrameDuration>):Animator
         {
@@ -215,21 +225,11 @@ package otlib.things
                 throw new ArgumentError("Invalid start frame " + startFrame);
             
             var animator:Animator = new Animator();
-            animator.frameStrategy = frameStrategy;
+            animator.loopCount = loopCount;
             animator.frames = frames;
             animator.startFrame = startFrame;
             animator.animationMode = animationMode;
             animator.frameDurations = frameDurations;
-            
-            var strategy:IFrameStrategy;
-            if (frameStrategy < 0)
-                strategy = new PingPongStrategy();
-            else {
-                strategy = new LoopStrategy();
-                LoopStrategy(strategy).loopCount = frameStrategy;
-            }
-                
-            animator.nextFrameStrategy = strategy;
             animator.frame = FRAME_AUTOMATIC;
             return animator;
         }

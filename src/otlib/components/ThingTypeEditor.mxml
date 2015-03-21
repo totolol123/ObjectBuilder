@@ -63,9 +63,6 @@ THE SOFTWARE.
             import otlib.things.AnimationMode;
             import otlib.things.BindableThingType;
             import otlib.things.FrameDuration;
-            import otlib.things.IFrameStrategy;
-            import otlib.things.LoopStrategy;
-            import otlib.things.PingPongStrategy;
             import otlib.things.ThingCategory;
             import otlib.things.ThingData;
             import otlib.things.ThingType;
@@ -245,12 +242,15 @@ THE SOFTWARE.
                     
                     _thingBinding.copyFrom(thingData);
                     
-                    var nextFrameStrategy:IFrameStrategy = _thingBinding.getNextFrameStrategy();
-                    if (nextFrameStrategy) {
-                        if (nextFrameStrategy is PingPongStrategy) 
-                            frameStrategyDropDownList.selectedIndex = 0;
-                        else if (nextFrameStrategy is LoopStrategy)
-                            frameStrategyDropDownList.selectedIndex = 1;
+                    var loopCount:int = _thingBinding.getLoopCount();
+                    if (loopCount == -1) {
+                        frameStrategyDropDownList.selectedIndex = 0;
+                        repeatNumericStepper.value = 0;
+                        repeatNumericStepper.enabled = false;
+                    } else {
+                        frameStrategyDropDownList.selectedIndex = 1;
+                        repeatNumericStepper.value = loopCount;
+                        repeatNumericStepper.enabled = true;
                     }
                     
                     if (_thingBinding.getAnimationMode() == AnimationMode.ASYNCHRONOUS)
@@ -773,20 +773,9 @@ THE SOFTWARE.
             
             protected function frameStrategyDropDownListChangeHandler(event:IndexChangeEvent):void
             {
-                var strategy:IFrameStrategy;
-                if (frameStrategyDropDownList.selectedIndex == 0)
-                {
-                    strategy = new PingPongStrategy();
-                    repeatNumericStepper.enabled = false;
-                }
-                else
-                {
-                    strategy = new LoopStrategy();
-                    LoopStrategy(strategy).loopCount = Math.max(0, repeatNumericStepper.value);
-                    repeatNumericStepper.enabled = true;
-                }
-                
-                _thingBinding.setNextFrameStrategy(strategy);
+                var loopCount:int = frameStrategyDropDownList.selectedIndex == 0 ? -1 : repeatNumericStepper.value;
+                repeatNumericStepper.enabled = (loopCount >= 0);
+                _thingBinding.setLoopCount(loopCount);
             }
             
             protected function repeatNumericStepperChangeHandler(event:Event):void

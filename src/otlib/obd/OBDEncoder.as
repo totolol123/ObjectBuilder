@@ -43,7 +43,6 @@ package otlib.obd
     import otlib.things.AnimationMode;
     import otlib.things.Animator;
     import otlib.things.FrameDuration;
-    import otlib.things.FrameStrategyType;
     import otlib.things.ThingCategory;
     import otlib.things.ThingData;
     import otlib.things.ThingSerializer;
@@ -224,7 +223,7 @@ package otlib.obd
             {
                 var animator:Animator = thing.animator;
                 bytes.writeByte(animator.animationMode); // Write animation type
-                bytes.writeInt(animator.frameStrategy);  // Write frame Strategy
+                bytes.writeInt(animator.loopCount);      // Write loop count
                 bytes.writeByte(animator.startFrame);    // Write start frame
                 
                 var frameDuration:Vector.<FrameDuration> = animator.frameDurations;
@@ -317,7 +316,7 @@ package otlib.obd
                 thing.isAnimation = true;
                 
                 var animationMode:uint = AnimationMode.ASYNCHRONOUS;
-                var frameStrategy:int = FrameStrategyType.LOOP;
+                var loopCount:int = 0;
                 var startFrame:int = -1;
                 var frameDurations:Vector.<FrameDuration> = new Vector.<FrameDuration>(thing.frames, true);
                 var duration:uint = FrameDuration.getDefaultDuration(thing.category);
@@ -327,7 +326,7 @@ package otlib.obd
                 
                 thing.animator = Animator.create(thing.frames,
                                                  startFrame,
-                                                 frameStrategy,
+                                                 loopCount,
                                                  animationMode,
                                                  frameDurations);
             }

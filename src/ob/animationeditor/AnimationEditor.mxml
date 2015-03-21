@@ -83,7 +83,6 @@ THE SOFTWARE.
             import otlib.things.AnimationMode;
             import otlib.things.Animator;
             import otlib.things.FrameDuration;
-            import otlib.things.FrameStrategyType;
             import otlib.things.ThingCategory;
             import otlib.things.ThingData;
             import otlib.things.ThingType;
@@ -290,7 +289,7 @@ THE SOFTWARE.
                     
                     thing.animator = Animator.create(thing.frames,
                                                      0,
-                                                     FrameStrategyType.LOOP,
+                                                     0,
                                                      AnimationMode.SYNCHRONOUS,
                                                      frameDurations);
                 }

@@ -875,13 +875,13 @@ package otlib.things
                 thing.isAnimation = true;
                 
                 var animationMode:uint = AnimationMode.ASYNCHRONOUS;
-                var frameStrategy:int = FrameStrategyType.LOOP;
+                var loopCount:int = 0;
                 var startFrame:int = -1;
                 var frameDurations:Vector.<FrameDuration> = new Vector.<FrameDuration>(thing.frames, true);
                 
                 if (readFrameDuration) {
                     animationMode = input.readUnsignedByte();
-                    frameStrategy = input.readInt();
+                    loopCount = input.readInt();
                     startFrame = input.readByte();
                     
                     for (i = 0; i < thing.frames; i++)
@@ -901,7 +901,7 @@ package otlib.things
                 
                 thing.animator = Animator.create(thing.frames,
                                                  startFrame,
-                                                 frameStrategy,
+                                                 loopCount,
                                                  animationMode,
                                                  frameDurations);
             }
@@ -1393,7 +1393,7 @@ package otlib.things
             if (thing.isAnimation && writeFrameDuration) {
                 var animator:Animator = thing.animator;
                 output.writeByte(animator.animationMode);   // Write animation type
-                output.writeInt(animator.frameStrategy);    // Write frame strategy
+                output.writeInt(animator.loopCount);        // Write loop count
                 output.writeByte(animator.startFrame);      // Write start frame
                 
                 var frameDurations:Vector.<FrameDuration> = animator.frameDurations;

@@ -109,8 +109,6 @@ package ob.core
     import otlib.sprites.SpriteStorage;
     import otlib.things.Animator;
     import otlib.things.FrameDuration;
-    import otlib.things.LoopStrategy;
-    import otlib.things.PingPongStrategy;
     import otlib.things.ThingCategory;
     import otlib.things.ThingData;
     import otlib.things.ThingProperty;
@@ -274,8 +272,6 @@ package ob.core
             registerClassAlias("ByteArray", ByteArray);
             registerClassAlias("PathHelper", PathHelper);
             registerClassAlias("FrameDuration", FrameDuration);
-            registerClassAlias("PingPongStrategy", PingPongStrategy);
-            registerClassAlias("LoopStrategy", LoopStrategy);
             registerClassAlias("Animator", Animator);
             
             registerCallback(SettingsCommand, onSettings);

@@ -377,7 +377,7 @@ package otlib.things
             if (isAnimation && (!animator || animator.frames != this.frames)) {
                 
                 var startFrame:int;
-                var frameStrategy:int;
+                var loopCount:int;
                 var animationType:int;
                 var frameDurations:Vector.<FrameDuration> = new Vector.<FrameDuration>(this.frames, true);
                 var duration:uint = FrameDuration.getDefaultDuration(this.category);
@@ -385,7 +385,7 @@ package otlib.things
                 
                 if (animator) {
                     startFrame = animator.startFrame;
-                    frameStrategy = animator.frameStrategy;
+                    loopCount = animator.loopCount;
                     animationType = animator.animationMode;
                     
                     for (i = 0; i < this.frames; i++) {
@@ -397,7 +397,7 @@ package otlib.things
                     }
                 } else {
                     startFrame = 0;
-                    frameStrategy = category == ThingCategory.EFFECT ? 1 : 0;
+                    loopCount = category == ThingCategory.EFFECT ? 1 : 0;
                     animationType = category == ThingCategory.ITEM ? 1 : 0;
                     
                     for (i = 0; i < this.frames; i++)
@@ -406,7 +406,7 @@ package otlib.things
                 
                 this.animator = Animator.create(this.frames,
                                                 startFrame,
-                                                frameStrategy,
+                                                loopCount,
                                                 animationType,
                                                 frameDurations);
             }
@@ -485,47 +485,17 @@ package otlib.things
             }
         }
         
-        public function getNextFrameStrategy():IFrameStrategy
+        public function getLoopCount():int
         {
-            return animator ? animator.nextFrameStrategy : null;
-        }
-        
-        public function setNextFrameStrategy(strategy:IFrameStrategy):void
-        {
-            if (!strategy) return;
-            
-            if (strategy is PingPongStrategy)
-                animator.frameStrategy = -1;
-            else if (strategy is LoopStrategy)
-                animator.frameStrategy = LoopStrategy(strategy).loopCount;
-            
-            var oldValue:IFrameStrategy = animator.nextFrameStrategy;
-            animator.nextFrameStrategy = strategy;
-            
-            var event:PropertyChangeEvent = new PropertyChangeEvent(PropertyChangeEvent.PROPERTY_CHANGE);
-            event.property = "nextFrameStrategy";
-            event.oldValue = oldValue;
-            event.newValue = strategy;
-            dispatchEvent(event);
-        }
-        
-        public function getLoopCount():uint
-        {
-            if (animator && animator.nextFrameStrategy is LoopStrategy)
-                return LoopStrategy(animator.nextFrameStrategy).loopCount;
-            
-            return 0;
+            return animator ? animator.loopCount : 0;
         }
         
         public function setLoopCount(value:int):void
         {
-            if (!animator) return;
+            if (!animator || animator.loopCount == value) return;
             
-            var strategy:LoopStrategy = animator.nextFrameStrategy as LoopStrategy;
-            if (!strategy || strategy.loopCount == value) return;
-            
-            var oldValue:int = strategy.loopCount;
-            strategy.loopCount = value;
+            var oldValue:int = animator.loopCount;
+            animator.loopCount = value;
             
             var event:PropertyChangeEvent = new PropertyChangeEvent(PropertyChangeEvent.PROPERTY_CHANGE);
             event.property = "repeat";
@@ -536,10 +506,7 @@ package otlib.things
         
         public function getStartFrame():int
         {
-            if (animator)
-                return animator.startFrame;
-            
-            return 0;
+            return animator ? animator.startFrame : 0;
         }
         
         public function setStartFrame(value:int):void
