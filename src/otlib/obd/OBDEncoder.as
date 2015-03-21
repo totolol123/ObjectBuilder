@@ -161,7 +161,7 @@ package otlib.obd
             bytes.writeByte(thing.frames);   // Write frames
             
             var sprites:Vector.<SpriteData> = data.sprites;
-            var spriteList:Vector.<uint> = thing.spriteIndex;
+            var spriteList:Vector.<uint> = thing.spriteIDs;
             var length:uint = spriteList.length;
             
             for (var i:uint = 0; i < length; i++)
@@ -236,7 +236,7 @@ package otlib.obd
             }
             
             var sprites:Vector.<SpriteData> = data.sprites;
-            var spriteList:Vector.<uint> = thing.spriteIndex;
+            var spriteList:Vector.<uint> = thing.spriteIDs;
             length = spriteList.length;
             
             for (i = 0; i < length; i++)
@@ -335,13 +335,13 @@ package otlib.obd
             if (totalSprites > 4096)
                 throw new Error("The Object Data has more than 4096 sprites.");
             
-            thing.spriteIndex = new Vector.<uint>(totalSprites, true);
+            thing.spriteIDs = new Vector.<uint>(totalSprites, true);
             var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(totalSprites, true);
             
             for (i = 0; i < totalSprites; i++)
             {
                 var spriteId:uint = bytes.readUnsignedInt();
-                thing.spriteIndex[i] = spriteId;
+                thing.spriteIDs[i] = spriteId;
                 
                 var dataSize:uint = bytes.readUnsignedInt();
                 if (dataSize > 4096)
@@ -427,13 +427,13 @@ package otlib.obd
             if (totalSprites > 4096)
                 throw new Error("The Object Data has more than 4096 sprites.");
             
-            thing.spriteIndex = new Vector.<uint>(totalSprites, true);
+            thing.spriteIDs = new Vector.<uint>(totalSprites, true);
             var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(totalSprites, true);
             
             for (i = 0; i < totalSprites; i++)
             {
                 var spriteId:uint = bytes.readUnsignedInt();
-                thing.spriteIndex[i] = spriteId;
+                thing.spriteIDs[i] = spriteId;
                 
                 var pixels:ByteArray = new ByteArray();
                 pixels.endian = Endian.BIG_ENDIAN;
@@ -524,7 +524,7 @@ package otlib.obd
                         break;
                     
                     case BLOCK_PATHFIND:
-                        thing.blockPathfind = true;
+                        thing.blockPathfinder = true;
                         break;
                     
                     case NO_MOVE_ANIMATION:
@@ -540,11 +540,11 @@ package otlib.obd
                         break;
                     
                     case HOOK_SOUTH:
-                        thing.isVertical = true;
+                        thing.hookSouth = true;
                         break;
                     
                     case HOOK_EAST:
-                        thing.isHorizontal = true;
+                        thing.hookEast = true;
                         break;
                     
                     case ROTATABLE:
@@ -584,9 +584,9 @@ package otlib.obd
                         thing.animateAlways = true;
                         break;
                     
-                    case MINI_MAP:
-                        thing.miniMap = true;
-                        thing.miniMapColor = input.readUnsignedShort();
+                    case MINIMAP:
+                        thing.minimap = true;
+                        thing.minimapColor = input.readUnsignedShort();
                         break;
                     
                     case LENS_HELP:
@@ -691,7 +691,7 @@ package otlib.obd
             
             if (thing.blockMissile) output.writeByte(BLOCK_MISSILE);
             
-            if (thing.blockPathfind) output.writeByte(BLOCK_PATHFIND);
+            if (thing.blockPathfinder) output.writeByte(BLOCK_PATHFIND);
             
             if (thing.noMoveAnimation) output.writeByte(NO_MOVE_ANIMATION);
             
@@ -699,9 +699,9 @@ package otlib.obd
             
             if (thing.hangable) output.writeByte(HANGABLE);
             
-            if (thing.isVertical) output.writeByte(HOOK_SOUTH);
+            if (thing.hookSouth) output.writeByte(HOOK_SOUTH);
             
-            if (thing.isHorizontal) output.writeByte(HOOK_EAST);
+            if (thing.hookEast) output.writeByte(HOOK_EAST);
             
             if (thing.rotatable) output.writeByte(ROTATABLE);
             
@@ -733,10 +733,10 @@ package otlib.obd
             
             if (thing.animateAlways) output.writeByte(ANIMATE_ALWAYS);
             
-            if (thing.miniMap)
+            if (thing.minimap)
             {
-                output.writeByte(MINI_MAP);
-                output.writeShort(thing.miniMapColor);
+                output.writeByte(MINIMAP);
+                output.writeShort(thing.minimapColor);
             }
             
             if (thing.isLensHelp)
@@ -817,7 +817,7 @@ package otlib.obd
         private static const HAS_ELEVATION:uint     = 0x1A;
         private static const LYING_OBJECT:uint      = 0x1B;
         private static const ANIMATE_ALWAYS:uint    = 0x1C;
-        private static const MINI_MAP:uint          = 0x1D;
+        private static const MINIMAP:uint           = 0x1D;
         private static const LENS_HELP:uint         = 0x1E;
         private static const FULL_GROUND:uint       = 0x1F;
         private static const IGNORE_LOOK:uint       = 0x20;

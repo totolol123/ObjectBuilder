@@ -108,7 +108,7 @@ package otlib.things
                         thing.blockMissile = true;
                         break;
                     case ThingTypeFlags1.BLOCK_PATHFINDER:
-                        thing.blockPathfind = true;
+                        thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags1.PICKUPABLE:
                         thing.pickupable = true;
@@ -133,9 +133,9 @@ package otlib.things
                         thing.offsetX = 8;
                         thing.offsetY = 8;
                         break;
-                    case ThingTypeFlags1.MINI_MAP:
-                        thing.miniMap = true;
-                        thing.miniMapColor = input.readUnsignedShort();
+                    case ThingTypeFlags1.MINIMAP:
+                        thing.minimap = true;
+                        thing.minimapColor = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags1.ROTATABLE:
                         thing.rotatable = true;
@@ -222,7 +222,7 @@ package otlib.things
                         thing.blockMissile = true;
                         break;
                     case ThingTypeFlags2.BLOCK_PATHFINDER:
-                        thing.blockPathfind = true;
+                        thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags2.PICKUPABLE:
                         thing.pickupable = true;
@@ -246,9 +246,9 @@ package otlib.things
                         thing.offsetX = 8;
                         thing.offsetY = 8;
                         break;
-                    case ThingTypeFlags2.MINI_MAP:
-                        thing.miniMap = true;
-                        thing.miniMapColor = input.readUnsignedShort(); 
+                    case ThingTypeFlags2.MINIMAP:
+                        thing.minimap = true;
+                        thing.minimapColor = input.readUnsignedShort(); 
                         break;
                     case ThingTypeFlags2.ROTATABLE:
                         thing.rotatable = true;
@@ -259,11 +259,11 @@ package otlib.things
                     case ThingTypeFlags2.HANGABLE:
                         thing.hangable = true;
                         break;
-                    case ThingTypeFlags2.VERTICAL:
-                        thing.isVertical = true;
+                    case ThingTypeFlags2.HOOK_SOUTH:
+                        thing.hookSouth = true;
                         break;
-                    case ThingTypeFlags2.HORIZONTAL:
-                        thing.isHorizontal = true;
+                    case ThingTypeFlags2.HOOK_EAST:
+                        thing.hookEast = true;
                         break;
                     case ThingTypeFlags2.ANIMATE_ALWAYS:
                         thing.animateAlways = true;
@@ -347,7 +347,7 @@ package otlib.things
                         thing.blockMissile = true;
                         break;
                     case ThingTypeFlags3.BLOCK_PATHFINDER:
-                        thing.blockPathfind = true;
+                        thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags3.PICKUPABLE:
                         thing.pickupable = true;
@@ -355,11 +355,11 @@ package otlib.things
                     case ThingTypeFlags3.HANGABLE:
                         thing.hangable = true;
                         break;
-                    case ThingTypeFlags3.VERTICAL:
-                        thing.isVertical = true;
+                    case ThingTypeFlags3.HOOK_SOUTH:
+                        thing.hookSouth = true;
                         break;
-                    case ThingTypeFlags3.HORIZONTAL:
-                        thing.isHorizontal = true;
+                    case ThingTypeFlags3.HOOK_EAST:
+                        thing.hookEast = true;
                         break;
                     case ThingTypeFlags3.ROTATABLE:
                         thing.rotatable = true;
@@ -387,9 +387,9 @@ package otlib.things
                     case ThingTypeFlags3.ANIMATE_ALWAYS:
                         thing.animateAlways = true;
                         break;
-                    case ThingTypeFlags3.MINI_MAP:
-                        thing.miniMap = true;
-                        thing.miniMapColor = input.readUnsignedShort();
+                    case ThingTypeFlags3.MINIMAP:
+                        thing.minimap = true;
+                        thing.minimapColor = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags3.LENS_HELP:
                         thing.isLensHelp = true;
@@ -476,7 +476,7 @@ package otlib.things
                         thing.blockMissile = true;
                         break;
                     case ThingTypeFlags4.BLOCK_PATHFIND:
-                        thing.blockPathfind = true;
+                        thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags4.PICKUPABLE:
                         thing.pickupable = true;
@@ -484,11 +484,11 @@ package otlib.things
                     case ThingTypeFlags4.HANGABLE:
                         thing.hangable = true;
                         break;
-                    case ThingTypeFlags4.VERTICAL:
-                        thing.isVertical = true;
+                    case ThingTypeFlags4.HOOK_SOUTH:
+                        thing.hookSouth = true;
                         break;
-                    case ThingTypeFlags4.HORIZONTAL:
-                        thing.isHorizontal = true;
+                    case ThingTypeFlags4.HOOK_EAST:
+                        thing.hookEast = true;
                         break;
                     case ThingTypeFlags4.ROTATABLE:
                         thing.rotatable = true;
@@ -519,9 +519,9 @@ package otlib.things
                     case ThingTypeFlags4.ANIMATE_ALWAYS:
                         thing.animateAlways = true;
                         break;
-                    case ThingTypeFlags4.MINI_MAP:
-                        thing.miniMap = true;
-                        thing.miniMapColor = input.readUnsignedShort();
+                    case ThingTypeFlags4.MINIMAP:
+                        thing.minimap = true;
+                        thing.minimapColor = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags4.LENS_HELP:
                         thing.isLensHelp = true;
@@ -608,7 +608,7 @@ package otlib.things
                         thing.blockMissile = true;
                         break;
                     case ThingTypeFlags5.BLOCK_PATHFIND:
-                        thing.blockPathfind = true;
+                        thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags5.PICKUPABLE:
                         thing.pickupable = true;
@@ -616,11 +616,11 @@ package otlib.things
                     case ThingTypeFlags5.HANGABLE:
                         thing.hangable = true;
                         break;
-                    case ThingTypeFlags5.VERTICAL:
-                        thing.isVertical = true;
+                    case ThingTypeFlags5.HOOK_SOUTH:
+                        thing.hookSouth = true;
                         break;
-                    case ThingTypeFlags5.HORIZONTAL:
-                        thing.isHorizontal = true;
+                    case ThingTypeFlags5.HOOK_EAST:
+                        thing.hookEast = true;
                         break;
                     case ThingTypeFlags5.ROTATABLE:
                         thing.rotatable = true;
@@ -651,9 +651,9 @@ package otlib.things
                     case ThingTypeFlags5.ANIMATE_ALWAYS:
                         thing.animateAlways = true;
                         break;
-                    case ThingTypeFlags5.MINI_MAP:
-                        thing.miniMap = true;
-                        thing.miniMapColor = input.readUnsignedShort();
+                    case ThingTypeFlags5.MINIMAP:
+                        thing.minimap = true;
+                        thing.minimapColor = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags5.LENS_HELP:
                         thing.isLensHelp = true;
@@ -754,7 +754,7 @@ package otlib.things
                         thing.blockMissile = true;
                         break;
                     case ThingTypeFlags6.BLOCK_PATHFIND:
-                        thing.blockPathfind = true;
+                        thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags6.NO_MOVE_ANIMATION:
                         thing.noMoveAnimation = true;
@@ -765,11 +765,11 @@ package otlib.things
                     case ThingTypeFlags6.HANGABLE:
                         thing.hangable = true;
                         break;
-                    case ThingTypeFlags6.VERTICAL:
-                        thing.isVertical = true;
+                    case ThingTypeFlags6.HOOK_SOUTH:
+                        thing.hookSouth = true;
                         break;
-                    case ThingTypeFlags6.HORIZONTAL:
-                        thing.isHorizontal = true;
+                    case ThingTypeFlags6.HOOK_EAST:
+                        thing.hookEast = true;
                         break;
                     case ThingTypeFlags6.ROTATABLE:
                         thing.rotatable = true;
@@ -800,9 +800,9 @@ package otlib.things
                     case ThingTypeFlags6.ANIMATE_ALWAYS:
                         thing.animateAlways = true;
                         break;
-                    case ThingTypeFlags6.MINI_MAP:
-                        thing.miniMap = true;
-                        thing.miniMapColor = input.readUnsignedShort();
+                    case ThingTypeFlags6.MINIMAP:
+                        thing.minimap = true;
+                        thing.minimapColor = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags6.LENS_HELP:
                         thing.isLensHelp = true;
@@ -910,12 +910,12 @@ package otlib.things
             if (totalSprites > 4096)
                 throw new Error("A thing type has more than 4096 sprites.");
             
-            thing.spriteIndex = new Vector.<uint>(totalSprites);
+            thing.spriteIDs = new Vector.<uint>(totalSprites);
             for (i = 0; i < totalSprites; i++) {
                 if (extended)
-                    thing.spriteIndex[i] = input.readUnsignedInt();
+                    thing.spriteIDs[i] = input.readUnsignedInt();
                 else 
-                    thing.spriteIndex[i] = input.readUnsignedShort();
+                    thing.spriteIDs[i] = input.readUnsignedShort();
             }
             return true;
         }
@@ -951,7 +951,7 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags1.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags1.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags1.BLOCK_MISSILE);
-            if (thing.blockPathfind) output.writeByte(ThingTypeFlags1.BLOCK_PATHFINDER);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags1.BLOCK_PATHFINDER);
             if (thing.pickupable) output.writeByte(ThingTypeFlags1.PICKUPABLE);
             if (thing.hasLight) {
                 output.writeByte(ThingTypeFlags1.HAS_LIGHT);
@@ -967,9 +967,9 @@ package otlib.things
             if (thing.hasOffset) {
                 output.writeByte(ThingTypeFlags1.HAS_OFFSET);
             }
-            if (thing.miniMap) {
-                output.writeByte(ThingTypeFlags1.MINI_MAP);
-                output.writeShort(thing.miniMapColor);
+            if (thing.minimap) {
+                output.writeByte(ThingTypeFlags1.MINIMAP);
+                output.writeShort(thing.minimapColor);
             }
             if (thing.rotatable) output.writeByte(ThingTypeFlags1.ROTATABLE);
             if (thing.isLyingObject) output.writeByte(ThingTypeFlags1.LYING_OBJECT);
@@ -1013,7 +1013,7 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags2.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags2.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags2.BLOCK_MISSILE);
-            if (thing.blockPathfind) output.writeByte(ThingTypeFlags2.BLOCK_PATHFINDER);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags2.BLOCK_PATHFINDER);
             if (thing.pickupable) output.writeByte(ThingTypeFlags2.PICKUPABLE);
             if (thing.hasLight) {
                 output.writeByte(ThingTypeFlags2.HAS_LIGHT);
@@ -1029,15 +1029,15 @@ package otlib.things
             if (thing.hasOffset) {
                 output.writeByte(ThingTypeFlags2.HAS_OFFSET);
             }
-            if (thing.miniMap) {
-                output.writeByte(ThingTypeFlags2.MINI_MAP);
-                output.writeShort(thing.miniMapColor);
+            if (thing.minimap) {
+                output.writeByte(ThingTypeFlags2.MINIMAP);
+                output.writeShort(thing.minimapColor);
             }
             if (thing.rotatable) output.writeByte(ThingTypeFlags2.ROTATABLE);
             if (thing.isLyingObject) output.writeByte(ThingTypeFlags2.LYING_OBJECT);
             if (thing.hangable) output.writeByte(ThingTypeFlags2.HANGABLE);
-            if (thing.isVertical) output.writeByte(ThingTypeFlags2.VERTICAL);
-            if (thing.isHorizontal) output.writeByte(ThingTypeFlags2.HORIZONTAL);
+            if (thing.hookSouth) output.writeByte(ThingTypeFlags2.HOOK_SOUTH);
+            if (thing.hookEast) output.writeByte(ThingTypeFlags2.HOOK_EAST);
             if (thing.animateAlways) output.writeByte(ThingTypeFlags2.ANIMATE_ALWAYS);
             if (thing.isLensHelp) {
                 output.writeByte(ThingTypeFlags2.LENS_HELP);
@@ -1080,11 +1080,11 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags3.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags3.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags3.BLOCK_MISSILE);
-            if (thing.blockPathfind) output.writeByte(ThingTypeFlags3.BLOCK_PATHFINDER);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags3.BLOCK_PATHFINDER);
             if (thing.pickupable) output.writeByte(ThingTypeFlags3.PICKUPABLE);
             if (thing.hangable) output.writeByte(ThingTypeFlags3.HANGABLE);
-            if (thing.isVertical) output.writeByte(ThingTypeFlags3.VERTICAL);
-            if (thing.isHorizontal) output.writeByte(ThingTypeFlags3.HORIZONTAL);
+            if (thing.hookSouth) output.writeByte(ThingTypeFlags3.HOOK_SOUTH);
+            if (thing.hookEast) output.writeByte(ThingTypeFlags3.HOOK_EAST);
             if (thing.rotatable) output.writeByte(ThingTypeFlags3.ROTATABLE);
             if (thing.hasLight) {
                 output.writeByte(ThingTypeFlags3.HAS_LIGHT);
@@ -1103,9 +1103,9 @@ package otlib.things
             }
             if (thing.isLyingObject) output.writeByte(ThingTypeFlags3.LYING_OBJECT);
             if (thing.animateAlways) output.writeByte(ThingTypeFlags3.ANIMATE_ALWAYS);
-            if (thing.miniMap) {
-                output.writeByte(ThingTypeFlags3.MINI_MAP);
-                output.writeShort(thing.miniMapColor);
+            if (thing.minimap) {
+                output.writeByte(ThingTypeFlags3.MINIMAP);
+                output.writeShort(thing.minimapColor);
             }
             if (thing.isLensHelp) {
                 output.writeByte(ThingTypeFlags3.LENS_HELP);
@@ -1150,11 +1150,11 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags4.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags4.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags4.BLOCK_MISSILE);
-            if (thing.blockPathfind) output.writeByte(ThingTypeFlags4.BLOCK_PATHFIND);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags4.BLOCK_PATHFIND);
             if (thing.pickupable) output.writeByte(ThingTypeFlags4.PICKUPABLE);
             if (thing.hangable) output.writeByte(ThingTypeFlags4.HANGABLE);
-            if (thing.isVertical) output.writeByte(ThingTypeFlags4.VERTICAL);
-            if (thing.isHorizontal) output.writeByte(ThingTypeFlags4.HORIZONTAL);
+            if (thing.hookSouth) output.writeByte(ThingTypeFlags4.HOOK_SOUTH);
+            if (thing.hookEast) output.writeByte(ThingTypeFlags4.HOOK_EAST);
             if (thing.rotatable) output.writeByte(ThingTypeFlags4.ROTATABLE);
             if (thing.hasLight) {
                 output.writeByte(ThingTypeFlags4.HAS_LIGHT);
@@ -1174,9 +1174,9 @@ package otlib.things
             }
             if (thing.isLyingObject) output.writeByte(ThingTypeFlags4.LYING_OBJECT);
             if (thing.animateAlways) output.writeByte(ThingTypeFlags4.ANIMATE_ALWAYS);
-            if (thing.miniMap) {
-                output.writeByte(ThingTypeFlags4.MINI_MAP);
-                output.writeShort(thing.miniMapColor);
+            if (thing.minimap) {
+                output.writeByte(ThingTypeFlags4.MINIMAP);
+                output.writeShort(thing.minimapColor);
             }
             if (thing.isLensHelp) {
                 output.writeByte(ThingTypeFlags4.LENS_HELP);
@@ -1221,11 +1221,11 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags5.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags5.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags5.BLOCK_MISSILE);
-            if (thing.blockPathfind) output.writeByte(ThingTypeFlags5.BLOCK_PATHFIND);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags5.BLOCK_PATHFIND);
             if (thing.pickupable) output.writeByte(ThingTypeFlags5.PICKUPABLE);
             if (thing.hangable) output.writeByte(ThingTypeFlags5.HANGABLE);
-            if (thing.isVertical) output.writeByte(ThingTypeFlags5.VERTICAL);
-            if (thing.isHorizontal) output.writeByte(ThingTypeFlags5.HORIZONTAL);
+            if (thing.hookSouth) output.writeByte(ThingTypeFlags5.HOOK_SOUTH);
+            if (thing.hookEast) output.writeByte(ThingTypeFlags5.HOOK_EAST);
             if (thing.rotatable) output.writeByte(ThingTypeFlags5.ROTATABLE);
             if (thing.hasLight) {
                 output.writeByte(ThingTypeFlags5.HAS_LIGHT);
@@ -1245,9 +1245,9 @@ package otlib.things
             }
             if (thing.isLyingObject) output.writeByte(ThingTypeFlags5.LYING_OBJECT);
             if (thing.animateAlways) output.writeByte(ThingTypeFlags5.ANIMATE_ALWAYS);
-            if (thing.miniMap) {
-                output.writeByte(ThingTypeFlags5.MINI_MAP);
-                output.writeShort(thing.miniMapColor);
+            if (thing.minimap) {
+                output.writeByte(ThingTypeFlags5.MINIMAP);
+                output.writeShort(thing.minimapColor);
             }
             if (thing.isLensHelp) {
                 output.writeByte(ThingTypeFlags5.LENS_HELP);
@@ -1306,12 +1306,12 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags6.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags6.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags6.BLOCK_MISSILE);
-            if (thing.blockPathfind) output.writeByte(ThingTypeFlags6.BLOCK_PATHFIND);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags6.BLOCK_PATHFIND);
             if (thing.noMoveAnimation) output.writeByte(ThingTypeFlags6.NO_MOVE_ANIMATION);
             if (thing.pickupable) output.writeByte(ThingTypeFlags6.PICKUPABLE);
             if (thing.hangable) output.writeByte(ThingTypeFlags6.HANGABLE);
-            if (thing.isVertical) output.writeByte(ThingTypeFlags6.VERTICAL);
-            if (thing.isHorizontal) output.writeByte(ThingTypeFlags6.HORIZONTAL);
+            if (thing.hookSouth) output.writeByte(ThingTypeFlags6.HOOK_SOUTH);
+            if (thing.hookEast) output.writeByte(ThingTypeFlags6.HOOK_EAST);
             if (thing.rotatable) output.writeByte(ThingTypeFlags6.ROTATABLE);
             if (thing.hasLight) {
                 output.writeByte(ThingTypeFlags6.HAS_LIGHT);
@@ -1331,9 +1331,9 @@ package otlib.things
             }
             if (thing.isLyingObject) output.writeByte(ThingTypeFlags6.LYING_OBJECT);
             if (thing.animateAlways) output.writeByte(ThingTypeFlags6.ANIMATE_ALWAYS);
-            if (thing.miniMap) {
-                output.writeByte(ThingTypeFlags6.MINI_MAP);
-                output.writeShort(thing.miniMapColor);
+            if (thing.minimap) {
+                output.writeByte(ThingTypeFlags6.MINIMAP);
+                output.writeShort(thing.minimapColor);
             }
             if (thing.isLensHelp) {
                 output.writeByte(ThingTypeFlags6.LENS_HELP);
@@ -1404,14 +1404,14 @@ package otlib.things
                 }
             }
             
-            var spriteIndex:Vector.<uint> = thing.spriteIndex;
-            var length:uint = spriteIndex.length;
+            var spriteIDs:Vector.<uint> = thing.spriteIDs;
+            var length:uint = spriteIDs.length;
             for (i = 0; i < length; i++) {
                 // Write sprite index
                 if (extended)
-                    output.writeUnsignedInt(spriteIndex[i]); 
+                    output.writeUnsignedInt(spriteIDs[i]); 
                 else
-                    output.writeShort(spriteIndex[i]);
+                    output.writeShort(spriteIDs[i]);
             }
             return true;
         }

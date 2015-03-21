@@ -60,8 +60,8 @@ package otlib.things
         public static const BLOCK_PATHFIND:uint  = 0x0F;
         public static const PICKUPABLE:uint = 0x10;
         public static const HANGABLE:uint = 0x11;
-        public static const VERTICAL:uint = 0x12;
-        public static const HORIZONTAL:uint = 0x13;
+        public static const HOOK_SOUTH:uint = 0x12;
+        public static const HOOK_EAST:uint = 0x13;
         public static const ROTATABLE:uint = 0x14;
         public static const HAS_LIGHT:uint = 0x15;
         public static const DONT_HIDE:uint = 0x16;
@@ -70,7 +70,7 @@ package otlib.things
         public static const HAS_ELEVATION:uint = 0x19;
         public static const LYING_OBJECT:uint = 0x1A;
         public static const ANIMATE_ALWAYS:uint = 0x1B;
-        public static const MINI_MAP:uint = 0x1C;
+        public static const MINIMAP:uint = 0x1C;
         public static const LENS_HELP:uint = 0x1D;
         public static const FULL_GROUND:uint = 0x1E;
         public static const IGNORE_LOOK:uint = 0x1F;

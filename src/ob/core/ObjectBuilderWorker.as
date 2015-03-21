@@ -568,15 +568,15 @@ package ob.core
             
             for (var i:uint = 0; i < length; i++) {
                 var spriteData:SpriteData = sprites[i];
-                var id:uint = thing.spriteIndex[i];
+                var id:uint = thing.spriteIDs[i];
                 
                 if (id == uint.MAX_VALUE) {
                     if (spriteData.isEmpty()) {
-                        thing.spriteIndex[i] = 0;
+                        thing.spriteIDs[i] = 0;
                     } else {
                         
                         if (replaceSprites) {
-                            result = _sprites.replaceSprite(currentThing.spriteIndex[i], spriteData.pixels);
+                            result = _sprites.replaceSprite(currentThing.spriteIDs[i], spriteData.pixels);
                         } else {
                             result = _sprites.addSprite(spriteData.pixels);
                         }
@@ -587,7 +587,7 @@ package ob.core
                         }
                         
                         spriteData = result.list[0];
-                        thing.spriteIndex[i] = spriteData.id;
+                        thing.spriteIDs[i] = spriteData.id;
                         spritesIds[spritesIds.length] = spriteData.id;
                         addedSpriteList[addedSpriteList.length] = spriteData;
                     }
@@ -740,7 +740,7 @@ package ob.core
                         id = _sprites.spritesCount;
                         spritesIds[spritesIds.length] = id;
                     }
-                    thing.spriteIndex[k] = id;
+                    thing.spriteIDs[k] = id;
                 }
             }
             
@@ -859,7 +859,7 @@ package ob.core
                         id = _sprites.spritesCount;
                         spritesIds[spritesIds.length] = id;
                     }
-                    thing.spriteIndex[k] = id;
+                    thing.spriteIDs[k] = id;
                 }
             }
             
@@ -1043,10 +1043,10 @@ package ob.core
                 
                 length = removedThingList.length;
                 for (var i:uint = 0; i < length; i++) {
-                    var spriteIndex:Vector.<uint> = removedThingList[i].spriteIndex;
-                    var len:uint = spriteIndex.length;
+                    var spriteIDs:Vector.<uint> = removedThingList[i].spriteIDs;
+                    var len:uint = spriteIDs.length;
                     for (var k:uint = 0; k < len; k++) {
-                        id = spriteIndex[k];
+                        id = spriteIDs[k];
                         if (id != 0) {
                             sprites[id] = id;
                         }
@@ -1622,7 +1622,7 @@ package ob.core
                         var index:uint = thing.getSpriteIndex(w, h, l, x, 0, 0, 0);
                         var px:int = (width - w - 1) * size;
                         var py:int = (height - h - 1) * size;
-                        _sprites.copyPixels(thing.spriteIndex[index], bitmap, px, py);
+                        _sprites.copyPixels(thing.spriteIDs[index], bitmap, px, py);
                     }
                 }
             }
@@ -1644,11 +1644,11 @@ package ob.core
             }
             
             var sprites:Vector.<SpriteData> = new Vector.<SpriteData>();
-            var spriteIndex:Vector.<uint> = thing.spriteIndex;
-            var length:uint = spriteIndex.length;
+            var spriteIDs:Vector.<uint> = thing.spriteIDs;
+            var length:uint = spriteIDs.length;
             
             for (var i:uint = 0; i < length; i++) {
-                var spriteId:uint = spriteIndex[i];
+                var spriteId:uint = spriteIDs[i];
                 var pixels:ByteArray = _sprites.getPixels(spriteId);
                 if (!pixels) {
                     Log.error(Resources.getString("spriteNotFound", spriteId));

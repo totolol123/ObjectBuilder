@@ -44,7 +44,7 @@ package otlib.things
         public var patternY:uint;
         public var patternZ:uint;
         public var frames:uint;
-        public var spriteIndex:Vector.<uint>;
+        public var spriteIDs:Vector.<uint>;
         public var isGround:Boolean;
         public var groundSpeed:uint;
         public var isGroundBorder:Boolean;
@@ -63,12 +63,12 @@ package otlib.things
         public var isUnpassable:Boolean;
         public var isUnmoveable:Boolean;
         public var blockMissile:Boolean;
-        public var blockPathfind:Boolean;
+        public var blockPathfinder:Boolean;
         public var noMoveAnimation:Boolean;
         public var pickupable:Boolean;
         public var hangable:Boolean;
-        public var isVertical:Boolean;
-        public var isHorizontal:Boolean;
+        public var hookSouth:Boolean;
+        public var hookEast:Boolean;
         public var rotatable:Boolean;
         public var hasLight:Boolean;
         public var lightLevel:uint;
@@ -83,8 +83,8 @@ package otlib.things
         public var elevation:uint;
         public var isLyingObject:Boolean;
         public var animateAlways:Boolean;
-        public var miniMap:Boolean;
-        public var miniMapColor:uint;
+        public var minimap:Boolean;
+        public var minimapColor:uint;
         public var isLensHelp:Boolean;
         public var lensHelp:uint;
         public var isFullGround:Boolean;
@@ -198,8 +198,8 @@ package otlib.things
                 newThing[name] = this[name];
             }
             
-            if (this.spriteIndex)
-                newThing.spriteIndex = this.spriteIndex.concat();
+            if (this.spriteIDs)
+                newThing.spriteIDs = this.spriteIDs.concat();
             
             if (this.animator)
                 newThing.animator = this.animator.clone();
@@ -252,7 +252,7 @@ package otlib.things
                 thing.patternY = 3;
             }
             
-            thing.spriteIndex = new Vector.<uint>(thing.getTotalSprites(), true);
+            thing.spriteIDs = new Vector.<uint>(thing.getTotalSprites(), true);
             return thing;
         }
     }

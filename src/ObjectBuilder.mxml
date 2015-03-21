@@ -1972,10 +1972,10 @@ THE SOFTWARE.
                     
                     if (bitmap.width == size.width && size.height == bitmap.height)
                     {
-                        var length:uint = thing.spriteIndex.length;
+                        var length:uint = thing.spriteIDs.length;
                         var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(length, true);
                         for (var i:uint = 0; i < length; i++)
-                            sprites[i] = SpriteData.createSpriteData(thing.spriteIndex[i]);
+                            sprites[i] = SpriteData.createSpriteData(thing.spriteIDs[i]);
                         
                         var data:ThingData = ThingData.create(OBDVersions.OBD_VERSION_2, _version.value, thing, sprites);
                         data.setSpriteSheet(bitmap);

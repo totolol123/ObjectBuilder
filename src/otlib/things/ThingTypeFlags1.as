@@ -64,7 +64,7 @@ package otlib.things
         public static const HAS_ELEVATION:uint = 0x13;
         public static const HAS_OFFSET:uint = 0x14;
         // Flag 0x15 ????
-        public static const MINI_MAP:uint = 0x16;
+        public static const MINIMAP:uint = 0x16;
         public static const ROTATABLE:uint = 0x17;
         public static const LYING_OBJECT:uint = 0x18;
         public static const ANIMATE_ALWAYS:uint = 0x19;

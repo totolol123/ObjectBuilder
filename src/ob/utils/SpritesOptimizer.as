@@ -220,7 +220,7 @@ package ob.utils
         {
             for each (var thing:ThingType in list)
             {
-                var spriteIDs:Vector.<uint> = thing.spriteIndex;
+                var spriteIDs:Vector.<uint> = thing.spriteIDs;
                 var length:uint = spriteIDs.length;
                 
                 for (var i:int = 0; i < length; i++)
@@ -232,7 +232,7 @@ package ob.utils
         {
             for each (var thing:ThingType in list)
             {
-                var spriteIDs:Vector.<uint> = thing.spriteIndex;
+                var spriteIDs:Vector.<uint> = thing.spriteIDs;
                 var length:uint = spriteIDs.length;
                 
                 for (var i:int = 0; i < length; i++)

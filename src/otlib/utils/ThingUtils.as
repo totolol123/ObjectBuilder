@@ -45,10 +45,10 @@ package otlib.utils
         {
             var thing:ThingType = ThingType.create(0, category);
             if (thing) {
-                var spriteIndex:Vector.<uint> = thing.spriteIndex;
-                var length:uint = spriteIndex.length;
+                var spriteIDs:Vector.<uint> = thing.spriteIDs;
+                var length:uint = spriteIDs.length;
                 for (var i:uint = 0; i < length; i++) {
-                    spriteIndex[i] = 0xFFFFFFFF;
+                    spriteIDs[i] = 0xFFFFFFFF;
                 }
             }
             return thing;

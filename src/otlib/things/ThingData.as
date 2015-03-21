@@ -309,7 +309,7 @@ package otlib.things
                                         sd.id = uint.MAX_VALUE;
                                         
                                         m_sprites[index] = sd;
-                                        m_thing.spriteIndex[index] = sd.id;
+                                        m_thing.spriteIDs[index] = sd.id;
                                     }
                                 }
                             }
@@ -330,7 +330,7 @@ package otlib.things
             
             m_thing.patternY = 1; // Decrease addons
             m_thing.layers = 1; // Decrease layers 
-            m_thing.spriteIndex = new Vector.<uint>(m_thing.getTotalSprites(), true);
+            m_thing.spriteIDs = new Vector.<uint>(m_thing.getTotalSprites(), true);
             m_sprites = new Vector.<SpriteData>(m_thing.getTotalSprites(), true);
             setSpriteSheet(bitmap);
         }
@@ -419,7 +419,7 @@ package otlib.things
             if (!sprites)
                 throw new NullArgumentError("sprites");
             
-            if (thing.spriteIndex.length != sprites.length)
+            if (thing.spriteIDs.length != sprites.length)
                 throw new ArgumentError("Invalid sprites length.");
             
             var thingData:ThingData = new ThingData();

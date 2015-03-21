@@ -402,7 +402,7 @@ THE SOFTWARE.
                 for (var w:uint = 0; w < width; w++) {
                     for (var h:uint = 0; h < height; h++) {
                         var index:int = getSpriteIndex(_thingBinding, w, h, l, x, y, z, f);
-                        var id:uint = _thingBinding.spriteIndex[index];
+                        var id:uint = _thingBinding.spriteIDs[index];
                         var px:int = ((width - w - 1) * size);
                         var py:int = ((height - h - 1) * size);
                         copyPixels(index, bitmap, px, py);
@@ -446,7 +446,7 @@ THE SOFTWARE.
                         for (var w:uint = 0; w < width; w++) {
                             for (var h:uint = 0; h < height; h++) {
                                 var index:int = getSpriteIndex(_thingBinding, w, h, l, x, y, z, f);
-                                var id:uint = _thingBinding.spriteIndex[index];
+                                var id:uint = _thingBinding.spriteIDs[index];
                                 var px:int = ((width - w - 1) * size) + fx;
                                 var py:int = ((height - h - 1) * size) + fy;
                                 copyPixels(index, bitmap, px, py);
@@ -1264,8 +1264,8 @@ THE SOFTWARE.
                     <nail:GroupCheckBox id="automapGroupCheckBox" 
                                         label="@Resource(key='automap', bundle='strings')"
                                         width="100%"
-                                        selected="{_thingBinding.miniMap}"
-                                        change="{_thingBinding.miniMap = automapGroupCheckBox.selected;}">
+                                        selected="{_thingBinding.minimap}"
+                                        change="{_thingBinding.minimap = automapGroupCheckBox.selected;}">
                         <s:Group width="100%"
                                  height="100%"
                                  enabled="{automapGroupCheckBox.selected}">
@@ -1283,11 +1283,11 @@ THE SOFTWARE.
                             <s:NumericStepper id="automapColorNumericStepper"
                                               width="80"
                                               maximum="215"
-                                              value="{_thingBinding.miniMapColor}"
-                                              change="{_thingBinding.miniMapColor = automapColorNumericStepper.value;}"/>
+                                              value="{_thingBinding.minimapColor}"
+                                              change="{_thingBinding.minimapColor = automapColorNumericStepper.value;}"/>
                             <otlib:EightBitColorPicker id="automapColorSwitchColor"
-                                                       color="{_thingBinding.miniMapColor}"
-                                                       change="{_thingBinding.miniMapColor = automapColorSwitchColor.color;}"/>
+                                                       color="{_thingBinding.minimapColor}"
+                                                       change="{_thingBinding.minimapColor = automapColorSwitchColor.color;}"/>
                         </s:Group>
                     </nail:GroupCheckBox>
                     
@@ -1713,8 +1713,8 @@ THE SOFTWARE.
                                         change="{_thingBinding.blockMissile = blockMissileCheckBox.selected;}"/>
                             <s:CheckBox id="blockPathfindCheckBox"
                                         label="@Resource(key='blockPathfinder', bundle='strings')"
-                                        selected="{_thingBinding.blockPathfind}"
-                                        change="{_thingBinding.blockPathfind = blockPathfindCheckBox.selected;}"/>
+                                        selected="{_thingBinding.blockPathfinder}"
+                                        change="{_thingBinding.blockPathfinder = blockPathfindCheckBox.selected;}"/>
                         </s:VGroup>
                         
                         <s:VGroup id="flagsRightColumn" 
@@ -1735,12 +1735,12 @@ THE SOFTWARE.
                                         change="{_thingBinding.hangable = hangableCheckBox.selected;}"/>
                             <s:CheckBox id="horizontalCheckBox"
                                         label="@Resource(key='horizontalWall', bundle='strings')"
-                                        selected="{_thingBinding.isHorizontal}"
-                                        change="{_thingBinding.isHorizontal = horizontalCheckBox.selected;}"/>
+                                        selected="{_thingBinding.hookEast}"
+                                        change="{_thingBinding.hookEast = horizontalCheckBox.selected;}"/>
                             <s:CheckBox id="verticalCheckBox"
                                         label="@Resource(key='verticalWall', bundle='strings')"
-                                        selected="{_thingBinding.isVertical}"
-                                        change="{_thingBinding.isVertical = verticalCheckBox.selected;}"/>
+                                        selected="{_thingBinding.hookSouth}"
+                                        change="{_thingBinding.hookSouth = verticalCheckBox.selected;}"/>
                             <s:CheckBox id="rotatableCheckBox"
                                         label="@Resource(key='rotatable', bundle='strings')"
                                         selected="{_thingBinding.rotatable}"

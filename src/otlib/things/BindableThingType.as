@@ -131,7 +131,7 @@ package otlib.things
         public var blockMissile:Boolean;
         
         [Bindable]
-        public var blockPathfind:Boolean;
+        public var blockPathfinder:Boolean;
         
         [Bindable]
         public var noMoveAnimation:Boolean;
@@ -143,10 +143,10 @@ package otlib.things
         public var hangable:Boolean;
         
         [Bindable]
-        public var isVertical:Boolean;
+        public var hookSouth:Boolean;
         
         [Bindable]
-        public var isHorizontal:Boolean;
+        public var hookEast:Boolean;
         
         [Bindable]
         public var rotatable:Boolean;
@@ -191,10 +191,10 @@ package otlib.things
         public var animateAlways:Boolean;
         
         [Bindable]
-        public var miniMap:Boolean;
+        public var minimap:Boolean;
         
         [Bindable]
-        public var miniMapColor:uint;
+        public var minimapColor:uint;
         
         [Bindable]
         public var isLensHelp:Boolean;
@@ -248,7 +248,7 @@ package otlib.things
         public var isAnimation:Boolean;
         
         public var animator:Animator;
-        public var spriteIndex:Vector.<uint>;
+        public var spriteIDs:Vector.<uint>;
         public var sprites:Vector.<SpriteData>;
         
         //--------------------------------------------------------------------------
@@ -269,12 +269,12 @@ package otlib.things
         
         public function setSprite(index:uint, sprite:SpriteData):void
         {
-            var oldValue:uint = spriteIndex[index];
-            this.spriteIndex[index] = sprite.id;
+            var oldValue:uint = spriteIDs[index];
+            this.spriteIDs[index] = sprite.id;
             this.sprites[index] = sprite;
             
             var event:PropertyChangeEvent = new PropertyChangeEvent(PropertyChangeEvent.PROPERTY_CHANGE);
-            event.property = "spriteIndex";
+            event.property = "spriteIDs";
             event.oldValue = oldValue;
             event.newValue = sprite.id;
             dispatchEvent(event);
@@ -318,8 +318,8 @@ package otlib.things
                     this[name] = thing[name];
             }	
             
-            if (thing.spriteIndex)
-                this.spriteIndex = thing.spriteIndex.concat();
+            if (thing.spriteIDs)
+                this.spriteIDs = thing.spriteIDs.concat();
             
             if (data.sprites)
                 this.sprites = data.sprites.concat();
@@ -358,8 +358,8 @@ package otlib.things
                     thing[name] = this[name];
             }
             
-            if (this.spriteIndex)
-                thing.spriteIndex = this.spriteIndex.concat();
+            if (this.spriteIDs)
+                thing.spriteIDs = this.spriteIDs.concat();
             
             if (animator)
                 thing.animator = animator.clone();
@@ -370,7 +370,7 @@ package otlib.things
         public function updateSpriteCount():void
         {
             var spriteCount:uint = getTotalSprites();
-            this.spriteIndex.length = spriteCount;
+            this.spriteIDs.length = spriteCount;
             this.sprites.length = spriteCount;
             this.isAnimation = (this.frames > 1);
             
@@ -568,12 +568,12 @@ package otlib.things
             PROPERTY_LABEL["isUnpassable"] = resource.getString("strings", "unpassable");
             PROPERTY_LABEL["isUnmoveable"] = resource.getString("strings", "unmovable");
             PROPERTY_LABEL["blockMissile"] = resource.getString("strings", "blockMissile");
-            PROPERTY_LABEL["blockPathfind"] = resource.getString("strings", "blockPathfinder");
+            PROPERTY_LABEL["blockPathfinder"] = resource.getString("strings", "blockPathfinder");
             PROPERTY_LABEL["noMoveAnimation"] = resource.getString("strings", "noMoveAnimation");
             PROPERTY_LABEL["pickupable"] = resource.getString("strings", "pickupable");
             PROPERTY_LABEL["hangable"] = resource.getString("strings", "hangable");
-            PROPERTY_LABEL["isVertical"] = resource.getString("strings", "verticalWall");
-            PROPERTY_LABEL["isHorizontal"] = resource.getString("strings", "horizontalWall");
+            PROPERTY_LABEL["hookSouth"] = resource.getString("strings", "verticalWall");
+            PROPERTY_LABEL["hookEast"] = resource.getString("strings", "horizontalWall");
             PROPERTY_LABEL["rotatable"] = resource.getString("strings", "rotatable");
             PROPERTY_LABEL["hasOffset"] = resource.getString("strings", "hasOffset");
             PROPERTY_LABEL["offsetX"] = resource.getString("strings", "offsetX");
@@ -587,8 +587,8 @@ package otlib.things
             PROPERTY_LABEL["elevation"] = resource.getString("strings", "elevation");
             PROPERTY_LABEL["isLyingObject"] = resource.getString("strings", "lyingObject");
             PROPERTY_LABEL["animateAlways"] = resource.getString("strings", "animateAlways");
-            PROPERTY_LABEL["miniMap"] = resource.getString("strings", "automap");
-            PROPERTY_LABEL["miniMapColor"] = resource.getString("strings", "automapColor");
+            PROPERTY_LABEL["minimap"] = resource.getString("strings", "automap");
+            PROPERTY_LABEL["minimapColor"] = resource.getString("strings", "automapColor");
             PROPERTY_LABEL["isLensHelp"] = resource.getString("strings", "lensHelp");
             PROPERTY_LABEL["lensHelp"] = resource.getString("strings", "lensHelpValue");
             PROPERTY_LABEL["isFullGround"] = resource.getString("strings", "fullGround");
@@ -605,7 +605,7 @@ package otlib.things
             PROPERTY_LABEL["hasDefaultAction"] = resource.getString("strings", "hasAction");
             PROPERTY_LABEL["defaultAction"] = resource.getString("strings", "actionType");
             PROPERTY_LABEL["usable"] = resource.getString("strings", "usable");
-            PROPERTY_LABEL["spriteIndex"] = resource.getString("strings", "spriteId");
+            PROPERTY_LABEL["spriteIDs"] = resource.getString("strings", "spriteId");
             PROPERTY_LABEL["hasCharges"] = resource.getString("strings", "hasCharges");
             PROPERTY_LABEL["floorChange"] = resource.getString("strings", "floorChange");
             PROPERTY_LABEL["animationMode"] = resource.getString("strings", "animationMode");

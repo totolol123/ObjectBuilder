@@ -330,7 +330,7 @@ THE SOFTWARE.
                                     change="{m_bindableThingType.hasLight = hasLigthCheckBox.selected;}"/>
                         <s:CheckBox id="automapCheckBox"
                                     label="@Resource(key='automap', bundle='strings')"
-                                    change="{m_bindableThingType.miniMap = automapCheckBox.selected;}"/>
+                                    change="{m_bindableThingType.minimap = automapCheckBox.selected;}"/>
                         <s:CheckBox id="hasOffsetCheckBox"
                                     label="@Resource(key='hasOffset', bundle='strings')"
                                     change="{m_bindableThingType.hasOffset = hasOffsetCheckBox.selected;}"/>
@@ -381,7 +381,7 @@ THE SOFTWARE.
                                     change="{m_bindableThingType.blockMissile = blockMissileCheckBox.selected;}"/>
                         <s:CheckBox id="blockPathfindCheckBox"
                                     label="@Resource(key='blockPathfinder', bundle='strings')"
-                                    change="{m_bindableThingType.blockPathfind = blockPathfindCheckBox.selected;}"/>
+                                    change="{m_bindableThingType.blockPathfinder = blockPathfindCheckBox.selected;}"/>
                         <s:CheckBox id="noMoveAnimationCheckBox"
                                     label="@Resource(key='noMoveAnimation', bundle='strings')"
                                     change="{m_bindableThingType.noMoveAnimation = noMoveAnimationCheckBox.selected;}"/>
@@ -393,10 +393,10 @@ THE SOFTWARE.
                                     change="{m_bindableThingType.hangable = hangableCheckBox.selected;}"/>
                         <s:CheckBox id="horizontalCheckBox"
                                     label="@Resource(key='horizontalWall', bundle='strings')"
-                                    change="{m_bindableThingType.isHorizontal = horizontalCheckBox.selected;}"/>
+                                    change="{m_bindableThingType.hookEast = horizontalCheckBox.selected;}"/>
                         <s:CheckBox id="verticalCheckBox"
                                     label="@Resource(key='verticalWall', bundle='strings')"
-                                    change="{m_bindableThingType.isVertical = verticalCheckBox.selected;}"/>
+                                    change="{m_bindableThingType.hookSouth = verticalCheckBox.selected;}"/>
                         <s:CheckBox id="rotatableCheckBox"
                                     label="@Resource(key='rotatable', bundle='strings')"
                                     change="{m_bindableThingType.rotatable = rotatableCheckBox.selected;}"/>

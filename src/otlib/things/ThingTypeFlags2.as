@@ -64,12 +64,12 @@ package otlib.things
         public static const HAS_ELEVATION:uint = 0x13;
         public static const HAS_OFFSET:uint = 0x14;
         // Flag 0x15 ????
-        public static const MINI_MAP:uint = 0x16;
+        public static const MINIMAP:uint = 0x16;
         public static const ROTATABLE:uint = 0x17;
         public static const LYING_OBJECT:uint = 0x18;
         public static const HANGABLE:uint = 0x19;
-        public static const VERTICAL:uint = 0x1A;
-        public static const HORIZONTAL:uint = 0x1B;
+        public static const HOOK_SOUTH:uint = 0x1A;
+        public static const HOOK_EAST:uint = 0x1B;
         public static const ANIMATE_ALWAYS:uint = 0x1C;
         public static const LENS_HELP:uint = 0x1D;
     }

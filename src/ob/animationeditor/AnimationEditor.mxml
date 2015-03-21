@@ -267,7 +267,7 @@ THE SOFTWARE.
                 
                 var spriteCount:uint = thing.width * thing.height * thing.frames;
                 var spriteIndices:Vector.<uint> = new Vector.<uint>(spriteCount);
-                thing.spriteIndex = spriteIndices;
+                thing.spriteIDs = spriteIndices;
                 
                 var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(spriteCount);
                 var id:uint = uint.MAX_VALUE;
