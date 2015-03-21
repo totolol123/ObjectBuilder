@@ -115,9 +115,6 @@ package otlib.things
         
         public function clone():Animator
         {
-            if (this.animationMode == AnimationMode.SYNCHRONOUS)
-                return this;
-            
             var clone:Animator = new Animator();
             clone.loopCount = loopCount;
             clone.frames = frames;
