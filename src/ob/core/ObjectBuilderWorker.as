@@ -265,17 +265,17 @@ package ob.core
         public function register():void
         {
             // Register classes.
-            registerClassAlias("ObjectBuilderSettings", ObjectBuilderSettings);
-            registerClassAlias("ClientInfo", ClientInfo);
-            registerClassAlias("ThingType", ThingType);
-            registerClassAlias("ThingData", ThingData);
-            registerClassAlias("ThingProperty", ThingProperty);
-            registerClassAlias("ThingListItem", ThingListItem);
-            registerClassAlias("SpriteData", SpriteData);
-            registerClassAlias("ByteArray", ByteArray);
-            registerClassAlias("PathHelper", PathHelper);
-            registerClassAlias("FrameDuration", FrameDuration);
             registerClassAlias("Animator", Animator);
+            registerClassAlias("ByteArray", ByteArray);
+            registerClassAlias("ClientInfo", ClientInfo);
+            registerClassAlias("FrameDuration", FrameDuration);
+            registerClassAlias("ObjectBuilderSettings", ObjectBuilderSettings);
+            registerClassAlias("PathHelper", PathHelper);
+            registerClassAlias("SpriteData", SpriteData);
+            registerClassAlias("ThingData", ThingData);
+            registerClassAlias("ThingListItem", ThingListItem);
+            registerClassAlias("ThingProperty", ThingProperty);
+            registerClassAlias("ThingType", ThingType);
             
             registerCallback(SettingsCommand, onSettings);
             
