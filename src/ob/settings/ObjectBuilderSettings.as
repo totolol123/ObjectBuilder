@@ -66,6 +66,9 @@ package ob.settings
         public var spritesListAmount:Number = 100;
         public var exportWithTransparentBackground:Boolean = false;
         public var jpegQuality:Number = 100;
+        public var extendedAlwaysSelected:Boolean;
+        public var transparencyAlwaysSelected:Boolean;
+        public var improvedAnimationsAlwaysSelected:Boolean;
         
         // import / export
         public var exportThingFormat:String;

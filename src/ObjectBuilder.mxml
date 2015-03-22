@@ -344,31 +344,25 @@ THE SOFTWARE.
             public function openProject(directory:File = null):void
             {
                 var window:OpenProjectWindow;
-                
                 if (PopUpWindowManager.currentWindow is OpenProjectWindow) {
                     window = OpenProjectWindow(PopUpWindowManager.currentWindow);
-                    window.clientDirectory = directory || _settings.getClientDirectory();
-                    window.extended = _settings.extended;
-                    window.transparency = _settings.transparency;
-                    window.improvedAnimations = _settings.improvedAnimations;
-                }
-                else 
-                {
+                    window.activate();
+                    WindowUtil.centralizeWindowOnScreen(window);
+                } else {
                     window = new OpenProjectWindow();
-                    window.clientDirectory = directory || _settings.getClientDirectory();
-                    window.extended = _settings.extended;
-                    window.transparency = _settings.transparency;
-                    window.improvedAnimations = _settings.improvedAnimations;
                     window.addEventListener(Event.CLOSE, windowCloseHandler);
                     window.open();
-                    
                     PopUpWindowManager.addWindow(window);
                 }
                 
+                window.clientDirectory = (directory || _settings.getClientDirectory());
+                window.extended = (_settings.extended || _settings.extendedAlwaysSelected);
+                window.transparency = (_settings.transparency || _settings.transparencyAlwaysSelected);
+                window.improvedAnimations = (_settings.improvedAnimations || _settings.improvedAnimationsAlwaysSelected);
+                
                 function windowCloseHandler(event:Event):void
                 {
-                    if (window.detail == DialogDetail.CONFIRM)
-                    {
+                    if (window.detail == DialogDetail.CONFIRM) {
                         _settings.datSignature = window.version.datSignature;
                         _settings.sprSignature = window.version.sprSignature;
                         _settings.datPath = window.datFile.nativePath;
@@ -379,12 +373,12 @@ THE SOFTWARE.
                         _filesName = FileUtil.getName(window.datFile);
                         
                         sendCommand(new LoadProjectCommand(window.datFile,
-                                                         window.sprFile,
-                                                         window.version.datSignature,
-                                                         window.version.sprSignature,
-                                                         window.extended,
-                                                         window.transparency,
-                                                         window.improvedAnimations));
+                                                           window.sprFile,
+                                                           window.version.datSignature,
+                                                           window.version.sprSignature,
+                                                           window.extended,
+                                                           window.transparency,
+                                                           window.improvedAnimations));
                     }
                 }
             }

@@ -80,7 +80,7 @@ package otlib.utils
         // Public
         //--------------------------------------
         
-        public function load(dat:File, spr:File, extended:Boolean):void
+        public function load(dat:File, spr:File, extended:Boolean, transparency:Boolean, improvedAnimations:Boolean):void
         {
             if (!dat)
                 throw new NullArgumentError("dat");
@@ -103,6 +103,8 @@ package otlib.utils
             m_spr = spr;
             m_clientInfo = new ClientInfo();
             m_clientInfo.extended = extended;
+            m_clientInfo.transparency = transparency;
+            m_clientInfo.improvedAnimations = improvedAnimations;
             m_total = 3;
             
             loadNext();
@@ -130,18 +132,14 @@ package otlib.utils
         
         private function loadOTFI():void
         {
-            if (m_otfi)
-            {
+            if (m_otfi) {
                 var otfi:OTFI = new OTFI();
-                if (otfi.load(m_otfi))
-                {
+                if (otfi.load(m_otfi)) {
                     m_clientInfo.extended = otfi.extended;
                     m_clientInfo.transparency = otfi.transparency;
                     m_clientInfo.improvedAnimations = otfi.improvedAnimations;
-                    //m_clientInfo.frameGroups = otfi.frameGroups;
                 }
             }
-            
             loadNext();
         }
         
@@ -174,7 +172,6 @@ package otlib.utils
             m_clientInfo.maxOutfitId = stream.readUnsignedShort();
             m_clientInfo.maxEffectId = stream.readUnsignedShort();
             m_clientInfo.maxMissileId = stream.readUnsignedShort();
-            
             loadNext();
         }
         
@@ -186,8 +183,7 @@ package otlib.utils
                 m_clientInfo.datSignature,
                 m_clientInfo.sprSignature);
             
-            if (!version)
-            {
+            if (!version) {
                 m_clientInfo.maxItemId = 0;
                 m_clientInfo.maxOutfitId = 0;
                 m_clientInfo.maxEffectId = 0;
@@ -202,12 +198,10 @@ package otlib.utils
             m_clientInfo.clientVersion = version.value;
             m_clientInfo.clientVersionStr = version.description;
             
-            if (m_clientInfo.extended || version.value >= 960)
-            {
+            if (m_clientInfo.extended || version.value >= 960) {
                 m_clientInfo.maxSpriteId = stream.readUnsignedInt();
                 m_clientInfo.extended = true;
-            }
-            else
+            } else
                 m_clientInfo.maxSpriteId = stream.readUnsignedShort();
             
             loadNext();

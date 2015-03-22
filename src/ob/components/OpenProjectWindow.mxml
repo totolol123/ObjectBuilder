@@ -111,7 +111,7 @@ THE SOFTWARE.
             public function get transparency():Boolean { return m_transparency; }
             public function set transparency(value:Boolean):void
             {
-                if (value != m_transparency) { 
+                if (value != m_transparency) {
                     m_transparency = value;
                     m_transparencyChanged = true;
                     invalidateProperties();
@@ -227,7 +227,7 @@ THE SOFTWARE.
                 var loader:ClientInfoLoader = new ClientInfoLoader();
                 loader.addEventListener(Event.COMPLETE, completeHandler);
                 loader.addEventListener(ErrorEvent.ERROR, errorHandler);
-                loader.load(dat, spr, this.extended);
+                loader.load(dat, spr, this.extended, this.transparency, this.improvedAnimations);
                 
                 function completeHandler(event:Event):void
                 {

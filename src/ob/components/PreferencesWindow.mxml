@@ -21,8 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
-          xmlns:s="library://ns.adobe.com/flex/spark" 
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
           xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:nail="library://ns.nail.com/naillib"
           width="400"
@@ -33,17 +33,8 @@ THE SOFTWARE.
           fontSize="11"
           type="utility"
           title="@Resource(key='menu.preferences', bundle='strings')"
+          preinitialize="preinitializeHandler(event)"
           creationComplete="creationCompleteHandler(event)">
-    
-    <s:layout>
-        <s:VerticalLayout gap="10"
-                          horizontalAlign="center"/>
-    </s:layout>
-    
-    <fx:Declarations>
-        <s:RadioButtonGroup id="savePropertiesRadioButtonGroup"
-                            selectedIndex="0"/>
-    </fx:Declarations>
     
     <fx:Metadata>
         [ResourceBundle("strings")]
@@ -65,29 +56,29 @@ THE SOFTWARE.
             // PROPERTIES
             //--------------------------------------------------------------------------
             
-            private var _settings:ObjectBuilderSettings;
-            private var _settingsChanged:Boolean;
-            private var _detail:uint;
-            private var _languages:ArrayCollection;
+            private var m_languages:ArrayCollection;
+            private var m_settings:ObjectBuilderSettings;
+            private var m_settingsChanged:Boolean;
+            private var m_detail:uint;
             
             //--------------------------------------
             // Getters / Setters
             //--------------------------------------
             
-            public function get settings():ObjectBuilderSettings { return _settings; }
+            public function get settings():ObjectBuilderSettings { return m_settings; }
             public function set settings(value:ObjectBuilderSettings):void
             {
                 if (!value)
                     throw new NullArgumentError("settings");
                 
-                if (_settings != value) {
-                    _settings = value;
-                    _settingsChanged = true;
+                if (m_settings != value) {
+                    m_settings = value;
+                    m_settingsChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get detail():uint { return _detail; }
+            public function get detail():uint { return m_detail; }
                 
             //--------------------------------------------------------------------------
             // METHODS
@@ -101,12 +92,9 @@ THE SOFTWARE.
             {
                 super.commitProperties();
                 
-                if (_settingsChanged)
-                {
-                    if (initialized)
-                        setSettings(_settings);
-                    
-                    _settingsChanged = false;
+                if (m_settingsChanged) {
+                    setSettings(m_settings);
+                    m_settingsChanged = false;
                 }
             }
             
@@ -117,11 +105,12 @@ THE SOFTWARE.
             private function setSettings(settings:ObjectBuilderSettings):void
             {
                 setLanguage(settings.language);
-                confirmButton.enabled = (settings != null);
+                confirmButton.enabled = true;
                 autosaveChangesCheckBox.selected = settings.autosaveThingChanges;
                 loadFilesOnStartupCheckBox.selected = settings.loadFilesOnStartup;
-                extendedCheckBox.selected = settings.extended;
-                transparencyCheckBox.selected = settings.transparency;
+                extendedCheckBox.selected = settings.extendedAlwaysSelected;
+                transparencyCheckBox.selected = settings.transparencyAlwaysSelected;
+                improvedAnimationsCheckBox.selected = settings.improvedAnimationsAlwaysSelected;
                 exportObjectPropertiesCheckBox.selected = settings.exportObjectProperties;
                 objectsAmountSlider.value = settings.objectsListAmount;
                 spritesAmountSlider.value = settings.spritesListAmount;
@@ -131,15 +120,15 @@ THE SOFTWARE.
             {
                 switch(language)
                 {
-                    case _languages.getItemAt(1).locale:
+                    case m_languages.getItemAt(1).locale:
                         languageDropDownList.selectedIndex = 1;
                         break;
                     
-                    case _languages.getItemAt(2).locale:
+                    case m_languages.getItemAt(2).locale:
                         languageDropDownList.selectedIndex = 2;
                         break;
                     
-                    case _languages.getItemAt(3).locale:
+                    case m_languages.getItemAt(3).locale:
                         languageDropDownList.selectedIndex = 3;
                         break;
                     
@@ -151,44 +140,50 @@ THE SOFTWARE.
             
             private function getLanguage():String
             {
-                return _languages.getItemAt(languageDropDownList.selectedIndex).locale;
+                return m_languages.getItemAt(languageDropDownList.selectedIndex).locale;
             }
             
             //--------------------------------------
             // Event Handlers
             //--------------------------------------
             
+            protected function preinitializeHandler(event:FlexEvent):void
+            {
+                m_languages = new ArrayCollection([{locale:"en_US", label:"English"},
+                                                   {locale:"es_ES", label:"Español"},
+                                                   {locale:"pl_PL", label:"Polski"},
+                                                   {locale:"pt_BR", label:"Português"}]);
+                m_detail = DialogDetail.CANCEL;
+            }
+            
             protected function creationCompleteHandler(event:FlexEvent):void
             {
-                _languages = new ArrayCollection([{locale:"en_US", label:"English"},
-                                                  {locale:"es_ES", label:"Español"},
-                                                  {locale:"pl_PL", label:"Polski"},
-                                                  {locale:"pt_BR", label:"Português"}]);
-                
-                languageDropDownList.dataProvider = _languages;
-                
+                languageDropDownList.dataProvider = m_languages;
                 focusManager.setFocus(cancelButton);
                 focusManager.showFocus();
-                
-                setSettings(_settings);
             }
             
             protected function confirmButtonClickHandler(event:MouseEvent):void
             {
-                _detail = DialogDetail.CONFIRM;
-                _settings.language = getLanguage();
-                _settings.autosaveThingChanges = autosaveChangesCheckBox.selected;
-                _settings.loadFilesOnStartup = loadFilesOnStartupCheckBox.selected;
-                _settings.extended = extendedCheckBox.selected;
-                _settings.transparency = transparencyCheckBox.selected;
-                _settings.exportObjectProperties = exportObjectPropertiesCheckBox.selected;
-                _settings.objectsListAmount = objectsAmountSlider.value;
-                _settings.spritesListAmount = spritesAmountSlider.value;
+                m_detail = DialogDetail.CONFIRM;
+                m_settings.language = getLanguage();
+                m_settings.autosaveThingChanges = autosaveChangesCheckBox.selected;
+                m_settings.loadFilesOnStartup = loadFilesOnStartupCheckBox.selected;
+                m_settings.extendedAlwaysSelected = extendedCheckBox.selected;
+                m_settings.transparencyAlwaysSelected = transparencyCheckBox.selected;
+                m_settings.improvedAnimationsAlwaysSelected = improvedAnimationsCheckBox.selected;
+                m_settings.exportObjectProperties = exportObjectPropertiesCheckBox.selected;
+                m_settings.objectsListAmount = objectsAmountSlider.value;
+                m_settings.spritesListAmount = spritesAmountSlider.value;
                 close();
             }
             
         ]]>
     </fx:Script>
+    
+    <s:layout>
+        <s:VerticalLayout gap="10"/>
+    </s:layout>
     
     <nail:TabNavigator width="100%"
                        height="100%"
@@ -303,6 +298,9 @@ THE SOFTWARE.
                 
                 <s:CheckBox id="transparencyCheckBox"
                             label="@Resource(key='transparencyAlwaysSelected', bundle='strings')"/>
+                
+                <s:CheckBox id="improvedAnimationsCheckBox"
+                            label="@Resource(key='improvedAnimationsAlwaysSelected', bundle='strings')"/>
             </nail:GroupBox>
         </s:NavigatorContent>
         
@@ -353,6 +351,7 @@ THE SOFTWARE.
         <s:Button id="confirmButton"
                   label="@Resource(key='confirm', bundle='strings')"
                   minWidth="70"
+                  enabled="false"
                   click="confirmButtonClickHandler(event)"/>
         
         <s:Button id="cancelButton"
