@@ -64,7 +64,7 @@ THE SOFTWARE.
             import ob.commands.sprites.GetSpriteListCommand;
             import ob.commands.sprites.RemoveSpritesCommand;
             import ob.commands.things.FindThingCommand;
-            import ob.commands.things.GetThingCommand;
+            import ob.commands.things.GetThingDataCommand;
             import ob.commands.things.RemoveThingCommand;
             import ob.core.IObjectBuilder;
             
@@ -180,7 +180,7 @@ THE SOFTWARE.
             {
                 var listItem:ThingListItem = thingsList.selectedItem as ThingListItem;
                 if (listItem && listItem.thing)
-                    m_application.sendCommand(new GetThingCommand(listItem.thing.id,
+                    m_application.sendCommand(new GetThingDataCommand(listItem.thing.id,
                                                                   listItem.thing.category));
             }
             

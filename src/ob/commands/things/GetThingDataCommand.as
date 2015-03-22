@@ -24,13 +24,13 @@ package ob.commands.things
 {
     import nail.commands.Command;
     
-    public class GetThingCommand extends Command
+    public class GetThingDataCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function GetThingCommand(id:uint, category:String)
+        public function GetThingDataCommand(id:uint, category:String)
         {
             super(id, category);
         }

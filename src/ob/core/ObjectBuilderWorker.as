@@ -77,7 +77,7 @@ package ob.core
     import ob.commands.things.DuplicateThingCommand;
     import ob.commands.things.ExportThingCommand;
     import ob.commands.things.FindThingCommand;
-    import ob.commands.things.GetThingCommand;
+    import ob.commands.things.GetThingDataCommand;
     import ob.commands.things.GetThingListCommand;
     import ob.commands.things.ImportThingsCommand;
     import ob.commands.things.ImportThingsFromFilesCommand;
@@ -298,7 +298,7 @@ package ob.core
             registerCallback(ReplaceThingsFromFilesCommand, onReplaceThingsFromFiles);
             registerCallback(DuplicateThingCommand, onDuplicateThing);
             registerCallback(RemoveThingCommand, onRemoveThings);
-            registerCallback(GetThingCommand, onGetThing);
+            registerCallback(GetThingDataCommand, onGetThing);
             registerCallback(GetThingListCommand, onGetThingList);
             registerCallback(FindThingCommand, onFindThing);
             

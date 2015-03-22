@@ -110,7 +110,7 @@ THE SOFTWARE.
             import ob.commands.sprites.SetSpriteListCommand;
             import ob.commands.things.DuplicateThingCommand;
             import ob.commands.things.ExportThingCommand;
-            import ob.commands.things.GetThingCommand;
+            import ob.commands.things.GetThingDataCommand;
             import ob.commands.things.GetThingListCommand;
             import ob.commands.things.ImportThingsFromFilesCommand;
             import ob.commands.things.NewThingCommand;
@@ -1379,7 +1379,7 @@ THE SOFTWARE.
                     thingStepper.maximum = getMaxThingId();
                     thingStepper.value = thingStepper.minimum;
                     objectListGroupBox.label = resourceManager.getString("strings", category+"s");
-                    sendCommand(new GetThingCommand(thingStepper.minimum, category));
+                    sendCommand(new GetThingDataCommand(thingStepper.minimum, category));
                     sendCommand(new GetThingListCommand(thingStepper.minimum, category));
                 }
             }
@@ -1538,7 +1538,7 @@ THE SOFTWARE.
             {
                 if (this.clientLoaded) {
                     if (thingList.selectedId != 0)
-                        sendCommand(new GetThingCommand(thingList.selectedId, this.currentCategory));
+                        sendCommand(new GetThingDataCommand(thingList.selectedId, this.currentCategory));
                     
                     editThingButton.enabled = !thingList.multipleSelected;
                 }
@@ -1604,7 +1604,7 @@ THE SOFTWARE.
             protected function thingStepperChangeHandler(event:Event):void
             {
                 if (this.clientLoaded && this.thingData)
-                    sendCommand(new GetThingCommand(thingStepper.value, this.currentCategory));
+                    sendCommand(new GetThingDataCommand(thingStepper.value, this.currentCategory));
             }
             
             protected function replaceThingHandler(event:Event):void
