@@ -40,11 +40,13 @@ package otlib.utils
         //--------------------------------------------------------------------------
         
         public static const OTBM:String = "otbm";
-        public static const OTB:String = "otb";
-        public static const OBD:String = "obd";
-        public static const DAT:String = "dat";
-        public static const SPR:String = "spr";
-        public static const XML:String = "xml";
-        public static const LUA:String = "lua";
+        public static const OTB:String  = "otb";
+        public static const OBD:String  = "obd";
+        public static const OBI:String  = "obi";
+        public static const OTFI:String = "otfi";
+        public static const DAT:String  = "dat";
+        public static const SPR:String  = "spr";
+        public static const XML:String  = "xml";
+        public static const LUA:String  = "lua";
     }
 }

@@ -76,7 +76,7 @@ package otlib.utils
             if (!file)
                 throw new NullArgumentError("file");
             
-            if (!file.exists || file.extension != "otfi") return false;
+            if (!file.exists || file.extension != OTFormat.OTFI) return false;
             
             var doc:OTMLDocument = new OTMLDocument();
             if (!doc.load(file) || doc.length == 0 || !doc.hasChild("DatSpr")) return false;

@@ -465,7 +465,7 @@ package ob.core
             
             // Save .otfi file
             var dir:File = FileUtil.getDirectory(dat);
-            var otfiFile:File = dir.resolvePath(FileUtil.getName(dat) + ".otfi");
+            var otfiFile:File = dir.resolvePath(FileUtil.getName(dat) + "." + OTFormat.OTFI);
             var otfi:OTFI = new OTFI(extended, transparency, improvedAnimations);
             otfi.save(otfiFile);
             
@@ -691,7 +691,7 @@ package ob.core
                         node.addChild(spriteSheetNode);
                         var doc:OTMLDocument = OTMLDocument.create();
                         doc.addChild(node);
-                        helper.addFile(doc.toOTMLString(), name, "obi", file);
+                        helper.addFile(doc.toOTMLString(), name, OTFormat.OBI, file);
                     }
                 } else if (format == OTFormat.OBD) {
                     bytes = encoder.encode(thingData);

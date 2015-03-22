@@ -95,7 +95,7 @@ package otlib.utils
                 dispatchEvent(createErrorEvent(Resources.getString("sprFileNotFound")));
             
             // Seachs for otfi file
-            var result:Vector.<File> = FileUtil.findExtension(dat, "otfi");
+            var result:Vector.<File> = FileUtil.findExtension(dat, OTFormat.OTFI);
             if (result.length != 0)
                 m_otfi = result[0];
             
