@@ -102,7 +102,6 @@ THE SOFTWARE.
             import ob.commands.UnloadProjectCommand;
             import ob.commands.sprites.ExportSpritesCommand;
             import ob.commands.sprites.GetSpriteListCommand;
-            import ob.commands.sprites.ImportSpritesCommand;
             import ob.commands.sprites.ImportSpritesFromFileCommand;
             import ob.commands.sprites.NewSpriteCommand;
             import ob.commands.sprites.RemoveSpritesCommand;
@@ -116,7 +115,6 @@ THE SOFTWARE.
             import ob.commands.things.ImportThingsFromFilesCommand;
             import ob.commands.things.NewThingCommand;
             import ob.commands.things.RemoveThingCommand;
-            import ob.commands.things.ReplaceThingsCommand;
             import ob.commands.things.ReplaceThingsFromFilesCommand;
             import ob.commands.things.SetThingDataCommand;
             import ob.commands.things.SetThingListCommand;
@@ -177,112 +175,112 @@ THE SOFTWARE.
             [Embed(source="../workerswfs/ob/core/ObjectBuilderWorker.swf", mimeType="application/octet-stream")]
             public const ObjectBuilderWorker:Class;
             
-            private var _creationComplete:Boolean;
-            private var _invokeArgs:Array;
-            private var _communicator:ICommunicator;
-            private var _logger:ILogger;
-            private var _logTarget:LogFileTarget;
-            private var _splashScreen:SplashScreen;
-            private var _settingsManager:ISettingsManager;
-            private var _settings:ObjectBuilderSettings;
-            private var _updater:ApplicationUpdaterUI = new ApplicationUpdaterUI();
-            private var _versionStorage:IVersionStorage;
-            private var _thingData:ThingData;
-            private var _nextThingData:ThingData;
-            private var _thingDataChanged:Boolean;
-            private var _filesName:String;
-            private var _selectThingIndex:int;
-            private var _logText:String = "";
-            private var _logWindow:LogWindow;
-            private var _findThingWindow:FindWindow;
-            private var _lookGenerator:LookGenerator;
-            private var _animationWindow:AnimationEditor;
-            private var _autosave:Boolean;
-            private var _autosaveChanged:Boolean;
-            private var _showPreviewPanel:Boolean = true;
-            private var _showThingsPanel:Boolean = true;
-            private var _showSpritesPanel:Boolean = true;
-            private var _showPanelChanged:Boolean;
-            private var _datSprProgressBar:DatSprProgressBar;
-            private var _defaultProgressBar:DefaultProgressBar;
-            private var _category:String;
-            private var _categoryChanged:Boolean;
-            private var _objectViewer:ObjectViewer;
-            private var _slicer:Slicer;
-            private var _clientInfo:ClientInfo;
-            private var _version:Version;
-            private var _extendedEnabled:Boolean;
-            private var _transparencyEnabled:Boolean;
-            private var _clientChanged:Boolean;
-            private var _clientIsTemporary:Boolean;
-            private var _clientLoaded:Boolean;
+            private var m_creationComplete:Boolean;
+            private var m_invokeArgs:Array;
+            private var m_communicator:ICommunicator;
+            private var m_logger:ILogger;
+            private var m_logTarget:LogFileTarget;
+            private var m_splashScreen:SplashScreen;
+            private var m_settingsManager:ISettingsManager;
+            private var m_settings:ObjectBuilderSettings;
+            private var m_updater:ApplicationUpdaterUI = new ApplicationUpdaterUI();
+            private var m_versionStorage:IVersionStorage;
+            private var m_thingData:ThingData;
+            private var m_nextThingData:ThingData;
+            private var m_thingDataChanged:Boolean;
+            private var m_filesName:String;
+            private var m_selectThingIndex:int;
+            private var m_logText:String = "";
+            private var m_logWindow:LogWindow;
+            private var m_findThingWindow:FindWindow;
+            private var m_lookGenerator:LookGenerator;
+            private var m_animationWindow:AnimationEditor;
+            private var m_autosave:Boolean;
+            private var m_autosaveChanged:Boolean;
+            private var m_showPreviewPanel:Boolean = true;
+            private var m_showThingsPanel:Boolean = true;
+            private var m_showSpritesPanel:Boolean = true;
+            private var m_showPanelChanged:Boolean;
+            private var m_datSprProgressBar:DatSprProgressBar;
+            private var m_defaultProgressBar:DefaultProgressBar;
+            private var m_category:String;
+            private var m_categoryChanged:Boolean;
+            private var m_objectViewer:ObjectViewer;
+            private var m_slicer:Slicer;
+            private var m_clientInfo:ClientInfo;
+            private var m_version:Version;
+            private var m_extendedEnabled:Boolean;
+            private var m_transparencyEnabled:Boolean;
+            private var m_clientChanged:Boolean;
+            private var m_clientIsTemporary:Boolean;
+            private var m_clientLoaded:Boolean;
             
             //--------------------------------------
             // Getters / Setters 
             //--------------------------------------
             
-            public function get worker():Worker { return _communicator.worker; }
-            public function get running():Boolean { return _communicator.running; }
-            public function get background():Boolean { return _communicator.background; }
-            public function get applicationDescriptor():XML { return _communicator.applicationDescriptor; }
-            public function get settingsManager():ISettingsManager { return _settingsManager; }
-            public function get settings():ObjectBuilderSettings { return _settings; }
-            public function get versionStorage():IVersionStorage { return _versionStorage; }
+            public function get worker():Worker { return m_communicator.worker; }
+            public function get running():Boolean { return m_communicator.running; }
+            public function get background():Boolean { return m_communicator.background; }
+            public function get applicationDescriptor():XML { return m_communicator.applicationDescriptor; }
+            public function get settingsManager():ISettingsManager { return m_settingsManager; }
+            public function get settings():ObjectBuilderSettings { return m_settings; }
+            public function get versionStorage():IVersionStorage { return m_versionStorage; }
             
-            public function get version():Version { return _version; }
-            public function get clientInfo():ClientInfo { return _clientInfo; }
-            public function get clientExtendedEnabled():Boolean { return _extendedEnabled; }
-            public function get clientTransparencyEnabled():Boolean { return _transparencyEnabled; }
-            public function get clientChanged():Boolean { return _clientChanged; }
-            public function get clientIsTemporary():Boolean { return _clientIsTemporary; }
-            public function get clientLoaded():Boolean { return _clientLoaded; }
+            public function get version():Version { return m_version; }
+            public function get clientInfo():ClientInfo { return m_clientInfo; }
+            public function get clientExtendedEnabled():Boolean { return m_extendedEnabled; }
+            public function get clientTransparencyEnabled():Boolean { return m_transparencyEnabled; }
+            public function get clientChanged():Boolean { return m_clientChanged; }
+            public function get clientIsTemporary():Boolean { return m_clientIsTemporary; }
+            public function get clientLoaded():Boolean { return m_clientLoaded; }
             
-            public function get thingData():ThingData { return _thingData; }
+            public function get thingData():ThingData { return m_thingData; }
             public function set thingData(value:ThingData):void
             {
-                if (_thingData != value) {
-                    _nextThingData = value;
-                    _thingDataChanged = true;
+                if (m_thingData != value) {
+                    m_nextThingData = value;
+                    m_thingDataChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get showPreviewPanel():Boolean { return _showPreviewPanel; }
+            public function get showPreviewPanel():Boolean { return m_showPreviewPanel; }
             public function set showPreviewPanel(value:Boolean):void
             {
-                if (_showPreviewPanel != value) {
-                    _showPreviewPanel = value;
-                    _showPanelChanged = true;
+                if (m_showPreviewPanel != value) {
+                    m_showPreviewPanel = value;
+                    m_showPanelChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get showThingsPanel():Boolean { return _showThingsPanel; }
+            public function get showThingsPanel():Boolean { return m_showThingsPanel; }
             public function set showThingsPanel(value:Boolean):void
             {
-                if (_showThingsPanel != value) {
-                    _showThingsPanel = value;
-                    _showPanelChanged = true;
+                if (m_showThingsPanel != value) {
+                    m_showThingsPanel = value;
+                    m_showPanelChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get showSpritesPanel():Boolean { return _showSpritesPanel; }
+            public function get showSpritesPanel():Boolean { return m_showSpritesPanel; }
             public function set showSpritesPanel(value:Boolean):void
             {
-                if (_showSpritesPanel != value) {
-                    _showSpritesPanel = value;
-                    _showPanelChanged = true;
+                if (m_showSpritesPanel != value) {
+                    m_showSpritesPanel = value;
+                    m_showPanelChanged = true;
                     invalidateProperties();
                 }
             }
             
-            public function get currentCategory():String { return _category; }
+            public function get currentCategory():String { return m_category; }
             public function set currentCategory(value:String):void
             {
-                if (_category != value) {
-                    _category = value;
-                    _categoryChanged = true;
+                if (m_category != value) {
+                    m_category = value;
+                    m_categoryChanged = true;
                     invalidateProperties();
                 }
             }
@@ -297,17 +295,17 @@ THE SOFTWARE.
             
             public function registerCallback(commandClass:Class, callback:Function):void
             {
-                _communicator.registerCallback(commandClass, callback);
+                m_communicator.registerCallback(commandClass, callback);
             }
             
             public function unregisterCallback(commandClass:Class, callback:Function):void
             {
-                _communicator.unregisterCallback(commandClass, callback);
+                m_communicator.unregisterCallback(commandClass, callback);
             }
             
             public function sendCommand(command:Command):void
             {
-                _communicator.sendCommand(command);
+                m_communicator.sendCommand(command);
             }
             
             public function start():void
@@ -318,9 +316,9 @@ THE SOFTWARE.
             public function createNewProject():void
             {
                 var window:NewProjectWindow = new NewProjectWindow();
-                window.extended = _settings.extended;
-                window.transparency = _settings.transparency;
-                window.improvedAnimations = _settings.improvedAnimations;
+                window.extended = m_settings.extended;
+                window.transparency = m_settings.transparency;
+                window.improvedAnimations = m_settings.improvedAnimations;
                 window.addEventListener(Event.CLOSE, windowCloseHandler);
                 window.open();
                 
@@ -328,15 +326,14 @@ THE SOFTWARE.
                 
                 function windowCloseHandler(event:Event):void
                 {
-                    if (window.detail == DialogDetail.CONFIRM)
-                    {
+                    if (window.detail == DialogDetail.CONFIRM) {
                         // TODO: check if it's changed/compiled
                         
                         sendCommand(new CreateNewProjectCommand(window.version.datSignature,
-                                                              window.version.sprSignature,
-                                                              window.extended,
-                                                              window.transparency,
-                                                              window.improvedAnimations));
+                                                               window.version.sprSignature,
+                                                               window.extended,
+                                                               window.transparency,
+                                                               window.improvedAnimations));
                     }
                 }
             }
@@ -355,22 +352,22 @@ THE SOFTWARE.
                     PopUpWindowManager.addWindow(window);
                 }
                 
-                window.clientDirectory = (directory || _settings.getClientDirectory());
-                window.extended = (_settings.extended || _settings.extendedAlwaysSelected);
-                window.transparency = (_settings.transparency || _settings.transparencyAlwaysSelected);
-                window.improvedAnimations = (_settings.improvedAnimations || _settings.improvedAnimationsAlwaysSelected);
+                window.clientDirectory = (directory || m_settings.getClientDirectory());
+                window.extended = (m_settings.extended || m_settings.extendedAlwaysSelected);
+                window.transparency = (m_settings.transparency || m_settings.transparencyAlwaysSelected);
+                window.improvedAnimations = (m_settings.improvedAnimations || m_settings.improvedAnimationsAlwaysSelected);
                 
                 function windowCloseHandler(event:Event):void
                 {
                     if (window.detail == DialogDetail.CONFIRM) {
-                        _settings.datSignature = window.version.datSignature;
-                        _settings.sprSignature = window.version.sprSignature;
-                        _settings.datPath = window.datFile.nativePath;
-                        _settings.sprPath = window.sprFile.nativePath;
-                        _settings.extended = window.extended;
-                        _settings.transparency = window.transparency;
-                        _settings.improvedAnimations = window.improvedAnimations;
-                        _filesName = FileUtil.getName(window.datFile);
+                        m_settings.datSignature = window.version.datSignature;
+                        m_settings.sprSignature = window.version.sprSignature;
+                        m_settings.datPath = window.datFile.nativePath;
+                        m_settings.sprPath = window.sprFile.nativePath;
+                        m_settings.extended = window.extended;
+                        m_settings.transparency = window.transparency;
+                        m_settings.improvedAnimations = window.improvedAnimations;
+                        m_filesName = FileUtil.getName(window.datFile);
                         
                         sendCommand(new LoadProjectCommand(window.datFile,
                                                            window.sprFile,
@@ -392,7 +389,7 @@ THE SOFTWARE.
                     return;
                 }
                 
-                if (_settings.autosaveThingChanges)
+                if (m_settings.autosaveThingChanges)
                     saveThingChanges();
                 
                 sendCommand(new CompileProjectCommand());
@@ -403,12 +400,12 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var window:CompileProjectWindow = new CompileProjectWindow();
-                window.directory = _settings.getClientDirectory();
-                window.version = _versionStorage.getBySignatures(_clientInfo.datSignature, _clientInfo.sprSignature);
-                window.extended = _clientInfo.extended;
-                window.transparency = _clientInfo.transparency;
-                window.improvedAnimations = _clientInfo.improvedAnimations;
-                window.filesName = isNullOrEmpty(_filesName) ? "Tibia" : _filesName;
+                window.directory = m_settings.getClientDirectory();
+                window.version = m_versionStorage.getBySignatures(m_clientInfo.datSignature, m_clientInfo.sprSignature);
+                window.extended = m_clientInfo.extended;
+                window.transparency = m_clientInfo.transparency;
+                window.improvedAnimations = m_clientInfo.improvedAnimations;
+                window.filesName = isNullOrEmpty(m_filesName) ? "Tibia" : m_filesName;
                 window.addEventListener(Event.CLOSE, windowCloseHandler);
                 window.open();
                 
@@ -417,15 +414,15 @@ THE SOFTWARE.
                 function windowCloseHandler(event:Event):void
                 {
                     if (window.detail == DialogDetail.CONFIRM) {
-                        _settings.datSignature = window.version.datSignature;
-                        _settings.sprSignature = window.version.sprSignature;
-                        _settings.datPath = window.datFile.nativePath;
-                        _settings.sprPath = window.sprFile.nativePath;
-                        _settings.extended = window.extended;
-                        _settings.transparency = window.transparency;
-                        _settings.improvedAnimations = window.improvedAnimations;
+                        m_settings.datSignature = window.version.datSignature;
+                        m_settings.sprSignature = window.version.sprSignature;
+                        m_settings.datPath = window.datFile.nativePath;
+                        m_settings.sprPath = window.sprFile.nativePath;
+                        m_settings.extended = window.extended;
+                        m_settings.transparency = window.transparency;
+                        m_settings.improvedAnimations = window.improvedAnimations;
                         
-                        if (_settings.autosaveThingChanges)
+                        if (m_settings.autosaveThingChanges)
                             saveThingChanges();
                         
                         sendCommand(new CompileProjectAsCommand(window.datFile,
@@ -441,15 +438,16 @@ THE SOFTWARE.
             
             public function unloadProject():void
             {
-                if (!this.clientLoaded) return;
-                this.clear();
-                sendCommand(new UnloadProjectCommand());
+                if (clientLoaded) {
+                    clear();
+                    sendCommand(new UnloadProjectCommand());
+                }
             }
             
             public function openPreferencesWindow():void
             {
                 var window:PreferencesWindow = new PreferencesWindow();
-                window.settings = _settings;
+                window.settings = m_settings;
                 window.addEventListener(Event.CLOSE, closeHandler);
                 window.open();
                 
@@ -457,123 +455,111 @@ THE SOFTWARE.
                 
                 function closeHandler(event:Event):void
                 {
-                    if (window.detail == DialogDetail.CONFIRM)
-                    {
-                        thingStepper.amount = _settings.objectsListAmount;
-                        spriteStepper.amount = _settings.spritesListAmount;
-                        
-                        sendCommand(new SettingsCommand(_settings));
+                    if (window.detail == DialogDetail.CONFIRM) {
+                        thingStepper.amount = m_settings.objectsListAmount;
+                        spriteStepper.amount = m_settings.spritesListAmount;
+                        sendCommand(new SettingsCommand(m_settings));
                     }
                 }
             }
             
             public function openFinder():void
             {
-                if (_findThingWindow)
+                if (!m_findThingWindow) {
+                    m_findThingWindow = new FindWindow();
+                    m_findThingWindow.width = m_settings.findWindowWidth;
+                    m_findThingWindow.height = m_settings.findWindowHeight;
+                    m_findThingWindow.addEventListener(Event.CLOSE, closeHandler);
+                    m_findThingWindow.open();
+                    WindowUtil.centralizeWindowOnScreen(m_findThingWindow);
+                } else
+                    m_findThingWindow.activate();
+                
+                function closeHandler(event:Event):void
                 {
-                    _findThingWindow.activate();
-                }
-                else
-                {
-                    _findThingWindow = new FindWindow();
-                    _findThingWindow.width = _settings.findWindowWidth;
-                    _findThingWindow.height = _settings.findWindowHeight;
-                    _findThingWindow.addEventListener(Event.CLOSE,
-                        function(event:Event):void
-                        {
-                            _settings.findWindowWidth = _findThingWindow.width;
-                            _settings.findWindowHeight = _findThingWindow.height;
-                            _findThingWindow = null;
-                        });
-                    _findThingWindow.open();
-                    
-                    WindowUtil.centralizeWindowOnScreen(_findThingWindow);
+                    m_settings.findWindowWidth = m_findThingWindow.width;
+                    m_settings.findWindowHeight = m_findThingWindow.height;
+                    m_findThingWindow.removeEventListener(Event.CLOSE, closeHandler);
+                    m_findThingWindow = null;
                 }
             }
             
             public function closeFinder():void
             {
-                if (_findThingWindow && !_findThingWindow.closed)
-                    _findThingWindow.close();
+                if (m_findThingWindow && !m_findThingWindow.closed)
+                    m_findThingWindow.close();
             }
             
             public function openObjectViewer(file:File = null):void
             {
-                if (_objectViewer)
-                {
-                    _objectViewer.activate();
-                }
-                else
-                {
-                    _objectViewer = new ObjectViewer();
-                    _objectViewer.addEventListener(Event.CLOSE,
-                        function(event:Event):void
-                        {
-                            _objectViewer = null;
-                        });
-                    _objectViewer.open();
-                }
+                if (!m_objectViewer) {
+                    m_objectViewer = new ObjectViewer();
+                    m_objectViewer.addEventListener(Event.CLOSE, closeHandler);
+                    m_objectViewer.open();
+                } else
+                    m_objectViewer.activate();
                 
-                _objectViewer.file = file;
+                m_objectViewer.file = file;
+                
+                function closeHandler(event:Event):void
+                {
+                    m_objectViewer.removeEventListener(Event.CLOSE, closeHandler);
+                    m_objectViewer = null;
+                }
             }
             
             public function closeObjectViewer():void
             {
-                if (_objectViewer && !_objectViewer.closed)
-                    _objectViewer.close();
+                if (m_objectViewer && !m_objectViewer.closed)
+                    m_objectViewer.close();
             }
             
             public function openSlicer(file:File = null):void
             {
                 if (file && !FileUtil.hasBitmapFormat(file)) return;
                 
-                if (_slicer)
-                {
-                    _slicer.activate();
-                }
-                else
-                {
-                    _slicer = new Slicer();
-                    _slicer.addEventListener(Event.CLOSE,
-                        function(event:Event):void
-                        {
-                            _slicer = null;
-                        });
-                    
-                    _slicer.open();
-                }
+                if (!m_slicer) {
+                    m_slicer = new Slicer();
+                    m_slicer.addEventListener(Event.CLOSE, closeHandler);
+                    m_slicer.open();
+                } else
+                    m_slicer.activate();
                 
-                _slicer.file = file;
+                m_slicer.file = file;
+                
+                function closeHandler(event:Event):void
+                {
+                    m_slicer.removeEventListener(Event.CLOSE, closeHandler);
+                    m_slicer = null;
+                }
             }
             
             public function closeSlicer():void
             {
-                if (_slicer && !_slicer.closed)
-                    _slicer.close();
+                if (m_slicer && !m_slicer.closed)
+                    m_slicer.close();
             }
             
             public function openAnimationEditor():void
             {
-                if (_animationWindow)
+                if (!m_animationWindow) {
+                    m_animationWindow = new AnimationEditor();
+                    m_animationWindow.addEventListener(Event.CLOSE, closeHandler);
+                    m_animationWindow.open();
+                } else
+                    m_animationWindow.activate();
+                
+                function closeHandler(event:Event):void
                 {
-                    _animationWindow.activate();
-                }
-                else
-                {
-                    _animationWindow = new AnimationEditor();
-                    _animationWindow.addEventListener(Event.CLOSE,
-                        function(event:Event):void
-                        {
-                            _animationWindow = null;
-                        });
-                    _animationWindow.open();
+                    m_animationWindow.removeEventListener(Event.CLOSE, closeHandler);
+                    m_animationWindow = null;
                 }
             }
             
             public function closeAnimationEditor():void
             {
-                if (_animationWindow && !_animationWindow.closed)
-                    _animationWindow.close();
+                if (m_animationWindow && !m_animationWindow.closed)
+                    m_animationWindow.close();
             }
             
             public function openSpritesOptimizer():void
@@ -582,7 +568,6 @@ THE SOFTWARE.
                 
                 var window:SpritesOptimizerWindow = new SpritesOptimizerWindow();
                 window.open();
-                
                 PopUpWindowManager.addWindow(window);
             }
             
@@ -594,61 +579,50 @@ THE SOFTWARE.
                 window.addEventListener(Event.CLOSING, windowClosingHandler);
                 window.open();
                 
-                if (_settings.versionsWindowMaximized)
+                if (m_settings.versionsWindowMaximized)
                     window.maximize();
                 else {
-                    window.width = _settings.versionsWindowWidth;
-                    window.height = _settings.versionsWindowHeight;
+                    window.width = m_settings.versionsWindowWidth;
+                    window.height = m_settings.versionsWindowHeight;
                     WindowUtil.centralizeWindowOnScreen(window);
                 }
                 
                 function windowClosingHandler(event:Event):void
                 {
                     window.removeEventListener(Event.CLOSING, windowClosingHandler);
-                    _settings.versionsWindowMaximized = (window.nativeWindow.displayState == NativeWindowDisplayState.MAXIMIZED);
+                    m_settings.versionsWindowMaximized = (window.nativeWindow.displayState == NativeWindowDisplayState.MAXIMIZED);
                 }
             }
             
             public function openLogWindow():void
             {
-                if (_logWindow)
-                {
-                    _logWindow.activate();
-                }
-                else
-                {
-                    _logWindow = new LogWindow();
-                    _logWindow.text = _logText;
-                    _logWindow.addEventListener(Event.CLEAR, clearHandler);
-                    _logWindow.addEventListener(Event.CLOSE, closeHandler);
-                    _logWindow.open();
-                    
-                    WindowUtil.centralizeWindowOnScreen(_logWindow);
-                }
+                if (!m_logWindow) {
+                    m_logWindow = new LogWindow();
+                    m_logWindow.text = m_logText;
+                    m_logWindow.addEventListener(Event.CLEAR, clearHandler);
+                    m_logWindow.addEventListener(Event.CLOSE, closeHandler);
+                    m_logWindow.open();
+                    WindowUtil.centralizeWindowOnScreen(m_logWindow);
+                } else
+                    m_logWindow.activate();
                 
                 function clearHandler(event:Event):void
                 {
-                    _logWindow.text = _logText = "";
+                    m_logWindow.text = m_logText = "";
                 }
                 
                 function closeHandler(event:Event):void
                 {
-                    _logWindow.removeEventListener(Event.CLEAR, clearHandler);
-                    _logWindow.removeEventListener(Event.CLOSE, closeHandler);
-                    _logWindow = null;
+                    m_logWindow.removeEventListener(Event.CLEAR, clearHandler);
+                    m_logWindow.removeEventListener(Event.CLOSE, closeHandler);
+                    m_logWindow = null;
                 }
             }
             
             public function closeLogWindow():void
             {
-                if (_logWindow && !_logWindow.closed)
-                    _logWindow.close();
-            }
-            
-            public function importThingsFromFiles(list:Vector.<PathHelper>):void
-            {
-                if (!this.clientLoaded || !list || list.length == 0) return;
-                sendCommand(new ImportThingsFromFilesCommand(list));
+                if (m_logWindow && !m_logWindow.closed)
+                    m_logWindow.close();
             }
             
             public function exportThings(fileDataList:Vector.<FileData>,
@@ -666,50 +640,6 @@ THE SOFTWARE.
                     list[i] = new PathHelper(fileDataList[i].nativePath, fileDataList[i].data as uint);
                 }
                 sendCommand(new ExportThingCommand(list, category, obdVersion, clientVersion.datSignature, clientVersion.sprSignature, exportObjectProperties, transparentBackground, jpegQuality));
-            }
-            
-            public function replaceThings(list:Vector.<ThingData>):void
-            {
-                if (!this.clientLoaded || !list || list.length == 0) return;
-                sendCommand(new ReplaceThingsCommand(list));
-            }
-            
-            public function duplicateThings(ids:Vector.<uint>, category:String):void
-            {
-                if (!this.clientLoaded || !ids || ids.length == 0 || isNullOrEmpty(category)) return;
-                sendCommand(new DuplicateThingCommand(ids, category));
-            }
-            
-            public function replaceThingsFromFiles(list:Vector.<PathHelper>):void
-            {
-                if (!this.clientLoaded || !list || list.length == 0) return;
-                sendCommand(new ReplaceThingsFromFilesCommand(list));
-            }
-            
-            public function removeThing(thing:ThingType, removeSprites:Boolean = false):void
-            {
-                if (this.clientLoaded && thing) {
-                    sendCommand(new RemoveThingCommand(Vector.<uint>([thing.id]), thing.category, removeSprites));
-                }
-            }
-            
-            public function removeThings(list:Vector.<uint>, category:String, removeSprites:Boolean = false):void
-            {
-                if (this.clientLoaded && list && !isNullOrEmpty(category)) {
-                    sendCommand(new RemoveThingCommand(list, category, removeSprites));
-                }
-            }
-            
-            public function importSprites(list:Vector.<ByteArray>):void
-            {
-                if (!this.clientLoaded || !list || list.length == 0) return;
-                sendCommand(new ImportSpritesCommand(list));
-            }
-            
-            public function importSpritesFromFiles(list:Vector.<PathHelper>):void
-            {
-                if (!this.clientLoaded || !list || list.length == 0) return;
-                sendCommand(new ImportSpritesFromFileCommand(list));
             }
             
             public function exportSprites(fileDataList:Vector.<FileData>,
@@ -730,18 +660,6 @@ THE SOFTWARE.
                 if (!this.clientLoaded || id == 0 || !bitmap) return;
                 var spriteData:SpriteData = SpriteData.createSpriteData(id, bitmap.getPixels(bitmap.rect));
                 sendCommand(new ReplaceSpritesCommand(Vector.<SpriteData>([spriteData])));
-            }
-            
-            public function replaceSprites(sprites:Vector.<SpriteData>):void
-            {
-                if (!this.clientLoaded || !sprites || sprites.length == 0) return;
-                sendCommand(new ReplaceSpritesCommand(sprites));
-            }
-            
-            public function replaceSpritesFromFiles(list:Vector.<PathHelper>):void
-            {
-                if (!this.clientLoaded || !list || list.length == 0) return;
-                sendCommand(new ReplaceSpritesFromFilesCommand(list));
             }
             
             public function removeSpritesIds(sprites:Vector.<uint>):void
@@ -766,9 +684,9 @@ THE SOFTWARE.
             public function appendLog(text:String):void
             {
                 if (text) {
-                    _logText += "→ " + text + "<br/>"; 
-                    if (_logWindow) {
-                        _logWindow.text = _logText;
+                    m_logText += "→ " + text + "<br/>"; 
+                    if (m_logWindow) {
+                        m_logWindow.text = m_logText;
                     }
                 }
             }
@@ -776,30 +694,29 @@ THE SOFTWARE.
             public function saveThingChanges():void
             {
                 if (this.clientLoaded && this.thingData && this.thingTypeEditor.changed) {
-                    if (this.thingTypeEditor.saveChanges()) {
+                    if (this.thingTypeEditor.saveChanges())
                         sendCommand(new UpdateThingCommand(thingTypeEditor.thingData, true));
-                    }
                 }
             }
             
             public function checkForUpdates():void
             {
-                _updater.updateURL = "https://dl.dropboxusercontent.com/s/ersqqbih5xyqy7e/update.xml";
-                _updater.addEventListener(UpdateEvent.INITIALIZED, updateInitializedHandler);
-                _updater.addEventListener(ErrorEvent.ERROR, updateErrorHandler);
-                _updater.isCheckForUpdateVisible = true;
-                _updater.isFileUpdateVisible = true;
-                _updater.isInstallUpdateVisible = true;
-                _updater.initialize();
+                m_updater.updateURL = "https://dl.dropboxusercontent.com/s/ersqqbih5xyqy7e/update.xml";
+                m_updater.addEventListener(UpdateEvent.INITIALIZED, updateInitializedHandler);
+                m_updater.addEventListener(ErrorEvent.ERROR, updateErrorHandler);
+                m_updater.isCheckForUpdateVisible = true;
+                m_updater.isFileUpdateVisible = true;
+                m_updater.isInstallUpdateVisible = true;
+                m_updater.initialize();
             }
             
             public function clear():void
             {
-                _thingData = null;
-                _thingDataChanged = false;
-                _clientInfo = null;
-                _nextThingData = null;
-                _selectThingIndex = -1;
+                m_thingData = null;
+                m_thingDataChanged = false;
+                m_clientInfo = null;
+                m_nextThingData = null;
+                m_selectThingIndex = -1;
                 
                 thingList.removeAll();
                 spritesList.removeAll();
@@ -809,7 +726,7 @@ THE SOFTWARE.
                 infoPanel.clear();
                 categoryDropDownList.selectedIndex = 0;
                 thingStepper.value = 0;
-                _logText = "";
+                m_logText = "";
             }
             
             //--------------------------------------
@@ -850,32 +767,31 @@ THE SOFTWARE.
             {
                 super.commitProperties();
                 
-                if (_thingDataChanged) {
-                    setThingData(_nextThingData);
-                    _nextThingData = null;
-                    _thingDataChanged = false;
+                if (m_thingDataChanged) {
+                    setThingData(m_nextThingData);
+                    m_nextThingData = null;
+                    m_thingDataChanged = false;
                 }
                 
-                if (_autosaveChanged) {
-                    _settings.autosaveThingChanges = _autosave;
-                    _autosaveChanged = false;
+                if (m_autosaveChanged) {
+                    m_settings.autosaveThingChanges = m_autosave;
+                    m_autosaveChanged = false;
                 }
                 
-                if (_showPanelChanged)
-                {
-                    previewPanel.visible = _showPreviewPanel;
-                    previewPanel.includeInLayout = _showPreviewPanel;
-                    thingsPanel.visible = _showThingsPanel;
-                    thingsPanel.includeInLayout = _showThingsPanel;
-                    spritesPanel.visible = _showSpritesPanel;
-                    spritesPanel.includeInLayout = _showSpritesPanel;
-                    showThingsPanelButton.selected = _showThingsPanel;
-                    _showPanelChanged = false;
+                if (m_showPanelChanged) {
+                    previewPanel.visible = m_showPreviewPanel;
+                    previewPanel.includeInLayout = m_showPreviewPanel;
+                    thingsPanel.visible = m_showThingsPanel;
+                    thingsPanel.includeInLayout = m_showThingsPanel;
+                    spritesPanel.visible = m_showSpritesPanel;
+                    spritesPanel.includeInLayout = m_showSpritesPanel;
+                    showThingsPanelButton.selected = m_showThingsPanel;
+                    m_showPanelChanged = false;
                 }
                 
-                if (_categoryChanged) {
-                    onSetCategory(_category);
-                    _categoryChanged = false;
+                if (m_categoryChanged) {
+                    onSetCategory(m_category);
+                    m_categoryChanged = false;
                 }
             }
             
@@ -888,38 +804,35 @@ THE SOFTWARE.
                 visible = true;
                 activate();
                 
-                if (_settings.maximized)
+                if (m_settings.maximized)
                     this.maximize();
                 else
                     WindowUtil.centralizeWindowOnScreen(this);
                 
-                previewPanel.width = Math.max(previewPanel.minWidth, _settings.previewContainerWidth);
-                thingsPanel.width = Math.max(thingsPanel.minWidth, _settings.thingListContainerWidth);
-                spritesPanel.width = Math.max(spritesPanel.minWidth, _settings.spritesContainerWidth);
-                showPreviewPanel = _settings.showPreviewPanel;
-                showThingsPanel = _settings.showThingsPanel;
-                showSpritesPanel = _settings.showSpritesPanel;
-                thingStepper.amount = _settings.objectsListAmount;
-                spriteStepper.amount = _settings.spritesListAmount;
+                previewPanel.width = Math.max(previewPanel.minWidth, m_settings.previewContainerWidth);
+                thingsPanel.width = Math.max(thingsPanel.minWidth, m_settings.thingListContainerWidth);
+                spritesPanel.width = Math.max(spritesPanel.minWidth, m_settings.spritesContainerWidth);
+                showPreviewPanel = m_settings.showPreviewPanel;
+                showThingsPanel = m_settings.showThingsPanel;
+                showSpritesPanel = m_settings.showSpritesPanel;
+                thingStepper.amount = m_settings.objectsListAmount;
+                spriteStepper.amount = m_settings.spritesListAmount;
                 
-                if (_invokeArgs) {
-                    setInvokeArgs(_invokeArgs);
-                    _invokeArgs = null;
-                } else if (_settings.loadFilesOnStartup)
+                if (m_invokeArgs) {
+                    setInvokeArgs(m_invokeArgs);
+                    m_invokeArgs = null;
+                } else if (m_settings.loadFilesOnStartup)
                     autoLoadProject();
                 
-                _creationComplete = true;
+                m_creationComplete = true;
             }
             
             private function setInvokeArgs(args:Array):void
             {
-                if (args)
-                {
+                if (args) {
                     var path:String = args[0];
-                    if (!isNullOrEmpty(path))
-                    {
+                    if (!isNullOrEmpty(path)) {
                         var file:File = new File(path);
-                        
                         if (file.extension == OTFormat.DAT || file.extension == OTFormat.SPR)
                             openProject(FileUtil.getDirectory(file));
                         else if (file.extension == OTFormat.OBD)
@@ -930,72 +843,71 @@ THE SOFTWARE.
             
             private function createLogging():void 
             {
-                _logTarget = new LogFileTarget();
-                _logTarget.filters = ["*"];
-                _logTarget.level = LogEventLevel.ALL;
-                _logTarget.includeDate = true;
-                _logTarget.includeTime = true;
-                _logTarget.includeLevel = true;
+                m_logTarget = new LogFileTarget();
+                m_logTarget.filters = ["*"];
+                m_logTarget.level = LogEventLevel.ALL;
+                m_logTarget.includeDate = true;
+                m_logTarget.includeTime = true;
+                m_logTarget.includeLevel = true;
                 
-                mx.logging.Log.addTarget(_logTarget);
+                mx.logging.Log.addTarget(m_logTarget);
             }
             
             private function createWorker():void
             {
                 var workerBytesClass:ByteArray = new ObjectBuilderWorker() as ByteArray;
-                _communicator = new Communicator(workerBytesClass);
-                _communicator.start();
+                m_communicator = new Communicator(workerBytesClass);
+                m_communicator.start();
             }
             
             private function createSplashScreen():void
             {
-                _splashScreen = new SplashScreen();
-                _splashScreen.addEventListener(Event.CLOSE,
-                    function():void
-                    { 
-                        applicationLoadComplete();
-                        _splashScreen = null;
-                    });
-                _splashScreen.open();
+                m_splashScreen = new SplashScreen();
+                m_splashScreen.addEventListener(Event.CLOSE, closeHandler);
+                m_splashScreen.open();
+                
+                function closeHandler(event:Event):void
+                {
+                    applicationLoadComplete();
+                    m_splashScreen.removeEventListener(Event.CLOSE, closeHandler);
+                    m_splashScreen = null;
+                }
             }
             
             private function loadSettings():void
             {
-                _splashScreen.setProgress(1, 2);
+                m_splashScreen.setProgress(1, 2);
+                m_settings = new ObjectBuilderSettings();
                 
-                _settings = new ObjectBuilderSettings();
-                
-                if (!_settingsManager.loadSettings(_settings) ||
-                    _settings.settingsApplicationVersion != Descriptor.getVersionNumber()) {
-                    
+                if (!m_settingsManager.loadSettings(m_settings) ||
+                    m_settings.settingsApplicationVersion != Descriptor.getVersionNumber()) {
                     firstRun();
                 }
                 
-                Resources.locale = _settings.getLanguage()[0];
-                this.resourceManager.localeChain = _settings.getLanguage();
+                Resources.locale = m_settings.getLanguage()[0];
+                this.resourceManager.localeChain = m_settings.getLanguage();
                 
-                sendCommand(new SettingsCommand(_settings));
+                sendCommand(new SettingsCommand(m_settings));
                 
-                _splashScreen.status = resourceManager.getString("strings", "loadingSettings") + "...";
+                m_splashScreen.status = resourceManager.getString("strings", "loadingSettings") + "...";
             }
             
             private function saveSettings():void
             {
-                _settings.maximized = (nativeWindow.displayState == NativeWindowDisplayState.MAXIMIZED);
-                _settingsManager.saveSettings(_settings);
+                m_settings.maximized = (nativeWindow.displayState == NativeWindowDisplayState.MAXIMIZED);
+                m_settingsManager.saveSettings(m_settings);
             }
             
             private function loadVersions():void
             {
                 var file:File = File.applicationStorageDirectory.resolvePath("versions.xml");
-                _versionStorage.load(file);
-                
+                m_versionStorage.load(file);
                 sendCommand(new LoadVersionsCommand(file));
             }
             
             private function saveVersions():void
             {
-                _versionStorage.save();
+                m_versionStorage.save();
             }
             
             private function firstRun():void
@@ -1017,7 +929,7 @@ THE SOFTWARE.
                 }
                 
                 // Clear the application log
-                _logTarget.clear();
+                m_logTarget.clear();
             }
             
             private function onSetClientInfo(info:ClientInfo):void
@@ -1025,13 +937,13 @@ THE SOFTWARE.
                 if (!info)
                     throw new NullArgumentError("info");
                 
-                _clientInfo = info;
-                _version = _versionStorage.getBySignatures(info.datSignature, info.sprSignature);
-                _extendedEnabled = info.extended;
-                _transparencyEnabled = info.transparency;
-                _clientChanged = info.changed;
-                _clientIsTemporary = info.isTemporary;
-                _clientLoaded = info.loaded;
+                m_clientInfo = info;
+                m_version = m_versionStorage.getBySignatures(info.datSignature, info.sprSignature);
+                m_extendedEnabled = info.extended;
+                m_transparencyEnabled = info.transparency;
+                m_clientChanged = info.changed;
+                m_clientIsTemporary = info.isTemporary;
+                m_clientLoaded = info.loaded;
                 
                 infoPanel.setFilesInfo(info);
                 thingTypeEditor.filesInfo = info;
@@ -1044,22 +956,19 @@ THE SOFTWARE.
             
             private function onSetThingData(thingData:ThingData):void
             {
-                if (!thingData) {
+                if (!thingData)
                     throw new NullArgumentError("thingData");
-                }
                 
                 this.thingData = thingData;
             }
             
             private function onSetThingList(selectedIds:Vector.<uint>, things:Vector.<ThingListItem>):void
             {
-                if (!selectedIds) {
+                if (!selectedIds)
                     throw new NullArgumentError("selectedIds");
-                }
                 
-                if (!things) {
+                if (!things)
                     throw new NullArgumentError("things");
-                }
                 
                 thingList.rememberScroll();
                 thingList.setListObjects(things);
@@ -1069,13 +978,11 @@ THE SOFTWARE.
             
             private function onSetSpriteList(selectedIds:Vector.<uint>, sprites:Vector.<SpriteData>):void
             {
-                if (!selectedIds) {
+                if (!selectedIds)
                     throw new NullArgumentError("selectedIds");
-                }
                 
-                if (!sprites) {
+                if (!sprites)
                     throw new NullArgumentError("sprites");
-                }
                 
                 spritesList.rememberScroll();
                 spritesList.setListObjects(sprites);
@@ -1085,18 +992,16 @@ THE SOFTWARE.
             
             private function onNeedToReload(extended:Boolean, transparency:Boolean, improvedAnimations:Boolean):void
             {
-                Alert.show(
-                    resourceManager.getString("strings", "needToReload"),
-                    resourceManager.getString("strings", "warning"),
-                    Alert.YES | Alert.NO,
-                    this,
-                    alertCloseHandler);
+                Alert.show(resourceManager.getString("strings", "needToReload"),
+                           resourceManager.getString("strings", "warning"),
+                           Alert.YES | Alert.NO,
+                           this,
+                           alertCloseHandler);
                 
                 function alertCloseHandler(event:CloseEvent):void
                 {
-                    if (event.detail == Alert.YES) {
+                    if (event.detail == Alert.YES)
                         sendCommand(new NeedToReloadCommand(extended, transparency, improvedAnimations));
-                    }
                 }
             }
             
@@ -1126,9 +1031,8 @@ THE SOFTWARE.
                 
                 function completeHandler(event:Event):void
                 {
-                    if (queue.result && queue.result.length > 0) {
+                    if (queue.result && queue.result.length > 0)
                         exportThings(queue.result, category, obdVersion, clientVersion, exportObjectProperties, transparentBackground, jpegQuality);
-                    }
                 }
             }
             
@@ -1154,9 +1058,8 @@ THE SOFTWARE.
                 
                 function completeHandler(event:Event):void
                 {
-                    if (queue.result && queue.result.length > 0) {
+                    if (queue.result && queue.result.length > 0)
                         exportSprites(queue.result, transparentBackground, jpegQuality);
-                    }
                 }
             }
             
@@ -1194,7 +1097,6 @@ THE SOFTWARE.
                 if (Clipboard.generalClipboard.hasFormat(ClipboardFormats.BITMAP_FORMAT)) {
                     var bitmap:BitmapData = BitmapData(Clipboard.generalClipboard.getData(ClipboardFormats.BITMAP_FORMAT));
                     bitmap = SpriteUtils.removeMagenta(bitmap);
-                    
                     if (bitmap.width == 32 && bitmap.height == 32) {
                         if (!spritesList.multipleSelected && spritesList.selectedId != 0) {
                             var pixels:ByteArray = bitmap.getPixels(bitmap.rect);
@@ -1207,23 +1109,19 @@ THE SOFTWARE.
             
             private function openLookGenerator():void
             {
-                if (!_lookGenerator) {
-                    _lookGenerator = new LookGenerator();
-                    _lookGenerator.addEventListener(Event.CLOSE, lookGeneratorCloseHandler);
-                    _lookGenerator.open();
-                    
-                    WindowUtil.centralizeWindowOnScreen(_lookGenerator);
-                } else {
-                    _lookGenerator.activate();
-                }
+                if (!m_lookGenerator) {
+                    m_lookGenerator = new LookGenerator();
+                    m_lookGenerator.open();
+                    WindowUtil.centralizeWindowOnScreen(m_lookGenerator);
+                } else
+                    m_lookGenerator.activate();
             }
             
             private function closeLookGenerator():void
             {
-                if (_lookGenerator && !_lookGenerator.closed) {
-                    _lookGenerator.removeEventListener(Event.CLOSE, lookGeneratorCloseHandler);
-                    _lookGenerator.close();
-                    _lookGenerator = null;
+                if (m_lookGenerator && !m_lookGenerator.closed) {
+                    m_lookGenerator.close();
+                    m_lookGenerator = null;
                 }
             }
             
@@ -1242,7 +1140,6 @@ THE SOFTWARE.
             {
                 var window:AboutWindow = new AboutWindow();
                 window.open();
-                
                 PopUpWindowManager.addWindow(window);
             }
             
@@ -1256,57 +1153,52 @@ THE SOFTWARE.
             
             private function getMinThingId():uint
             {
-                if (this.clientLoaded)
-                {
+                if (this.clientLoaded) {
                     switch (this.currentCategory)
                     {
                         case ThingCategory.ITEM:
-                            return _clientInfo.minItemId;
+                            return m_clientInfo.minItemId;
                             
                         case ThingCategory.OUTFIT:
-                            return _clientInfo.minOutfitId;
+                            return m_clientInfo.minOutfitId;
                             
                         case ThingCategory.EFFECT:
-                            return _clientInfo.minEffectId;
+                            return m_clientInfo.minEffectId;
                             
                         case ThingCategory.MISSILE:
-                            return _clientInfo.minMissileId;
+                            return m_clientInfo.minMissileId;
                     }
                 }
-                
                 return 0;
             }
             
             private function getMaxThingId():uint
             {
-                if (this.clientLoaded)
-                {
+                if (this.clientLoaded) {
                     switch(currentCategory)
                     {
                         case ThingCategory.ITEM:
-                            return _clientInfo.maxItemId;
+                            return m_clientInfo.maxItemId;
                             
                         case ThingCategory.OUTFIT:
-                            return _clientInfo.maxOutfitId;
+                            return m_clientInfo.maxOutfitId;
                             
                         case ThingCategory.EFFECT:
-                            return _clientInfo.maxEffectId;
+                            return m_clientInfo.maxEffectId;
                             
                         case ThingCategory.MISSILE:
-                            return _clientInfo.maxMissileId;
+                            return m_clientInfo.maxMissileId;
                     }
                 }
-                
                 return 0;
             }
             
             private function setThingData(thingData:ThingData):void
             {
-                _thingData = thingData;
+                m_thingData = thingData;
                 thingView.thingData = thingData;
                 
                 if (thingData) {
-                    
                     if (thingData.category == ThingCategory.OUTFIT) {
                         thingView.patternX = 2;
                         thingView.drawBlendLayer = false;
@@ -1340,54 +1232,56 @@ THE SOFTWARE.
             
             private function saveWindowState():void
             {
-                _settings.previewContainerWidth = previewPanel.width;
-                _settings.thingListContainerWidth = thingsPanel.width;
-                _settings.spritesContainerWidth = spritesPanel.width;
-                _settings.showPreviewPanel = showPreviewPanel;
-                _settings.showThingsPanel = showThingsPanel;
-                _settings.showSpritesPanel = showSpritesPanel;
+                m_settings.previewContainerWidth = previewPanel.width;
+                m_settings.thingListContainerWidth = thingsPanel.width;
+                m_settings.spritesContainerWidth = spritesPanel.width;
+                m_settings.showPreviewPanel = showPreviewPanel;
+                m_settings.showThingsPanel = showThingsPanel;
+                m_settings.showSpritesPanel = showSpritesPanel;
             }
             
             private function showDatSprProgressBar(title:String):void
             {
-                if (!_datSprProgressBar) {
-                    _datSprProgressBar = new DatSprProgressBar();
-                    _datSprProgressBar.title = title;
+                if (!m_datSprProgressBar) {
+                    m_datSprProgressBar = new DatSprProgressBar();
+                    m_datSprProgressBar.title = title;
                 }
-                _datSprProgressBar.open();
+                m_datSprProgressBar.open();
             }
             
             private function hideDatSprProgressBar():void
             {
-                if (_datSprProgressBar) {
-                    _datSprProgressBar.close();
-                    _datSprProgressBar = null;
+                if (m_datSprProgressBar) {
+                    m_datSprProgressBar.close();
+                    m_datSprProgressBar = null;
                 }
             }
             
             private function showDefaultProgressBar(title:String):void
             {
-                if (!_defaultProgressBar) {
-                    _defaultProgressBar = new DefaultProgressBar();
-                    _defaultProgressBar.title = title;
+                if (!m_defaultProgressBar) {
+                    m_defaultProgressBar = new DefaultProgressBar();
+                    m_defaultProgressBar.title = title;
                 }
-                _defaultProgressBar.open();
+                m_defaultProgressBar.open();
             }
             
             private function hideDefaultProgressBar():void
             {
-                if (_defaultProgressBar) {
-                    _defaultProgressBar.close();
-                    _defaultProgressBar = null;
+                if (m_defaultProgressBar) {
+                    m_defaultProgressBar.close();
+                    m_defaultProgressBar = null;
                 }
             }
             
             private function onShowProgressBar(id:uint, title:String):void
             {
-                switch(id) {
+                switch(id)
+                {
                     case ProgressBarID.DAT_SPR:
                         this.showDatSprProgressBar(title);
                         break;
+                    
                     case ProgressBarID.DEFAULT:
                         this.showDefaultProgressBar(title);
                         break;
@@ -1396,10 +1290,12 @@ THE SOFTWARE.
             
             private function onHideProgressBar(id:uint):void
             {
-                switch(id) {
+                switch(id)
+                {
                     case ProgressBarID.DAT_SPR:
                         this.hideDatSprProgressBar();
                         break;
+                    
                     case ProgressBarID.DEFAULT:
                         this.hideDefaultProgressBar();
                         break;
@@ -1411,10 +1307,9 @@ THE SOFTWARE.
                 this.hideDatSprProgressBar();
                 this.hideDefaultProgressBar();
                 
-                if (level != Log.INFO)
-                {
+                if (level != Log.INFO) {
                     var text:String = isNullOrEmpty(stack) ? message : stack;
-                    _logTarget.write(text);
+                    m_logTarget.write(text);
                     openErrorWindow(text);
                 }
                 else
@@ -1427,26 +1322,31 @@ THE SOFTWARE.
                 {
                     case ProgressBarID.DAT:
                     case ProgressBarID.SPR:
-                        if (_datSprProgressBar) _datSprProgressBar.setProgress(id, loaded, total);
+                        if (m_datSprProgressBar) m_datSprProgressBar.setProgress(id, loaded, total);
                         break;
                     
                     case ProgressBarID.DEFAULT:
-                        if (_defaultProgressBar) _defaultProgressBar.setProgress(loaded, total);
+                        if (m_defaultProgressBar) m_defaultProgressBar.setProgress(loaded, total);
                         break;
                 }
             }
             
             private function toLogString(level:uint):String
             {
-                switch(level) {
+                switch(level)
+                {
                     case Log.DEBUG:
                         return resourceManager.getString("strings", "debug");
+                        
                     case Log.INFO:
                         return resourceManager.getString("strings", "info");
+                        
                     case Log.WARN:
                         return resourceManager.getString("strings", "warn");
+                        
                     case Log.ERROR:
                         return resourceManager.getString("strings", "error");
+                        
                     case Log.FATAL:
                         return resourceManager.getString("strings", "fatal");
                 }
@@ -1456,16 +1356,20 @@ THE SOFTWARE.
             private function onSetCategory(category:String):void
             {
                 if (this.clientLoaded) {
-                    switch(category) {
+                    switch(category)
+                    {
                         case ThingCategory.ITEM:
                             categoryDropDownList.selectedIndex = 0;
                             break;
+                        
                         case ThingCategory.OUTFIT:
                             categoryDropDownList.selectedIndex = 1;
                             break;
+                        
                         case ThingCategory.EFFECT:
                             categoryDropDownList.selectedIndex = 2;
                             break;
+                        
                         case ThingCategory.MISSILE:
                             categoryDropDownList.selectedIndex = 3;
                             break;
@@ -1495,32 +1399,30 @@ THE SOFTWARE.
             
             private function openErrorWindow(message:String):void
             {
-                if (!PopUpWindowManager.currentWindow)
-                {
+                if (!PopUpWindowManager.currentWindow) {
                     var window:ErrorWindow = new ErrorWindow();
                     //window.addEventListener(Event.CLOSE, function(event:Event):void { exit(); });
                     window.open();
                     window.message = message;
-                    
                     PopUpWindowManager.addWindow(window);
-                }
-                else if (PopUpWindowManager.currentWindow is ErrorWindow)
-                {
+                } else if (PopUpWindowManager.currentWindow is ErrorWindow)
                     ErrorWindow(PopUpWindowManager.currentWindow).appendMessage(message);
-                }
             }
             
             private function autoLoadProject():void
             {
-                var version:Version = _versionStorage.getBySignatures(_settings.datSignature, _settings.sprSignature);
+                var version:Version = m_versionStorage.getBySignatures(m_settings.datSignature, m_settings.sprSignature);
                 if (version) {
-                    var datFile:File = PathUtil.toFile(_settings.datPath);
-                    var sprFile:File = PathUtil.toFile(_settings.sprPath);
+                    var datFile:File = PathUtil.toFile(m_settings.datPath);
+                    var sprFile:File = PathUtil.toFile(m_settings.sprPath);
                     if (datFile && sprFile)
                         sendCommand(new LoadProjectCommand(datFile,
-                                                         sprFile,
-                                                         version.datSignature,
-                                                         version.sprSignature, _settings.extended, _settings.transparency, _settings.improvedAnimations));
+                                                           sprFile,
+                                                           version.datSignature,
+                                                           version.sprSignature,
+                                                           m_settings.extended,
+                                                           m_settings.transparency,
+                                                           m_settings.improvedAnimations));
                 }
             }
             
@@ -1530,12 +1432,11 @@ THE SOFTWARE.
             
             protected function applicationInvokeHandler(event:InvokeEvent):void
             {
-                if (event.arguments && event.arguments.length > 0)
-                {
-                    if (_creationComplete)
+                if (event.arguments && event.arguments.length > 0) {
+                    if (m_creationComplete)
                         this.setInvokeArgs(event.arguments);
                     else
-                        _invokeArgs = event.arguments;
+                        m_invokeArgs = event.arguments;
                 }
             }
             
@@ -1543,11 +1444,11 @@ THE SOFTWARE.
             {
                 Resources.manager = ResourceManager.getInstance();
                 
-                _logger = mx.logging.Log.getLogger("ObjectBuilder");
-                _settingsManager = SettingsManager.getInstance();
-                _versionStorage = VersionStorage.getInstance();
-                _versionStorage.addEventListener(StorageEvent.COMPILE, versionStorageCompileHandler);
-                _category = ThingCategory.ITEM;
+                m_logger = mx.logging.Log.getLogger("ObjectBuilder");
+                m_settingsManager = SettingsManager.getInstance();
+                m_versionStorage = VersionStorage.getInstance();
+                m_versionStorage.addEventListener(StorageEvent.COMPILE, versionStorageCompileHandler);
+                m_category = ThingCategory.ITEM;
                 
                 createLogging();
                 createWorker();
@@ -1560,17 +1461,12 @@ THE SOFTWARE.
                 loadSettings();
                 loadVersions();
                 
-                _logTarget.writeStart();
+                m_logTarget.writeStart();
             }
             
             protected function applicationCompleteHandler(event:FlexEvent):void
             {
-                systemManager.stage.nativeWindow.addEventListener(
-                    NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGING,
-                    displayStateChangingHandler);
-                
-                _splashScreen.setProgress(2, 2);
-                _splashScreen = null;
+                m_splashScreen.setProgress(2, 2);
             }
             
             protected function applicationClosingHandler(event:Event):void
@@ -1585,16 +1481,17 @@ THE SOFTWARE.
                 this.saveSettings();
                 this.saveVersions();
                 
-                _logTarget.writeEnd();
+                m_logTarget.writeEnd();
                 
                 if (this.clientLoaded && this.clientChanged) {
                     event.preventDefault();
-                    Alert.show(
-                        resourceManager.getString("strings", "wantToCompile"),
-                        "",
-                        Alert.YES | Alert.NO | Alert.CANCEL,
-                        this,
-                        alertCloseHandler);
+                    Alert.show(resourceManager.getString("strings", "wantToCompile"),
+                               "",
+                               Alert.YES | Alert.NO | Alert.CANCEL,
+                               this,
+                               alertCloseHandler,
+                               null,
+                               Alert.YES);
                 }
                 
                 function alertCloseHandler(event:CloseEvent):void
@@ -1612,12 +1509,13 @@ THE SOFTWARE.
                     if (thingTypeEditor.saveChanges()) {
                         var thingData:ThingData = thingTypeEditor.thingData;
                         if (thingData.sprites[0].id == uint.MAX_VALUE) {
-                            Alert.show(
-                                resourceManager.getString("strings", "wantToReplaceSprites"),
-                                "",
-                                Alert.YES | Alert.NO,
-                                this,
-                                closeHandler);
+                            Alert.show(resourceManager.getString("strings", "wantToReplaceSprites"),
+                                       "",
+                                       Alert.YES | Alert.NO,
+                                       this,
+                                       closeHandler,
+                                       null,
+                                       Alert.NO);
                             return;
                         }
                         
@@ -1638,25 +1536,30 @@ THE SOFTWARE.
             
             protected function thingListChangeHandler(event:IndexChangeEvent):void
             {
-                if (!this.clientLoaded) return;
-                if (thingList.selectedId != 0) {
-                    sendCommand(new GetThingCommand(thingList.selectedId, this.currentCategory));
+                if (this.clientLoaded) {
+                    if (thingList.selectedId != 0)
+                        sendCommand(new GetThingCommand(thingList.selectedId, this.currentCategory));
+                    
+                    editThingButton.enabled = !thingList.multipleSelected;
                 }
-                editThingButton.enabled = !thingList.multipleSelected;
             }
             
             protected function categoryDropDownListChangeHandler(event:IndexChangeEvent):void
             {
-                switch(event.newIndex) {
+                switch(event.newIndex)
+                {
                     case 0:
                         this.currentCategory = ThingCategory.ITEM;
                         break;
+                    
                     case 1:
                         this.currentCategory = ThingCategory.OUTFIT;
                         break;
+                    
                     case 2:
                         this.currentCategory = ThingCategory.EFFECT;
                         break;
+                    
                     case 3:
                         this.currentCategory = ThingCategory.MISSILE;
                         break;
@@ -1666,34 +1569,30 @@ THE SOFTWARE.
             protected function thingChangedHandler(event:ThingEditorEvent):void
             {
                 var title:String = "";
-                if (event.data) {
+                if (event.data)
                     title = ObUtils.toLocale(event.data.category) + " " + event.data.id;
-                }
                 
-                this.updateTitle(title);
+                updateTitle(title);
                 confirmButton.enabled = false;
             }
             
             protected function thingPropertyChangedHandler(event:ThingEditorEvent):void
             {
                 var title:String = "";
-                
-                if (event.data) {
+                if (event.data)
                     title = ObUtils.toLocale(event.data.category) + " " + event.data.id;
-                }
                 
-                this.updateTitle(title, !thingTypeEditor.changed);
-                
+                updateTitle(title, !thingTypeEditor.changed);
                 confirmButton.enabled = thingTypeEditor.changed;
                 
                 if (event.property) {
                     var message:String = resourceManager.getString("strings", "propertyChanged");
                     this.appendLog(StringUtil.format(message,
-                        ObUtils.toLocale(event.data.category),
-                        event.data.id,
-                        event.property,
-                        event.oldValue,
-                        event.newValue));
+                                   ObUtils.toLocale(event.data.category),
+                                   event.data.id,
+                                   event.property,
+                                   event.oldValue,
+                                   event.newValue));
                 }
             }
             
@@ -1704,9 +1603,8 @@ THE SOFTWARE.
             
             protected function thingStepperChangeHandler(event:Event):void
             {
-                if (this.clientLoaded && this.thingData) {
+                if (this.clientLoaded && this.thingData)
                     sendCommand(new GetThingCommand(thingStepper.value, this.currentCategory));
-                }
             }
             
             protected function replaceThingHandler(event:Event):void
@@ -1714,7 +1612,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var filter:FileFilter = new FileFilter("Object Builder Data", "*.obd;");
-                var file:File = _settings.getIODirectory();
+                var file:File = m_settings.getIODirectory();
                 file.addEventListener(FileListEvent.SELECT_MULTIPLE, selectMultipleHandler);
                 file.browseForOpenMultiple(resourceManager.getString("strings", "selectFiles"), [filter]);
                 
@@ -1726,24 +1624,22 @@ THE SOFTWARE.
                     var list:Vector.<PathHelper> = new Vector.<PathHelper>(length, true);
                     
                     if (selectedIds.length != files.length) {
-                        Alert.show(
-                            resourceManager.getString(
-                                "strings",
-                                "invalidFileAmount",
-                                [resourceManager.getString("strings", "objects").toLowerCase()]),
-                            resourceManager.getString("strings", "error"));
+                        Alert.show(resourceManager.getString(
+                                   "strings",
+                                   "invalidFileAmount",
+                                   [resourceManager.getString("strings", "objects").toLowerCase()]),
+                                   resourceManager.getString("strings", "error"));
                         return;
                     }
                     
-                    FileUtil.sortFiles(files, Array.NUMERIC | Array.DESCENDING);
+                    if (files.length > 1)
+                        FileUtil.sortFiles(files, Array.NUMERIC | Array.DESCENDING);
                     
-                    for (var i:uint = 0; i < length; i++) {
+                    for (var i:uint = 0; i < length; i++)
                         list[i] = new PathHelper(files[i].nativePath, selectedIds[i]);
-                    }
                     
-                    if (list.length != 0) {
-                        replaceThingsFromFiles(list);
-                    }
+                    if (list.length != 0)
+                        sendCommand(new ReplaceThingsFromFilesCommand(list));
                 }
             }
             
@@ -1752,7 +1648,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var filter:FileFilter = new FileFilter("Object Builder Data", "*.obd;");
-                var file:File = _settings.getIODirectory();
+                var file:File = m_settings.getIODirectory();
                 file.addEventListener(FileListEvent.SELECT_MULTIPLE, selectMultipleHandler);
                 file.browseForOpenMultiple(resourceManager.getString("strings", "selectFiles"), [filter]);
                 
@@ -1763,15 +1659,14 @@ THE SOFTWARE.
                     var length:uint = files.length;
                     var list:Vector.<PathHelper> = new Vector.<PathHelper>(length, true);
                     
-                    FileUtil.sortFiles(files, Array.NUMERIC);
+                    if (files.length > 1)
+                        FileUtil.sortFiles(files, Array.NUMERIC);
                     
-                    for (var i:uint = 0; i < length; i++) {
+                    for (var i:uint = 0; i < length; i++)
                         list[i] = new PathHelper(files[i].nativePath, i);
-                    }
                     
-                    if (list.length != 0) {
-                        importThingsFromFiles(list);
-                    }
+                    if (list.length != 0)
+                        sendCommand(new ImportThingsFromFilesCommand(list));
                 }
             }
             
@@ -1782,19 +1677,19 @@ THE SOFTWARE.
                 var things:Vector.<ThingType> = thingList.selectedThings;
                 if (things.length == 0) return;
                 
-                var version:Version = _settings.getExportThingVersion();
+                var version:Version = m_settings.getExportThingVersion();
                 if (!version)
-                    version = _versionStorage.getBySignatures(_clientInfo.datSignature, _clientInfo.sprSignature);
+                    version = m_versionStorage.getBySignatures(m_clientInfo.datSignature, m_clientInfo.sprSignature);
                 
                 var window:ExportWindow = new ExportWindow();
                 window.obdFormatEnabled = true;
                 window.prefix = this.currentCategory;
-                window.directory = _settings.getIODirectory();
-                window.format = _settings.getExportThingFormat();
+                window.directory = m_settings.getIODirectory();
+                window.format = m_settings.getExportThingFormat();
                 window.clientVersion = version;
-                window.obdVersion = _settings.exportOBDVersion;
-                window.transparentBackground = _settings.exportWithTransparentBackground;
-                window.jpegQuality = _settings.jpegQuality;
+                window.obdVersion = m_settings.exportOBDVersion;
+                window.transparentBackground = m_settings.exportWithTransparentBackground;
+                window.jpegQuality = m_settings.jpegQuality;
                 window.addEventListener(Event.CLOSE, windowCloseHandler);
                 window.open();
                 
@@ -1803,12 +1698,12 @@ THE SOFTWARE.
                 function windowCloseHandler(event:Event):void
                 {
                     if (window.detail == DialogDetail.CONFIRM) {
-                        _settings.setIODirectory(window.directory);
-                        _settings.setExportThingFormat(window.format);
-                        _settings.setExportThingVersion(window.clientVersion);
-                        _settings.exportOBDVersion = window.obdVersion;
-                        _settings.exportWithTransparentBackground = window.transparentBackground;
-                        _settings.jpegQuality = window.jpegQuality;
+                        m_settings.setIODirectory(window.directory);
+                        m_settings.setExportThingFormat(window.format);
+                        m_settings.setExportThingVersion(window.clientVersion);
+                        m_settings.exportOBDVersion = window.obdVersion;
+                        m_settings.exportWithTransparentBackground = window.transparentBackground;
+                        m_settings.jpegQuality = window.jpegQuality;
                         
                         onExportThingData(window.prefix,
                                           window.format,
@@ -1817,9 +1712,9 @@ THE SOFTWARE.
                                           window.obdVersion,
                                           things,
                                           thingData.category,
-                                          _settings.exportObjectProperties,
-                                          _settings.exportWithTransparentBackground,
-                                          _settings.jpegQuality);
+                                          m_settings.exportObjectProperties,
+                                          m_settings.exportWithTransparentBackground,
+                                          m_settings.jpegQuality);
                     }
                 }
             }
@@ -1828,18 +1723,16 @@ THE SOFTWARE.
             {
                 if (!this.clientLoaded) return;
                 var things:Vector.<uint> = thingList.selectedIds;
-                if (things && things.length > 0) {
-                    duplicateThings(things, currentCategory);
-                }
+                if (things && things.length > 0)
+                    sendCommand(new DuplicateThingCommand(things, currentCategory));
             }
             
             protected function editThingHandler(event:Event):void
             {
                 if (!this.clientLoaded || thingTypeEditor.thingData == this.thingData) return;
                 
-                if (_settings.autosaveThingChanges) {
+                if (m_settings.autosaveThingChanges)
                     this.saveThingChanges();
-                }
                 
                 if (thingTypeEditor.thingData != null && thingTypeEditor.changed) {
                     var message:String = resourceManager.getString(
@@ -1848,12 +1741,13 @@ THE SOFTWARE.
                         [ObUtils.toLocale(thingTypeEditor.thingData.category),
                             thingTypeEditor.thingData.id]);
                     
-                    Alert.show(
-                        message,
-                        resourceManager.getString("strings", "save"),
-                        Alert.YES | Alert.NO | Alert.CANCEL,
-                        this,
-                        closeHandler);
+                    Alert.show(message,
+                               resourceManager.getString("strings", "save"),
+                               Alert.YES | Alert.NO | Alert.CANCEL,
+                               this,
+                               closeHandler,
+                               null,
+                               Alert.CANCEL);
                     return;
                 }
                 
@@ -1878,9 +1772,8 @@ THE SOFTWARE.
             protected function newThingHandler(event:Event):void
             {
                 if (this.clientLoaded) {
-                    if (this.currentCategory) {
+                    if (this.currentCategory)
                         sendCommand(new NewThingCommand(this.currentCategory));
-                    }
                 }
             }
             
@@ -1888,17 +1781,15 @@ THE SOFTWARE.
             {
                 if (this.clientLoaded) {
                     var selectedIds:Vector.<uint> = thingList.selectedIds;
-                    if (selectedIds && selectedIds.length > 0) {
-                        removeThings(selectedIds, this.currentCategory);
-                    }
+                    if (selectedIds && selectedIds.length > 0)
+                        sendCommand(new RemoveThingCommand(selectedIds, this.currentCategory, false));
                 }
             }
             
             protected function thingListDoubleClickHandler(event:MouseEvent):void
             {
-                if (event.target is ThingListRenderer) {
+                if (event.target is ThingListRenderer)
                     editThingHandler(event);
-                }
             }
             
             protected function thingDataNativeDragEnterHandler(event:NativeDragEvent):void
@@ -1923,14 +1814,12 @@ THE SOFTWARE.
                     
                     for (var i:uint = 0; i < length; i++) {
                         var file:File = dropfiles[i];
-                        if (file.extension == OTFormat.OBD) {
+                        if (file.extension == OTFormat.OBD)
                             list[list.length] = new PathHelper(file.nativePath, i);
-                        }
                     }
                     
-                    if (list.length > 0) {
-                        importThingsFromFiles(list);
-                    }
+                    if (list.length > 0)
+                        sendCommand(new ImportThingsFromFilesCommand(list));
                 }
             }
             
@@ -1964,24 +1853,21 @@ THE SOFTWARE.
                     var thing:ThingType = thingTypeEditor.getThingTypeResult();
                     var size:Size = thing.getSpriteSheetSize();
                     
-                    if (bitmap.width == size.width && size.height == bitmap.height)
-                    {
+                    if (bitmap.width == size.width && size.height == bitmap.height) {
                         var length:uint = thing.spriteIDs.length;
                         var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(length, true);
                         for (var i:uint = 0; i < length; i++)
                             sprites[i] = SpriteData.createSpriteData(thing.spriteIDs[i]);
                         
-                        var data:ThingData = ThingData.create(OBDVersions.OBD_VERSION_2, _version.value, thing, sprites);
+                        var data:ThingData = ThingData.create(OBDVersions.OBD_VERSION_2, m_version.value, thing, sprites);
                         data.setSpriteSheet(bitmap);
                         thingTypeEditor.thingData = data;
                         confirmButton.enabled = true;
                         thingTypeEditor.invalidateThingData();
-                    }
-                    else
-                    {
+                    } else {
                         var message:String = resourceManager.getString("strings", "invalidSpriteSheetSize");
                         Alert.show(StringUtil.format(message, size.width, size.height),
-                            resourceManager.getString("strings", "invalidSpriteSheetSizeTitle"));
+                                   resourceManager.getString("strings", "invalidSpriteSheetSizeTitle"));
                     }
                 }
             }
@@ -1991,7 +1877,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var filters:Array = ObUtils.createImagesFileFilter();
-                var file:File = _settings.getIODirectory();
+                var file:File = m_settings.getIODirectory();
                 file.addEventListener(FileListEvent.SELECT_MULTIPLE, multipleSelectHandler);
                 file.browseForOpenMultiple(resourceManager.getString("strings", "selectImages"), filters);
                 
@@ -2000,30 +1886,28 @@ THE SOFTWARE.
                     var selectedIds:Vector.<uint> = spritesList.selectedIds;
                     var files:Array = event.files;
                     var length:uint = files.length;
-                    var list:Vector.<PathHelper> = new Vector.<PathHelper>(length, true);
                     
                     if (length > 0)
-                        _settings.setIODirectory(files[0]);
+                        m_settings.setIODirectory(files[0]);
                     
                     if (selectedIds.length != files.length) {
-                        Alert.show(
-                            resourceManager.getString(
-                                "strings",
-                                "invalidFileAmount",
-                                [resourceManager.getString("strings", "sprites").toLowerCase()]),
-                            resourceManager.getString("strings", "error"));
+                        Alert.show(resourceManager.getString(
+                                   "strings",
+                                   "invalidFileAmount",
+                                   [resourceManager.getString("strings", "sprites").toLowerCase()]),
+                                   resourceManager.getString("strings", "error"));
                         return;
                     }
                     
-                    FileUtil.sortFiles(files, Array.NUMERIC | Array.DESCENDING);
+                    if (length > 1)
+                        FileUtil.sortFiles(files, Array.NUMERIC | Array.DESCENDING);
                     
-                    for (var i:uint = 0; i < length; i++) {
+                    var list:Vector.<PathHelper> = new Vector.<PathHelper>(length, true);
+                    for (var i:uint = 0; i < length; i++)
                         list[i] = new PathHelper(files[i].nativePath, selectedIds[i]);
-                    }
                     
-                    if (list.length != 0) {
-                        replaceSpritesFromFiles(list);
-                    }
+                    if (length != 0)
+                        sendCommand(new ReplaceSpritesFromFilesCommand(list));
                 }
             }
             
@@ -2032,7 +1916,7 @@ THE SOFTWARE.
                 if (!this.clientLoaded) return;
                 
                 var filters:Array = ObUtils.createImagesFileFilter();
-                var file:File = _settings.getIODirectory();
+                var file:File = m_settings.getIODirectory();
                 file.addEventListener(FileListEvent.SELECT_MULTIPLE, multipleSelectHandler);
                 file.browseForOpenMultiple(resourceManager.getString("strings", "selectImages"), filters);
                 
@@ -2042,18 +1926,16 @@ THE SOFTWARE.
                     var length:uint = files.length;
                     var list:Vector.<PathHelper> = new Vector.<PathHelper>(length, true);
                     
-                    if (length > 0)
-                        _settings.setIODirectory(files[0]);
+                    if (length > 0) {
+                        m_settings.setIODirectory(files[0]);
+                        FileUtil.sortFiles(files, Array.NUMERIC | Array.DESCENDING);
+                    }
                     
-                    FileUtil.sortFiles(files, Array.NUMERIC | Array.DESCENDING);
-                    
-                    for (var i:uint = 0; i < length; i++) {
+                    for (var i:uint = 0; i < length; i++)
                         list[i] = new PathHelper(files[i].nativePath, i);
-                    }
                     
-                    if (files.length != 0) {
-                        importSpritesFromFiles(list);
-                    }
+                    if (length != 0)
+                        sendCommand(new ImportSpritesFromFileCommand(list));
                 }
             }
             
@@ -2065,12 +1947,12 @@ THE SOFTWARE.
                 if (sprites.length == 0) return;
                 
                 var window:ExportWindow = new ExportWindow();
-                window.prefix = "sprite";
-                window.format = _settings.getExportSpriteFormat();
-                window.directory = _settings.getIODirectory();
                 window.obdFormatEnabled = false;
-                window.transparentBackground = _settings.exportWithTransparentBackground;
-                window.jpegQuality = _settings.jpegQuality;
+                window.prefix = "sprite";
+                window.format = m_settings.getExportSpriteFormat();
+                window.directory = m_settings.getIODirectory();
+                window.transparentBackground = m_settings.exportWithTransparentBackground;
+                window.jpegQuality = m_settings.jpegQuality;
                 window.addEventListener(Event.CLOSE, windowCloseHandler);
                 window.open();
                 
@@ -2079,26 +1961,25 @@ THE SOFTWARE.
                 function windowCloseHandler(event:Event):void
                 {
                     if (window.detail == DialogDetail.CONFIRM) {
-                        _settings.setIODirectory(window.directory);
-                        _settings.setExportSpriteFormat(window.format);
-                        _settings.exportWithTransparentBackground = window.transparentBackground;
-                        _settings.jpegQuality = window.jpegQuality;
+                        m_settings.setIODirectory(window.directory);
+                        m_settings.setExportSpriteFormat(window.format);
+                        m_settings.exportWithTransparentBackground = window.transparentBackground;
+                        m_settings.jpegQuality = window.jpegQuality;
                         
                         onExportSprites(window.prefix,
                                         window.format,
                                         window.directory,
                                         sprites,
-                                        _settings.exportWithTransparentBackground,
-                                        _settings.jpegQuality);
+                                        m_settings.exportWithTransparentBackground,
+                                        m_settings.jpegQuality);
                     }
                 }
             }
             
             protected function newSpriteButtonClickHandler(event:MouseEvent):void
             {
-                if (this.clientLoaded) {
+                if (this.clientLoaded)
                     sendCommand(new NewSpriteCommand());
-                }
             }
             
             protected function removeSpriteHandler(event:Event):void
@@ -2118,9 +1999,8 @@ THE SOFTWARE.
             
             protected function spriteStepperChangeHandler(event:Event):void
             {
-                if (this.clientLoaded) {
+                if (this.clientLoaded)
                     selectSprite(spriteStepper.value);
-                }
             }
             
             protected function spritesListNativeDragEnterHandler(event:NativeDragEvent):void
@@ -2140,49 +2020,31 @@ THE SOFTWARE.
                 var clipboard:Clipboard = event.clipboard;
                 if (clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT)) {
                     var dropfiles:Array = clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
-                    
-                    FileUtil.sortFiles(dropfiles, Array.NUMERIC | Array.DESCENDING);
-                    
                     var length:uint = dropfiles.length;
+                    
+                    if (length > 1)
+                        FileUtil.sortFiles(dropfiles, Array.NUMERIC | Array.DESCENDING);
+                    
                     var list:Vector.<PathHelper> = new Vector.<PathHelper>();
                     for (var i:uint = 0; i < length; i++) {
                         var file:File = dropfiles[i];
-                        if (FileUtil.hasBitmapFormat(file)) {
+                        if (FileUtil.hasBitmapFormat(file))
                             list[list.length] = new PathHelper(file.nativePath, i);
-                        }
                     }
+                    
+                    if (list.length > 0)
+                        sendCommand(new ImportSpritesFromFileCommand(list));
                 }
-                
-                if (list.length > 0) {
-                    importSpritesFromFiles(list);
-                }
-            }
-            
-            protected function lookGeneratorCloseHandler(event:Event):void
-            {
-                _lookGenerator.removeEventListener(Event.CLOSE, lookGeneratorCloseHandler);
-                _lookGenerator = null;
             }
             
             protected function updateInitializedHandler(event:UpdateEvent):void
             {
-                _updater.checkNow();
+                m_updater.checkNow();
             }
             
             protected function updateErrorHandler(event:ErrorEvent):void
             {
                 Alert.show(event.text);
-            }
-            
-            protected function displayStateChangingHandler(event:NativeWindowDisplayStateEvent):void
-            {
-                if (_settings)
-                    _settings.maximized = event.afterDisplayState == NativeWindowDisplayState.MAXIMIZED;
-            }
-            
-            protected function splashScreenCloseHandler(event:Event):void
-            {
-                applicationLoadComplete();
             }
             
             protected function versionStorageCompileHandler(event:StorageEvent):void
