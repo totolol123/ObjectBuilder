@@ -77,19 +77,10 @@ package otlib.things
         public var frames:uint;
         
         [Bindable]
-        public var isGround:Boolean;
+        public var stackOrder:uint;
         
         [Bindable]
         public var groundSpeed:uint;
-        
-        [Bindable]
-        public var isGroundBorder:Boolean;
-        
-        [Bindable]
-        public var isOnBottom:Boolean;
-        
-        [Bindable]
-        public var isOnTop:Boolean;
         
         [Bindable]
         public var isContainer:Boolean;
@@ -551,11 +542,8 @@ package otlib.things
             PROPERTY_LABEL["patternY"] = resource.getString("strings", "patternY");
             PROPERTY_LABEL["patternZ"] = resource.getString("strings", "patternZ");
             PROPERTY_LABEL["frames"] = resource.getString("strings", "animations");
-            PROPERTY_LABEL["isGround"] = resource.getString("strings", "isGround");
+            PROPERTY_LABEL["stackOrder"] = resource.getString("strings", "stackOrder");
             PROPERTY_LABEL["groundSpeed"] = resource.getString("strings", "groundSpeed");
-            PROPERTY_LABEL["isGroundBorder"] = resource.getString("strings", "isGroundBorder");
-            PROPERTY_LABEL["isOnBottom"] = resource.getString("strings", "isOnBottom");
-            PROPERTY_LABEL["isOnTop"] = resource.getString("strings", "isOnTop");
             PROPERTY_LABEL["isContainer"] = resource.getString("strings", "container");
             PROPERTY_LABEL["stackable"] = resource.getString("strings", "stackable");
             PROPERTY_LABEL["forceUse"] = resource.getString("strings", "forceUse");

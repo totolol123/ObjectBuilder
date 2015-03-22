@@ -63,14 +63,14 @@ package otlib.things
                 switch (flag)
                 {
                     case ThingTypeFlags1.GROUND:
-                        thing.isGround = true;
+                        thing.stackOrder = StackOrder.GROUND;
                         thing.groundSpeed = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags1.ON_BOTTOM:
-                        thing.isOnBottom = true;
+                        thing.stackOrder = StackOrder.BOTTOM;
                         break;
                     case ThingTypeFlags1.ON_TOP:
-                        thing.isOnTop = true;
+                        thing.stackOrder = StackOrder.TOP;
                         break;
                     case ThingTypeFlags1.CONTAINER:
                         thing.isContainer = true;
@@ -177,14 +177,14 @@ package otlib.things
                 switch (flag)
                 {
                     case ThingTypeFlags2.GROUND:
-                        thing.isGround = true;
+                        thing.stackOrder = StackOrder.GROUND;
                         thing.groundSpeed = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags2.ON_BOTTOM:
-                        thing.isOnBottom = true;
+                        thing.stackOrder = StackOrder.BOTTOM;
                         break;
                     case ThingTypeFlags2.ON_TOP:
-                        thing.isOnTop = true;
+                        thing.stackOrder = StackOrder.TOP;
                         break;
                     case ThingTypeFlags2.CONTAINER:
                         thing.isContainer = true;
@@ -299,17 +299,17 @@ package otlib.things
                 switch (flag)
                 {
                     case ThingTypeFlags3.GROUND:
-                        thing.isGround = true;
+                        thing.stackOrder = StackOrder.GROUND;
                         thing.groundSpeed = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags3.GROUND_BORDER:
-                        thing.isGroundBorder = true;
+                        thing.stackOrder = StackOrder.BORDER;
                         break;
                     case ThingTypeFlags3.ON_BOTTOM:
-                        thing.isOnBottom = true;
+                        thing.stackOrder = StackOrder.BOTTOM;
                         break;
                     case ThingTypeFlags3.ON_TOP:
-                        thing.isOnTop = true;
+                        thing.stackOrder = StackOrder.TOP;
                         break;
                     case ThingTypeFlags3.CONTAINER:
                         thing.isContainer = true;
@@ -425,17 +425,17 @@ package otlib.things
                 switch (flag)
                 {
                     case ThingTypeFlags4.GROUND:
-                        thing.isGround = true;
+                        thing.stackOrder = StackOrder.GROUND;
                         thing.groundSpeed = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags4.GROUND_BORDER:
-                        thing.isGroundBorder = true;
+                        thing.stackOrder = StackOrder.BORDER;
                         break;
                     case ThingTypeFlags4.ON_BOTTOM:
-                        thing.isOnBottom = true;
+                        thing.stackOrder = StackOrder.BOTTOM;
                         break;
                     case ThingTypeFlags4.ON_TOP:
-                        thing.isOnTop = true;
+                        thing.stackOrder = StackOrder.TOP;
                         break;
                     case ThingTypeFlags4.CONTAINER:
                         thing.isContainer = true;
@@ -560,17 +560,17 @@ package otlib.things
                 switch (flag)
                 {
                     case ThingTypeFlags5.GROUND:
-                        thing.isGround = true;
+                        thing.stackOrder = StackOrder.GROUND;
                         thing.groundSpeed = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags5.GROUND_BORDER:
-                        thing.isGroundBorder = true;
+                        thing.stackOrder = StackOrder.BORDER;
                         break;
                     case ThingTypeFlags5.ON_BOTTOM:
-                        thing.isOnBottom = true;
+                        thing.stackOrder = StackOrder.BOTTOM;
                         break;
                     case ThingTypeFlags5.ON_TOP:
-                        thing.isOnTop = true;
+                        thing.stackOrder = StackOrder.TOP;
                         break;
                     case ThingTypeFlags5.CONTAINER:
                         thing.isContainer = true;
@@ -706,17 +706,17 @@ package otlib.things
                 switch (flag)
                 {
                     case ThingTypeFlags6.GROUND:
-                        thing.isGround = true;
+                        thing.stackOrder = StackOrder.GROUND;
                         thing.groundSpeed = input.readUnsignedShort();
                         break;
                     case ThingTypeFlags6.GROUND_BORDER:
-                        thing.isGroundBorder = true;
+                        thing.stackOrder = StackOrder.BORDER;
                         break;
                     case ThingTypeFlags6.ON_BOTTOM:
-                        thing.isOnBottom = true;
+                        thing.stackOrder = StackOrder.BOTTOM;
                         break;
                     case ThingTypeFlags6.ON_TOP:
-                        thing.isOnTop = true;
+                        thing.stackOrder = StackOrder.TOP;
                         break;
                     case ThingTypeFlags6.CONTAINER:
                         thing.isContainer = true;
@@ -925,12 +925,12 @@ package otlib.things
          */
         public static function writeProperties1(thing:ThingType, output:IDataOutput):Boolean
         {
-            if (thing.isGround) {
+            if (thing.stackOrder == StackOrder.GROUND) {
                 output.writeByte(ThingTypeFlags1.GROUND);
                 output.writeShort(thing.groundSpeed);
-            } else if (thing.isOnBottom) {
+            } else if (thing.stackOrder == StackOrder.BOTTOM) {
                 output.writeByte(ThingTypeFlags1.ON_BOTTOM);
-            } else if (thing.isOnTop) {
+            } else if (thing.stackOrder == StackOrder.TOP) {
                 output.writeByte(ThingTypeFlags1.ON_TOP);
             }
             
@@ -987,12 +987,12 @@ package otlib.things
          */
         public static function writeProperties2(thing:ThingType, output:IDataOutput):Boolean
         {
-            if (thing.isGround) {
+            if (thing.stackOrder == StackOrder.GROUND) {
                 output.writeByte(ThingTypeFlags2.GROUND);
                 output.writeShort(thing.groundSpeed);
-            } else if (thing.isOnBottom) {
+            } else if (thing.stackOrder == StackOrder.BOTTOM) {
                 output.writeByte(ThingTypeFlags2.ON_BOTTOM);
-            } else if (thing.isOnTop) {
+            } else if (thing.stackOrder == StackOrder.TOP) {
                 output.writeByte(ThingTypeFlags2.ON_TOP);
             }
             
@@ -1052,14 +1052,14 @@ package otlib.things
          */
         public static function writeProperties3(thing:ThingType, output:IDataOutput):Boolean
         {
-            if (thing.isGround) {
+            if (thing.stackOrder == StackOrder.GROUND) {
                 output.writeByte(ThingTypeFlags3.GROUND);
                 output.writeShort(thing.groundSpeed);
-            } else if (thing.isGroundBorder) { 
+            } else if (thing.stackOrder == StackOrder.BORDER) { 
                 output.writeByte(ThingTypeFlags3.GROUND_BORDER);
-            } else if (thing.isOnBottom) {
+            } else if (thing.stackOrder == StackOrder.BOTTOM) {
                 output.writeByte(ThingTypeFlags3.ON_BOTTOM);
-            } else if (thing.isOnTop) {
+            } else if (thing.stackOrder == StackOrder.TOP) {
                 output.writeByte(ThingTypeFlags3.ON_TOP);
             }
             
@@ -1121,14 +1121,14 @@ package otlib.things
          */
         public static function writeProperties4(thing:ThingType, output:IDataOutput):Boolean
         {
-            if (thing.isGround) {
+            if (thing.stackOrder == StackOrder.GROUND) {
                 output.writeByte(ThingTypeFlags4.GROUND);
                 output.writeShort(thing.groundSpeed);
-            } else if (thing.isGroundBorder) { 
+            } else if (thing.stackOrder == StackOrder.BORDER) { 
                 output.writeByte(ThingTypeFlags4.GROUND_BORDER);
-            } else if (thing.isOnBottom) {
+            } else if (thing.stackOrder == StackOrder.BOTTOM) {
                 output.writeByte(ThingTypeFlags4.ON_BOTTOM);
-            } else if (thing.isOnTop) {
+            } else if (thing.stackOrder == StackOrder.TOP) {
                 output.writeByte(ThingTypeFlags4.ON_TOP);
             }
             
@@ -1193,14 +1193,14 @@ package otlib.things
          */
         public static function writeProperties5(thing:ThingType, output:IDataOutput):Boolean
         {
-            if (thing.isGround) {
+            if (thing.stackOrder == StackOrder.GROUND) {
                 output.writeByte(ThingTypeFlags5.GROUND);
                 output.writeShort(thing.groundSpeed);
-            } else if (thing.isGroundBorder) { 
+            } else if (thing.stackOrder == StackOrder.BORDER) { 
                 output.writeByte(ThingTypeFlags5.GROUND_BORDER);
-            } else if (thing.isOnBottom) {
+            } else if (thing.stackOrder == StackOrder.BOTTOM) {
                 output.writeByte(ThingTypeFlags5.ON_BOTTOM);
-            } else if (thing.isOnTop) {
+            } else if (thing.stackOrder == StackOrder.TOP) {
                 output.writeByte(ThingTypeFlags5.ON_TOP);
             }
             
@@ -1278,14 +1278,14 @@ package otlib.things
          */
         public static function writeProperties6(thing:ThingType, output:IDataOutput):Boolean
         {
-            if (thing.isGround) {
+            if (thing.stackOrder == StackOrder.GROUND) {
                 output.writeByte(ThingTypeFlags6.GROUND);
                 output.writeShort(thing.groundSpeed);
-            } else if (thing.isGroundBorder) { 
+            } else if (thing.stackOrder == StackOrder.BORDER) { 
                 output.writeByte(ThingTypeFlags6.GROUND_BORDER);
-            } else if (thing.isOnBottom) {
+            } else if (thing.stackOrder == StackOrder.BOTTOM) {
                 output.writeByte(ThingTypeFlags6.ON_BOTTOM);
-            } else if (thing.isOnTop) {
+            } else if (thing.stackOrder == StackOrder.TOP) {
                 output.writeByte(ThingTypeFlags6.ON_TOP);
             }
             

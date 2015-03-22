@@ -36,6 +36,7 @@ package otlib.things
         
         public var id:uint;
         public var category:String;
+        
         public var width:uint;
         public var height:uint;
         public var exactSize:uint;
@@ -45,11 +46,9 @@ package otlib.things
         public var patternZ:uint;
         public var frames:uint;
         public var spriteIDs:Vector.<uint>;
-        public var isGround:Boolean;
+        
+        public var stackOrder:uint;
         public var groundSpeed:uint;
-        public var isGroundBorder:Boolean;
-        public var isOnBottom:Boolean;
-        public var isOnTop:Boolean;
         public var isContainer:Boolean;
         public var stackable:Boolean;
         public var forceUse:Boolean;

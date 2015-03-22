@@ -41,6 +41,12 @@ THE SOFTWARE.
         <s:VerticalLayout/>
     </s:layout>
     
+    <fx:Declarations>
+        <s:RadioButtonGroup id="stackOrderRadioButtonGroup"
+                            selectedValue="{StackOrder.COMMOM}"
+                            change="stackOrderChangeHandler(event)"/>
+    </fx:Declarations>
+    
     <fx:Metadata>
         [ResourceBundle("strings")]
     </fx:Metadata>
@@ -67,6 +73,7 @@ THE SOFTWARE.
             import otlib.components.renders.ThingListRenderer;
             import otlib.sprites.SpriteData;
             import otlib.things.BindableThingType;
+            import otlib.things.StackOrder;
             import otlib.things.ThingCategory;
             import otlib.things.ThingProperty;
             import otlib.utils.ThingListItem;
@@ -244,6 +251,11 @@ THE SOFTWARE.
                     selectSprite();
             }
             
+            protected function stackOrderChangeHandler(event:Event):void
+            {
+                m_bindableThingType.stackOrder = uint(stackOrderRadioButtonGroup.selectedValue);
+            }
+            
             protected function thingPropertyChangeHandler(event:PropertyChangeEvent):void
             {
                 if (event.newValue)
@@ -310,21 +322,26 @@ THE SOFTWARE.
                             </s:dataProvider>
                         </s:DropDownList>	
                         <s:Spacer height="10"/>
-                        <s:CheckBox id="isGroundCheckBox"
-                                    label="@Resource(key='isGround', bundle='strings')"
-                                    change="{m_bindableThingType.isGround = isGroundCheckBox.selected;}"/>
-                        <s:CheckBox id="clipCheckBox"
-                                    label="@Resource(key='isGroundBorder', bundle='strings')"
-                                    toolTip="@Resource(key='toolTip.clip', bundle='strings')"
-                                    change="{m_bindableThingType.isGroundBorder = clipCheckBox.selected;}"/>
-                        <s:CheckBox id="bottomCheckBox"
-                                    label="@Resource(key='isOnBottom', bundle='strings')"
-                                    toolTip="@Resource(key='toolTip.bottom', bundle='strings')"
-                                    change="{m_bindableThingType.isOnBottom = bottomCheckBox.selected;}"/>
-                        <s:CheckBox id="topCheckBox"
-                                    label="@Resource(key='isOnTop', bundle='strings')"
-                                    toolTip="@Resource(key='toolTip.top', bundle='strings')"
-                                    change="{m_bindableThingType.isOnTop = topCheckBox.selected;}"/>
+                        <s:RadioButton id="commonRadioButton"
+                                       label="@Resource(key='isCommon', bundle='strings')"
+                                       value="{StackOrder.COMMOM}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:RadioButton id="groundRadioButton"
+                                       label="@Resource(key='ground', bundle='strings')"
+                                       value="{StackOrder.GROUND}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:RadioButton id="groundBorderRadioButton"
+                                       label="@Resource(key='isGroundBorder', bundle='strings')"
+                                       value="{StackOrder.BORDER}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:RadioButton id="onBottomRadioButton"
+                                       label="@Resource(key='isOnBottom', bundle='strings')"
+                                       value="{StackOrder.BOTTOM}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:RadioButton id="onTopRadioButton"
+                                       label="@Resource(key='isOnTop', bundle='strings')"
+                                       value="{StackOrder.TOP}"
+                                       group="{stackOrderRadioButtonGroup}"/>
                         <s:CheckBox id="hasLigthCheckBox"
                                     label="@Resource(key='hasLight', bundle='strings')"
                                     change="{m_bindableThingType.hasLight = hasLigthCheckBox.selected;}"/>

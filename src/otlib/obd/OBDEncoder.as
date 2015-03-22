@@ -43,6 +43,7 @@ package otlib.obd
     import otlib.things.AnimationMode;
     import otlib.things.Animator;
     import otlib.things.FrameDuration;
+    import otlib.things.StackOrder;
     import otlib.things.ThingCategory;
     import otlib.things.ThingData;
     import otlib.things.ThingSerializer;
@@ -461,20 +462,20 @@ package otlib.obd
                 switch (flag)
                 {
                     case GROUND:
-                        thing.isGround = true;
+                        thing.stackOrder = StackOrder.GROUND;
                         thing.groundSpeed = input.readUnsignedShort();
                         break;
                     
                     case GROUND_BORDER:
-                        thing.isGroundBorder = true;
+                        thing.stackOrder = StackOrder.BORDER;
                         break;
                     
                     case ON_BOTTOM:
-                        thing.isOnBottom = true;
+                        thing.stackOrder = StackOrder.BOTTOM;
                         break;
                     
                     case ON_TOP:
-                        thing.isOnTop = true;
+                        thing.stackOrder = StackOrder.TOP;
                         break;
                     
                     case CONTAINER:
@@ -649,16 +650,14 @@ package otlib.obd
         
         private static function writeProperties(thing:ThingType, output:IDataOutput):Boolean
         {
-            if (thing.isGround)
-            {
+            if (thing.stackOrder == StackOrder.GROUND) {
                 output.writeByte(GROUND);
                 output.writeShort(thing.groundSpeed);
-            }
-            else if (thing.isGroundBorder)
+            } else if (thing.stackOrder == StackOrder.BORDER)
                 output.writeByte(GROUND_BORDER);
-            else if (thing.isOnBottom)
+            else if (thing.stackOrder == StackOrder.BOTTOM)
                 output.writeByte(ON_BOTTOM);
-            else if (thing.isOnTop)
+            else if (thing.stackOrder == StackOrder.TOP)
                 output.writeByte(ON_TOP);
             
             if (thing.isContainer) output.writeByte(CONTAINER);
@@ -669,14 +668,12 @@ package otlib.obd
             
             if (thing.multiUse) output.writeByte(MULTI_USE);
             
-            if (thing.writable)
-            {
+            if (thing.writable) {
                 output.writeByte(WRITABLE);
                 output.writeShort(thing.maxTextLength);
             }
             
-            if (thing.writableOnce)
-            {
+            if (thing.writableOnce) {
                 output.writeByte(WRITABLE_ONCE);
                 output.writeShort(thing.maxTextLength);
             }
@@ -705,8 +702,7 @@ package otlib.obd
             
             if (thing.rotatable) output.writeByte(ROTATABLE);
             
-            if (thing.hasLight)
-            {
+            if (thing.hasLight) {
                 output.writeByte(HAS_LIGHT);
                 output.writeShort(thing.lightLevel);
                 output.writeShort(thing.lightColor);
@@ -716,15 +712,13 @@ package otlib.obd
             
             if (thing.isTranslucent) output.writeByte(TRANSLUCENT);
             
-            if (thing.hasOffset)
-            {
+            if (thing.hasOffset) {
                 output.writeByte(HAS_OFFSET);
                 output.writeShort(thing.offsetX);
                 output.writeShort(thing.offsetY);
             }
             
-            if (thing.hasElevation)
-            {
+            if (thing.hasElevation) {
                 output.writeByte(HAS_ELEVATION);
                 output.writeShort(thing.elevation);
             }
@@ -733,14 +727,12 @@ package otlib.obd
             
             if (thing.animateAlways) output.writeByte(ANIMATE_ALWAYS);
             
-            if (thing.minimap)
-            {
+            if (thing.minimap) {
                 output.writeByte(MINIMAP);
                 output.writeShort(thing.minimapColor);
             }
             
-            if (thing.isLensHelp)
-            {
+            if (thing.isLensHelp) {
                 output.writeByte(LENS_HELP);
                 output.writeShort(thing.lensHelp);
             }
@@ -749,14 +741,12 @@ package otlib.obd
             
             if (thing.ignoreLook) output.writeByte(IGNORE_LOOK);
             
-            if (thing.cloth)
-            {
+            if (thing.cloth) {
                 output.writeByte(CLOTH);
                 output.writeShort(thing.clothSlot);
             }
             
-            if (thing.isMarketItem)
-            {
+            if (thing.isMarketItem) {
                 output.writeByte(MARKET_ITEM);
                 output.writeShort(thing.marketCategory);
                 output.writeShort(thing.marketTradeAs);
@@ -767,8 +757,7 @@ package otlib.obd
                 output.writeShort(thing.marketRestrictLevel);
             }
             
-            if (thing.hasDefaultAction)
-            {
+            if (thing.hasDefaultAction) {
                 output.writeByte(DEFAULT_ACTION);
                 output.writeShort(thing.defaultAction);
             }

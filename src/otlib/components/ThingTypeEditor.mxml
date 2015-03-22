@@ -32,9 +32,8 @@ THE SOFTWARE.
          creationComplete="creationCompleteHandler(event)">
     
     <fx:Declarations>
-        <s:RadioButtonGroup id="renderOrder"
-                            enabled="{!groundGroupCheckBox.selected}"
-                            change="renderOrderChangeHandler(event)"/>
+        <s:RadioButtonGroup id="stackOrderRadioButtonGroup"
+                            change="stackOrderChangeHandler(event)"/>
     </fx:Declarations>
     
     <fx:Metadata>
@@ -63,6 +62,7 @@ THE SOFTWARE.
             import otlib.things.AnimationMode;
             import otlib.things.BindableThingType;
             import otlib.things.FrameDuration;
+            import otlib.things.StackOrder;
             import otlib.things.ThingCategory;
             import otlib.things.ThingData;
             import otlib.things.ThingType;
@@ -265,12 +265,12 @@ THE SOFTWARE.
                         selectDirectionButton(bottomCenterButton);
                     else
                         updatePreview();
+                    
+                    stackOrderRadioButtonGroup.selectedValue = _thingBinding.stackOrder;
                 }
                 
                 _changed = false;
                 _loading = false;
-                
-                checkThingOrder();
             }
             
             private function setFilesInfo(info:ClientInfo):void
@@ -287,8 +287,8 @@ THE SOFTWARE.
                 animateAlwaysCheckBox.includeInLayout = visible;
                 
                 var isItem:Boolean = (category == ThingCategory.ITEM);
-                groundGroupCheckBox.visible = isItem;
-                groundGroupCheckBox.includeInLayout = isItem;
+                stackableCheckBox.visible = isItem;
+                stackableCheckBox.includeInLayout = isItem;
                 automapGroupCheckBox.visible = isItem;
                 automapGroupCheckBox.includeInLayout = isItem;
                 hasElevationGroupCheckBox.visible = isItem;
@@ -322,7 +322,6 @@ THE SOFTWARE.
                 
                 visible = (isItem && info.clientVersion >= 755);
                 groundBorderRadioButton.enabled = visible;
-                groundBorderRadioButton.includeInLayout = visible;
                 hangableCheckBox.visible = visible;
                 hangableCheckBox.includeInLayout = visible;
                 horizontalCheckBox.visible = visible;
@@ -603,18 +602,6 @@ THE SOFTWARE.
                 updatePreview();
             }
             
-            private function checkThingOrder():void
-            {
-                if (filesInfo.clientVersion > 750 && _thingBinding.isGroundBorder)
-                    renderOrder.selectedIndex = 1;
-                else if (_thingBinding.isOnBottom)
-                    renderOrder.selectedIndex = 2;
-                else if (_thingBinding.isOnTop)
-                    renderOrder.selectedIndex = 3;
-                else 
-                    renderOrder.selectedIndex = 0;
-            }
-            
             private function setPreviewMode(enabled:Boolean):void
             {
                 var thingData:ThingData;
@@ -726,12 +713,9 @@ THE SOFTWARE.
                 this.selectDirectionButton(event.target as ToggleButton);
             }
             
-            protected function renderOrderChangeHandler(event:Event):void
+            protected function stackOrderChangeHandler(event:Event):void
             {
-                _thingBinding.isGroundBorder = (renderOrder.selectedIndex == 1);
-                _thingBinding.isOnBottom = (renderOrder.selectedIndex == 2);
-                _thingBinding.isOnTop = (renderOrder.selectedIndex == 3);
-                checkThingOrder();
+                _thingBinding.stackOrder = uint(stackOrderRadioButtonGroup.selectedValue);
             }
             
             protected function minimumNumericStepperChangeHandler(event:Event):void
@@ -1185,23 +1169,42 @@ THE SOFTWARE.
                                           gap="10"/>
                     </s:layout>
                     
-                    <!-- ground group -->
-                    <nail:GroupCheckBox id="groundGroupCheckBox" 
-                                        label="@Resource(key='isGround', bundle='strings')"
-                                        width="100%"
-                                        selected="{_thingBinding.isGround}"
-                                        change="{_thingBinding.isGround = groundGroupCheckBox.selected;}">
-                        <s:Group width="100%"
-                                 height="100%"
-                                 enabled="{groundGroupCheckBox.selected}">
-                            <s:layout>
-                                <s:HorizontalLayout paddingLeft="10"
-                                                    paddingRight="10"
-                                                    paddingTop="10"
-                                                    paddingBottom="10"
-                                                    verticalAlign="middle"
-                                                    horizontalAlign="right"/>
-                            </s:layout>
+                    <!-- stack order -->
+                    <nail:GroupBox id="stackOrderGroupBox"
+                                   label="@Resource(key='stackOrder', bundle='strings')"
+                                   width="100%">
+                        <nail:layout>
+                            <s:VerticalLayout paddingLeft="10"
+                                              paddingRight="10"
+                                              paddingTop="10"
+                                              paddingBottom="10"
+                                              gap="5"/>
+                        </nail:layout>
+                        
+                        <s:RadioButton id="commonRadioButton"
+                                       label="@Resource(key='isCommon', bundle='strings')"
+                                       value="{StackOrder.COMMOM}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:RadioButton id="groundRadioButton"
+                                       label="@Resource(key='ground', bundle='strings')"
+                                       value="{StackOrder.GROUND}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:RadioButton id="groundBorderRadioButton"
+                                       label="@Resource(key='isGroundBorder', bundle='strings')"
+                                       value="{StackOrder.BORDER}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:RadioButton id="onBottomRadioButton"
+                                       label="@Resource(key='isOnBottom', bundle='strings')"
+                                       value="{StackOrder.BOTTOM}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:RadioButton id="onTopRadioButton"
+                                       label="@Resource(key='isOnTop', bundle='strings')"
+                                       value="{StackOrder.TOP}"
+                                       group="{stackOrderRadioButtonGroup}"/>
+                        <s:HGroup width="100%"
+                                  verticalAlign="middle"
+                                  horizontalAlign="right"
+                                  enabled="{stackOrderRadioButtonGroup.selectedValue == StackOrder.GROUND}">
                             <s:Label text="{resourceManager.getString('strings', 'groundSpeed') + ':'}"
                                      minWidth="60"
                                      textAlign="right"/>
@@ -1211,8 +1214,8 @@ THE SOFTWARE.
                                               value="{_thingBinding.groundSpeed}"
                                               change="{_thingBinding.groundSpeed = groundSpeedNumericStepper.value;}"/>
                             <s:Spacer width="30"/>
-                        </s:Group>
-                    </nail:GroupCheckBox>
+                        </s:HGroup>
+                    </nail:GroupBox>
                     
                     <!-- has ligth group -->
                     <nail:GroupCheckBox id="hasLigthGroupCheckBox"
@@ -1662,19 +1665,6 @@ THE SOFTWARE.
                         <s:VGroup id="flagsLeftColumn" 
                                   width="100%"
                                   height="100%">
-                            
-                            <s:RadioButton id="commonRadioButton"
-                                           label="@Resource(key='isCommon', bundle='strings')"
-                                           group="{renderOrder}"/>
-                            <s:RadioButton id="groundBorderRadioButton"
-                                           label="@Resource(key='isGroundBorder', bundle='strings')"
-                                           group="{renderOrder}"/>
-                            <s:RadioButton id="onBottomRadioButton"
-                                           label="@Resource(key='isOnBottom', bundle='strings')"
-                                           group="{renderOrder}"/>
-                            <s:RadioButton id="onTopRadioButton"
-                                           label="@Resource(key='isOnTop', bundle='strings')"
-                                           group="{renderOrder}"/>
                             <s:CheckBox id="containerCheckBox"
                                         label="@Resource(key='container', bundle='strings')"
                                         selected="{_thingBinding.isContainer}"
@@ -1715,16 +1705,15 @@ THE SOFTWARE.
                                         label="@Resource(key='blockPathfinder', bundle='strings')"
                                         selected="{_thingBinding.blockPathfinder}"
                                         change="{_thingBinding.blockPathfinder = blockPathfindCheckBox.selected;}"/>
+                            <s:CheckBox id="noMoveAnimationCheckBox"
+                                        label="@Resource(key='noMoveAnimation', bundle='strings')"
+                                        selected="{_thingBinding.noMoveAnimation}"
+                                        change="{_thingBinding.noMoveAnimation = noMoveAnimationCheckBox.selected;}"/>
                         </s:VGroup>
                         
                         <s:VGroup id="flagsRightColumn" 
                                   width="100%"
                                   height="100%">
-                            
-                            <s:CheckBox id="noMoveAnimationCheckBox"
-                                        label="@Resource(key='noMoveAnimation', bundle='strings')"
-                                        selected="{_thingBinding.noMoveAnimation}"
-                                        change="{_thingBinding.noMoveAnimation = noMoveAnimationCheckBox.selected;}"/>
                             <s:CheckBox id="pickupableCheckBox"
                                         label="@Resource(key='pickupable', bundle='strings')"
                                         selected="{_thingBinding.pickupable}"
