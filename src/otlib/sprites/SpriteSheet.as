@@ -20,42 +20,42 @@
 *  THE SOFTWARE.
 */
 
-package otlib.things
+package otlib.sprites
 {
+    import flash.display.BitmapData;
+    
+    import nail.errors.NullOrEmptyArgumentError;
+    import nail.utils.isNullOrEmpty;
+    
+    import otlib.geom.Rect;
     import otlib.otml.OTMLNode;
-
-    public class FrameDuration
+    
+    public class SpriteSheet extends BitmapData
     {
         //--------------------------------------------------------------------------
         // PROPERTIES
         //--------------------------------------------------------------------------
         
-        public var minimum:uint;
-        public var maximum:uint;
+        private var m_textures:Vector.<Rect>;
         
         //--------------------------------------
         // Getters / Setters
         //--------------------------------------
         
-        public function get duration():uint
-        {
-            if (minimum == maximum)
-                return minimum;
-            
-            return minimum + Math.round(Math.random() * (maximum - minimum));
-        }
+        public function get textures():Vector.<Rect> { return m_textures; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function FrameDuration(minimum:uint = 0, maximum:uint = 0)
+        public function SpriteSheet(width:int, height:int, textures:Vector.<Rect>)
         {
-            if (minimum > maximum)
-                throw new ArgumentError("The minimum value may not be greater than the maximum value.");
+            super(width, height, true, 0);
             
-            this.minimum = minimum;
-            this.maximum = maximum;
+            if (isNullOrEmpty(textures))
+                throw new NullOrEmptyArgumentError("textures");
+            
+            m_textures = textures;
         }
         
         //--------------------------------------------------------------------------
@@ -66,57 +66,29 @@ package otlib.things
         // Public
         //--------------------------------------
         
-        public function toString():String
-        {
-            return "[FrameDuration minimum=" + minimum + ", maximum=" + maximum + "]";
-        }
-        
         public function serialize():OTMLNode
         {
             var node:OTMLNode = new OTMLNode();
-            node.tag = "FrameDuration";
-            node.writeAt("minimum", this.minimum);
-            node.writeAt("maximum", this.maximum);
+            node.tag = "SpriteSheet";
+            
+            var length:uint = m_textures.length;
+            for (var i:int = 0; i < length; i++) {
+                var rect:Rect = m_textures[i];
+                var rectNode:OTMLNode = new OTMLNode();
+                rectNode.tag = "Texture";
+                rectNode.writeAt("index", i);
+                rectNode.writeAt("x", rect.x);
+                rectNode.writeAt("y", rect.y);
+                rectNode.writeAt("width", rect.width);
+                rectNode.writeAt("height", rect.height);
+                node.addChild(rectNode);
+            }
             return node;
         }
         
         public function unserialize(node:OTMLNode):Boolean
         {
-            if (node.tag != "FrameDuration") return false;
-            
-            this.minimum = node.intAt("minimum");
-            this.maximum = node.intAt("maximum");
-            
-            if (this.minimum > this.maximum)
-                throw new ArgumentError("The minimum value may not be greater than the maximum value.");
-            
             return true;
-        }
-        
-        public function clone():FrameDuration
-        {
-            return new FrameDuration(this.minimum, this.maximum);
-        }
-        
-        //--------------------------------------------------------------------------
-        // STATIC
-        //--------------------------------------------------------------------------
-        
-        public static function getDefaultDuration(category:String):uint
-        {
-            switch(category)
-            {
-                case ThingCategory.ITEM:
-                    return 500;
-                    
-                case ThingCategory.OUTFIT:
-                    return 300;
-                    
-                case ThingCategory.EFFECT:
-                    return 100;
-            }
-            
-            return 0;
         }
     }
 }

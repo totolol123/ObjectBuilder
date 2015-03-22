@@ -23,8 +23,10 @@
 package otlib.things
 {
     import flash.utils.describeType;
+    import flash.utils.getDefinitionByName;
     
     import otlib.geom.Size;
+    import otlib.otml.OTMLNode;
     import otlib.resources.Resources;
     import otlib.sprites.Sprite;
     
@@ -204,6 +206,41 @@ package otlib.things
                 newThing.animator = this.animator.clone();
             
             return newThing;
+        }
+        
+        public function serialize():OTMLNode
+        {
+            var node:OTMLNode = new OTMLNode();
+            node.tag = "ThingType";
+            
+            var properties:XMLList = describeType(this).variable;
+            for each (var property:XML in properties) {
+                var name:String = property.@name;
+                node.writeAt(name, this[name]);
+            }
+            
+            if (animator)
+                node.addChild(animator.serialize());
+            
+            return node;
+        }
+        
+        public function unserialize(node:OTMLNode):Boolean
+        {
+            var properties:XMLList = describeType(this).variable;
+            for each (var property:XML in properties) {
+                var name:String = property.@name;
+                var type:String = property.@type;
+                this[name] = node.readAt(name, getDefinitionByName(type) as Class);
+            }
+            
+            var animatorNode:OTMLNode = node.getChild("Animator");
+            if (animatorNode) {
+                var animator:Animator = new Animator();
+                animator.unserialize(animatorNode);
+                this.animator = animator;
+            }
+            return true;
         }
         
         //--------------------------------------------------------------------------

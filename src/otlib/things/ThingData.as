@@ -42,8 +42,10 @@ package otlib.things
     import otlib.geom.Size;
     import otlib.obd.OBDEncoder;
     import otlib.obd.OBDVersions;
+    import otlib.otml.OTMLNode;
     import otlib.sprites.Sprite;
     import otlib.sprites.SpriteData;
+    import otlib.sprites.SpriteSheet;
     import otlib.utils.ColorUtils;
     import otlib.utils.OTFormat;
     import otlib.utils.OutfitData;
@@ -128,8 +130,7 @@ package otlib.things
         // Public
         //--------------------------------------
         
-        public function getSpriteSheet(textureIndex:Vector.<Rect> = null,
-                                       backgroundColor:uint = 0xFFFF00FF):BitmapData
+        public function getSpriteSheet(backgroundColor:uint = 0xFFFF00FF):SpriteSheet
         {
             // Measures and creates bitmap
             var size:uint = Sprite.DEFAULT_SIZE;
@@ -139,10 +140,8 @@ package otlib.things
             var bitmapHeight:Number = (totalY * m_thing.height) * size;
             var pixelsWidth:int = m_thing.width * size;
             var pixelsHeight:int = m_thing.height * size;
-            var bitmap:BitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, backgroundColor);
-            
-            if (textureIndex)
-                textureIndex.length = m_thing.getTotalTextures();
+            var textureRect:Vector.<Rect> = new Vector.<Rect>(m_thing.getTotalTextures(), true);
+            var spriteSheet:SpriteSheet = new SpriteSheet(bitmapWidth, bitmapHeight, textureRect);
             
             for (var f:uint = 0; f < m_thing.frames; f++)
             {
@@ -158,8 +157,7 @@ package otlib.things
                                 var fx:int = (index % totalX) * pixelsWidth;
                                 var fy:int = Math.floor(index / totalX) * pixelsHeight;
                                 
-                                if (textureIndex)
-                                    textureIndex[index] = new Rect(fx, fy, pixelsWidth, pixelsHeight);
+                                textureRect[index] = new Rect(fx, fy, pixelsWidth, pixelsHeight);
                                 
                                 for (var w:uint = 0; w < m_thing.width; w++)
                                 {
@@ -168,7 +166,7 @@ package otlib.things
                                         index = thing.getSpriteIndex(w, h, l, x, y, z, f);
                                         var px:int = ((m_thing.width - w - 1) * size);
                                         var py:int = ((m_thing.height - h - 1) * size);
-                                        copyPixels(index, bitmap, px + fx, py + fy);
+                                        copyPixels(index, spriteSheet, px + fx, py + fy);
                                     }
                                 }
                             }
@@ -176,17 +174,15 @@ package otlib.things
                     }
                 }
             }
-            return bitmap;
+            return spriteSheet;
         }
         
-        public function getColoredSpriteSheet(outfitData:OutfitData):BitmapData
+        public function getColoredSpriteSheet(outfitData:OutfitData):SpriteSheet
         {
             if (!outfitData)
                 throw new NullArgumentError("outfitData");
             
-            var textureRectList:Vector.<Rect> = new Vector.<Rect>();
-            var spriteSheet:BitmapData = getSpriteSheet(textureRectList, 0x00000000);
-            spriteSheet = SpriteUtils.removeMagenta(spriteSheet);
+            var spriteSheet:SpriteSheet = getSpriteSheet(0x00000000);
             
             if (m_thing.layers != 2)
                 return spriteSheet;
@@ -228,7 +224,7 @@ package otlib.things
                         for (z = 0; z < m_thing.patternZ; z++) {
                             for (x = 0; x < m_thing.patternX; x++) {
                                 var i:uint = (((f % m_thing.frames * m_thing.patternZ + z) * m_thing.patternY + y) * m_thing.patternX + x) * m_thing.layers;
-                                var rect:Rect = textureRectList[i];
+                                var rect:Rect = spriteSheet.textures[i];
                                 RECTANGLE.setTo(rect.x, rect.y, rect.width, rect.height);
                                 
                                 index = (((f * m_thing.patternZ + z) * m_thing.patternY) * m_thing.patternX + x) * m_thing.layers;
@@ -237,7 +233,7 @@ package otlib.things
                                 grayBitmap.copyPixels(spriteSheet, RECTANGLE, POINT);
                                 
                                 i++;
-                                rect = textureRectList[i];
+                                rect = spriteSheet.textures[i];
                                 RECTANGLE.setTo(rect.x, rect.y, rect.width, rect.height);
                                 blendBitmap.copyPixels(spriteSheet, RECTANGLE, POINT);
                             }
@@ -257,7 +253,7 @@ package otlib.things
             grayBitmap.dispose();
             blendBitmap.dispose();
             colorBitmap.dispose();
-            return bitmap;
+            return spriteSheet;
         }
         
         public function setSpriteSheet(bitmap:BitmapData):void
@@ -349,6 +345,29 @@ package otlib.things
                 td.m_sprites[i] = m_sprites[i].clone();
            
             return td;
+        }
+        
+        public function serialize():OTMLNode
+        {
+            var node:OTMLNode = new OTMLNode();
+            node.tag = "ThingData";
+            node.writeAt("obdVersion", m_obdVersion);
+            node.writeAt("clientVersion", m_clientVersion);
+            node.addChild(m_thing.serialize());
+            return node;
+        }
+        
+        public function unserialize(node:OTMLNode):Boolean
+        {
+            if (node.tag != "ThingData") return false;
+            
+            var thing:ThingType = new ThingType();
+            thing.unserialize(node.getChild("ThingType"));
+            
+            this.obdVersion = node.intAt("obdVersion");
+            this.clientVersion = node.intAt("clientVersion");
+            this.thing = thing;
+            return true;
         }
         
         //--------------------------------------

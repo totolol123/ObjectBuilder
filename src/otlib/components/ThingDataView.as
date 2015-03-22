@@ -31,6 +31,7 @@ package otlib.components
     import mx.core.UIComponent;
     
     import otlib.geom.Rect;
+    import otlib.sprites.SpriteSheet;
     import otlib.things.Animator;
     import otlib.things.FrameDuration;
     import otlib.things.ThingCategory;
@@ -50,7 +51,7 @@ package otlib.components
         private var _thingData:ThingData;
         private var _proposedThingData:ThingData;
         private var _thingDataChanged:Boolean;
-        private var _spriteSheet:BitmapData;
+        private var _spriteSheet:SpriteSheet;
         private var _textureIndex:Vector.<Rect>;
         private var _bitmap:BitmapData;
         private var _fillRect:Rectangle;
@@ -211,8 +212,8 @@ package otlib.components
                     thingData.colorize(_outfitData);
                 }
                 
-                _textureIndex = new Vector.<Rect>();
-                _spriteSheet = thingData.getSpriteSheet(_textureIndex, 0);
+                _spriteSheet = thingData.getSpriteSheet(0x00000000);
+                _textureIndex = _spriteSheet.textures;
                 _bitmap = new BitmapData(thingData.thing.width * 32, thingData.thing.height * 32, true);
                 _fillRect = _bitmap.rect;
                 _maxFrame = thingData.thing.frames;

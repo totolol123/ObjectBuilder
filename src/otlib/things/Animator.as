@@ -24,6 +24,8 @@ package otlib.things
 {
     import flash.utils.getTimer;
     
+    import otlib.otml.OTMLNode;
+    
     public class Animator
     {
         //--------------------------------------------------------------------------
@@ -140,6 +142,45 @@ package otlib.things
             m_currentLoop = 0;
             m_currentDirection = FORWARD;
             m_isComplete = false;
+        }
+        
+        public function serialize():OTMLNode
+        {
+            var node:OTMLNode = new OTMLNode();
+            node.tag = "Animator";
+            node.writeAt("animationMode", animationMode);
+            node.writeAt("loopCount", loopCount);
+            node.writeAt("startFrame", startFrame);
+            node.writeAt("frames", frames);
+            
+            var length:uint = frameDurations.length;
+            for (var i:uint = 0; i < length; i++)
+                node.addChild(frameDurations[i].serialize());
+            
+            return node;
+        }
+        
+        public function unserialize(node:OTMLNode):Boolean
+        {
+            if (node.tag != "Animator") return false;
+            
+            this.animationMode = node.intAt("animationMode");
+            this.loopCount = node.intAt("loopCount");
+            this.startFrame = node.intAt("startFrame");
+            this.frames = node.intAt("frames");
+            
+            var nodes:Vector.<OTMLNode> = node.getChildrenAt("FrameDuration");
+            if (nodes.length == 0 || nodes.length != this.frames) return false;
+            
+            var frameDurations:Vector.<FrameDuration> = new Vector.<FrameDuration>(nodes.length, true);
+            for (var i:uint = 0; i < nodes.length; i++) {
+                var duration:FrameDuration = new FrameDuration();
+                if (!duration.unserialize(nodes[i])) return false;
+                frameDurations[i] = duration;
+            }
+            
+            this.frameDurations = frameDurations;
+            return true;
         }
         
         //--------------------------------------

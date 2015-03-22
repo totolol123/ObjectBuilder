@@ -57,7 +57,6 @@ package ob.settings
         public var showThingsPanel:Boolean = true;
         public var showSpritesPanel:Boolean = true;
         public var language:String = "en_US";
-        public var savingSpriteSheet:Number = 0;
         public var findWindowWidth:Number = 0;
         public var findWindowHeight:Number = 0;
         public var objectViewerWidth:Number = 0;
@@ -72,6 +71,7 @@ package ob.settings
         public var exportThingFormat:String;
         public var exportOBDVersion:uint = OBDVersions.OBD_VERSION_2;
         public var exportSpriteFormat:String;
+        public var exportObjectProperties:Boolean;
         
         // versions window
         public var versionsWindowMaximized:Boolean = true;

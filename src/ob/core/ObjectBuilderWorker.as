@@ -103,9 +103,12 @@ package ob.core
     import otlib.loaders.ThingDataLoader;
     import otlib.obd.OBDEncoder;
     import otlib.obd.OBDVersions;
+    import otlib.otml.OTMLDocument;
+    import otlib.otml.OTMLNode;
     import otlib.resources.Resources;
     import otlib.sprites.Sprite;
     import otlib.sprites.SpriteData;
+    import otlib.sprites.SpriteSheet;
     import otlib.sprites.SpriteStorage;
     import otlib.things.Animator;
     import otlib.things.FrameDuration;
@@ -643,7 +646,7 @@ package ob.core
                                        obdVersion:uint,
                                        datSignature:uint,
                                        sprSignature:uint,
-                                       spriteSheetFlag:uint,
+                                       exportObjectProperties:Boolean,
                                        transparentBackground:Boolean,
                                        jpegQuality:uint):void
         {
@@ -669,7 +672,7 @@ package ob.core
             var helper:SaveHelper = new SaveHelper();
             var backgoundColor:uint = (_transparency || transparentBackground) ? 0x00FF00FF : 0xFFFF00FF;
             var bytes:ByteArray;
-            var bitmap:BitmapData;
+            var spriteSheet:SpriteSheet;
             
             for (var i:uint = 0; i < length; i++) {
                 var pathHelper:PathHelper = list[i];
@@ -678,16 +681,19 @@ package ob.core
                 var name:String = FileUtil.getName(file);
                 var format:String = file.extension;
                 
-                if (ImageFormat.hasImageFormat(format))
-                {
-                    bitmap = thingData.getSpriteSheet(null, backgoundColor);
-                    bytes = ImageCodec.encode(bitmap, format, jpegQuality);
-                    if (spriteSheetFlag != 0)
-                        helper.addFile(ObUtils.getPatternsString(thingData.thing, spriteSheetFlag), name, "txt", file);
-                    
-                }
-                else if (format == OTFormat.OBD)
-                {
+                if (ImageFormat.hasImageFormat(format)) {
+                    spriteSheet = thingData.getSpriteSheet(backgoundColor);
+                    bytes = ImageCodec.encode(spriteSheet, format, jpegQuality);
+                    if (exportObjectProperties) {
+                        var node:OTMLNode = thingData.serialize();
+                        var spriteSheetNode:OTMLNode = spriteSheet.serialize();
+                        spriteSheetNode.writeAt("image-source", file.name, 0);
+                        node.addChild(spriteSheetNode);
+                        var doc:OTMLDocument = OTMLDocument.create();
+                        doc.addChild(node);
+                        helper.addFile(doc.toOTMLString(), name, "obi", file);
+                    }
+                } else if (format == OTFormat.OBD) {
                     bytes = encoder.encode(thingData);
                 }
                 helper.addFile(bytes, name, format, file);

@@ -661,7 +661,7 @@ THE SOFTWARE.
                                          category:String,
                                          obdVersion:uint,
                                          clientVersion:Version,
-                                         spriteSheetFlags:uint,
+                                         exportObjectProperties:Boolean,
                                          transparentBackground:Boolean,
                                          jpegQuality:uint):void
             {
@@ -671,7 +671,7 @@ THE SOFTWARE.
                 for (var i:uint = 0; i < length; i++) {
                     list[i] = new PathHelper(fileDataList[i].nativePath, fileDataList[i].data as uint);
                 }
-                sendCommand(new ExportThingCommand(list, category, obdVersion, clientVersion.datSignature, clientVersion.sprSignature, spriteSheetFlags, transparentBackground, jpegQuality));
+                sendCommand(new ExportThingCommand(list, category, obdVersion, clientVersion.datSignature, clientVersion.sprSignature, exportObjectProperties, transparentBackground, jpegQuality));
             }
             
             public function replaceThings(list:Vector.<ThingData>):void
@@ -1113,7 +1113,7 @@ THE SOFTWARE.
                                                obdVersion:uint,
                                                things:Vector.<ThingType>,
                                                category:String,
-                                               spriteSheetFlag:uint,
+                                               exportObjectProperties:Boolean,
                                                transparentBackground:Boolean,
                                                jpegQuality:uint):void
             {
@@ -1133,7 +1133,7 @@ THE SOFTWARE.
                 function completeHandler(event:Event):void
                 {
                     if (queue.result && queue.result.length > 0) {
-                        exportThings(queue.result, category, obdVersion, clientVersion, spriteSheetFlag, transparentBackground, jpegQuality);
+                        exportThings(queue.result, category, obdVersion, clientVersion, exportObjectProperties, transparentBackground, jpegQuality);
                     }
                 }
             }
@@ -1823,7 +1823,7 @@ THE SOFTWARE.
                                           window.obdVersion,
                                           things,
                                           thingData.category,
-                                          _settings.savingSpriteSheet,
+                                          _settings.exportObjectProperties,
                                           _settings.exportWithTransparentBackground,
                                           _settings.jpegQuality);
                     }

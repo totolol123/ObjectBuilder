@@ -375,19 +375,13 @@ THE SOFTWARE.
                     var file:File = window.directory.resolvePath(window.prefix + "." + window.format);
                     var backgoundColor:uint = true ? 0x00FF00FF : 0xFFFF00FF;
                     var bytes:ByteArray;
-                    var bitmap:BitmapData;
                     var format:String = file.extension;
                     
                     var helper:SaveHelper = new SaveHelper();
                     if (ImageFormat.hasImageFormat(format))
-                    {
-                        bitmap = thingView.thingData.getSpriteSheet(null, backgoundColor);
-                        bytes = ImageCodec.encode(bitmap, format);
-                    }
+                        bytes = ImageCodec.encode(thingView.thingData.getSpriteSheet(backgoundColor), format);
                     else if (format == OTFormat.OBD)
-                    {
                         bytes = new OBDEncoder().encode(thingView.thingData);
-                    }
                     
                     helper.addFile(bytes, window.prefix, format, file);
                     helper.save();

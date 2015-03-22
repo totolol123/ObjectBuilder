@@ -37,7 +37,7 @@ package ob.commands.things
                                            obdVersion:uint,
                                            datSignature:uint,
                                            sprSignature:uint,
-                                           spriteSheetFlag:uint,
+                                           exportObjectProperties:Boolean,
                                            transparentBackground:Boolean,
                                            jpegQuality:uint)
         {
@@ -46,7 +46,7 @@ package ob.commands.things
                   obdVersion,
                   datSignature,
                   sprSignature,
-                  spriteSheetFlag,
+                  exportObjectProperties,
                   transparentBackground,
                   jpegQuality);
         }
