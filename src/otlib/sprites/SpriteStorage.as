@@ -192,7 +192,7 @@ package otlib.sprites
                 throw new NullArgumentError("pixels");
             }
             
-            if (pixels.length != Sprite.SPRITE_DATA_SIZE) {
+            if (pixels.length != Sprite.PIXEL_DATA_SIZE) {
                 throw new ArgumentError("Parameter pixels has an invalid length.");
             }
             
@@ -354,7 +354,7 @@ package otlib.sprites
                 throw new NullArgumentError("pixels");
             }
             
-            if (pixels.length != Sprite.SPRITE_DATA_SIZE) {
+            if (pixels.length != Sprite.PIXEL_DATA_SIZE) {
                 throw new ArgumentError("Parameter pixels has an invalid length.");
             }
             
@@ -593,7 +593,7 @@ package otlib.sprites
         {
             result = result ? result : new ChangeResult();
             
-            if (pixels.length != Sprite.SPRITE_DATA_SIZE) {
+            if (pixels.length != Sprite.PIXEL_DATA_SIZE) {
                 return result.update(null, false, "Parameter pixels has an invalid length.");
             }
             

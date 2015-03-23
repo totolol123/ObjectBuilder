@@ -92,7 +92,7 @@ THE SOFTWARE.
                     
                     try
                     {
-                        imageDisplay.source = item.getBitmap();
+                        imageDisplay.source = item.bitmap;
                     } catch(error:Error) {
                         Log.error(error.message, error.getStackTrace(), error.errorID);
                     }

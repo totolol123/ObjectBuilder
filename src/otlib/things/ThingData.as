@@ -362,7 +362,7 @@ package otlib.things
             if (index < m_sprites.length) {
                 var sd:SpriteData = m_sprites[index];
                 if (sd && sd.pixels) {
-                    var bmp:BitmapData = sd.getBitmap();
+                    var bmp:BitmapData = sd.bitmap;
                     if (bmp) {
                         sd.pixels.position = 0;
                         RECTANGLE.setTo(0, 0, bmp.width, bmp.height);

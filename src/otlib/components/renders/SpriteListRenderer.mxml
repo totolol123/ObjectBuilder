@@ -85,7 +85,7 @@ THE SOFTWARE.
             {
                 var sprite:SpriteData = data as SpriteData;
                 if (sprite) {
-                    imageDisplay.source = sprite.getBitmap();
+                    imageDisplay.source = sprite.bitmap;
                     labelDisplay.text = sprite.id.toString();
                 }
             }

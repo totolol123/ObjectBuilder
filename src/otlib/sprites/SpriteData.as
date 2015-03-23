@@ -23,9 +23,9 @@
 package otlib.sprites
 {
     import flash.display.BitmapData;
-    import flash.geom.Point;
-    import flash.geom.Rectangle;
     import flash.utils.ByteArray;
+    
+    import nail.errors.NullArgumentError;
     
     import otlib.components.IListObject;
     import otlib.utils.SpriteUtils;
@@ -38,6 +38,7 @@ package otlib.sprites
         
         private var m_id:uint;
         private var m_pixels:ByteArray;
+        private var m_bitmap:BitmapData;
         
         //--------------------------------------
         // Getters / Setters
@@ -47,7 +48,29 @@ package otlib.sprites
         public function set id(value:uint):void { m_id = value; }
         
         public function get pixels():ByteArray { return m_pixels; }
-        public function set pixels(value:ByteArray):void { m_pixels = value; }
+        public function set pixels(value:ByteArray):void
+        {
+            if (!value)
+                throw new NullArgumentError("pixels");
+            
+            if (value.length != Sprite.PIXEL_DATA_SIZE)
+                throw new ArgumentError("Invalid pixel data size.");
+            
+            m_pixels = value;
+            m_bitmap = null;
+        }
+        
+        public function get bitmap():BitmapData
+        {
+            if (!m_bitmap)
+                m_bitmap = Sprite.BITMAP.clone();
+            
+            if (m_pixels) {
+                m_pixels.position = 0;
+                m_bitmap.setPixels(Sprite.RECTANGLE, m_pixels);
+            }
+            return m_bitmap;
+        }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -70,50 +93,24 @@ package otlib.sprites
             return "[object ThingData id="+id+"]";
         }
         
-        /**
-         * @param backgroundColor A 32-bit ARGB color value.
-         */
-        public function getBitmap(backgroundColor:uint = 0x00000000):BitmapData
-        {
-            if (pixels) {
-                var bitmap:BitmapData;
-                
-                try
-                {
-                    pixels.position = 0;
-                    BITMAP.setPixels(RECTANGLE, pixels);
-                    bitmap = new BitmapData(Sprite.DEFAULT_SIZE, Sprite.DEFAULT_SIZE, true, backgroundColor);
-                    bitmap.copyPixels(BITMAP, RECTANGLE, POINT, null, null, true);
-                } catch(error:Error) {
-                    return null;
-                }
-                return bitmap;
-            }
-            return null;
-        }
-        
         public function isEmpty():Boolean
         {
-            if (pixels) {
-                BITMAP.setPixels(RECTANGLE, pixels);
-                return SpriteUtils.isEmpty(BITMAP);
-            }
-            return true;
+            return SpriteUtils.isEmpty(this.bitmap);
         }
         
         public function clone():SpriteData
         {
-            var pixelsCopy:ByteArray;
-            
+            var pixels:ByteArray;
             if (m_pixels) {
-                pixelsCopy = new ByteArray();
+                pixels = new ByteArray();
                 m_pixels.position = 0;
-                m_pixels.readBytes(pixelsCopy, 0, m_pixels.bytesAvailable);
+                m_pixels.readBytes(pixels, 0, m_pixels.bytesAvailable);
             }
             
             var sd:SpriteData = new SpriteData();
-            sd.id = m_id;
-            sd.pixels = pixelsCopy;
+            sd.m_id = m_id;
+            sd.m_pixels = pixels;
+            sd.m_bitmap = m_bitmap ? m_bitmap.clone() : null;
             return sd;
         }
         
@@ -121,16 +118,20 @@ package otlib.sprites
         // STATIC
         //--------------------------------------------------------------------------
         
-        private static const RECTANGLE:Rectangle = new Rectangle(0, 0, Sprite.DEFAULT_SIZE, Sprite.DEFAULT_SIZE);
-        private static const POINT:Point = new Point();
-        private static const BITMAP:BitmapData = new BitmapData(Sprite.DEFAULT_SIZE, Sprite.DEFAULT_SIZE, true, 0xFFFF00FF);
-        
-        public static function create(id:uint = 0, pixels:ByteArray = null):SpriteData
+        public static function create(id:uint, pixels:ByteArray):SpriteData
         {
-            var data:SpriteData = new SpriteData();
-            data.id = id;
-            data.pixels = pixels ? pixels : BITMAP.getPixels(RECTANGLE);
-            return data;
+            var sd:SpriteData = new SpriteData();
+            sd.id = id;
+            sd.pixels = pixels;
+            return sd;
+        }
+        
+        public static function createEmpty(id:uint = 0):SpriteData
+        {
+            var sd:SpriteData = new SpriteData();
+            sd.id = id;
+            sd.pixels = Sprite.BITMAP.getPixels(Sprite.RECTANGLE);
+            return sd;
         }
     }
 }

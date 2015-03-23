@@ -34,14 +34,18 @@ package ob.animationeditor
         //--------------------------------------------------------------------------
         
         public var opacity:Number;
-        public var bitmap:BitmapData;
         public var duration:FrameDuration;
+        
+        private var m_bitmap:BitmapData;
         
         //--------------------------------------
         // Getters / Setters
         //--------------------------------------
         
         public function get id():uint { return uint.MAX_VALUE; }
+        
+        public function get bitmap():BitmapData { return m_bitmap; }
+        public function set bitmap(value:BitmapData):void { m_bitmap = value; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -50,7 +54,7 @@ package ob.animationeditor
         public function Frame(bitmap:BitmapData = null, duration:FrameDuration = null)
         {
             this.opacity = 1.0;
-            this.bitmap = bitmap;
+            m_bitmap = bitmap;
             this.duration = duration;
         }
         
@@ -61,11 +65,6 @@ package ob.animationeditor
         //--------------------------------------
         // Public
         //--------------------------------------
-        
-        public function getBitmap(backgroundColor:uint = 0):BitmapData
-        {
-            return bitmap;
-        }
         
         public function clone():Frame
         {

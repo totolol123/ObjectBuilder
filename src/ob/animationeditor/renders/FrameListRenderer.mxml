@@ -69,7 +69,7 @@ THE SOFTWARE.
             {
                 var frame:Frame = data as Frame;
                 if (frame) {
-                    imageDisplay.source = frame.getBitmap();
+                    imageDisplay.source = frame.bitmap;
                     labelDisplay.text = this.itemIndex.toString();
                 }
             }

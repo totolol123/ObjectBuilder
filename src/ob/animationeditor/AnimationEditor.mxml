@@ -295,7 +295,7 @@ THE SOFTWARE.
                 }
                 
                 for (f = 0; f < thing.frames; f++) {
-                    var bmp:BitmapData = framesList.getObjectAt(f).getBitmap();
+                    var bmp:BitmapData = framesList.getObjectAt(f).bitmap;
                     for (var w:uint = 0; w < thing.width; w++) {
                         for (var h:uint = 0; h < thing.height; h++) {
                             

@@ -274,7 +274,7 @@ package otlib.things
         public function getSpriteBitmap(index:uint):BitmapData
         {
             if (sprites && index < sprites.length && sprites[index] != null)
-                return sprites[index].getBitmap();
+                return sprites[index].bitmap;
             
             return null;
         }
@@ -330,7 +330,7 @@ package otlib.things
                 var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(length, true);
                 
                 for (var i:uint = 0; i < length; i++)
-                    sprites[i] = this.sprites[i] || SpriteData.create();
+                    sprites[i] = this.sprites[i] || SpriteData.createEmpty();
                 
                 data.sprites = sprites;
             }
@@ -415,7 +415,7 @@ package otlib.things
             var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(length, true);
             
             for (var i:uint = 0; i < length; i++)
-                sprites[i] = this.sprites[i] || SpriteData.create();
+                sprites[i] = this.sprites[i] || SpriteData.createEmpty();
             
             return ThingData.create(OBDVersions.OBD_VERSION_2, version, thing, sprites);
         }

@@ -37,7 +37,7 @@ package otlib.utils
         public var thing:ThingType;
         public var pixels:ByteArray;
         
-        private var _bitmap:BitmapData;
+        private var m_bitmap:BitmapData;
         
         //--------------------------------------
         // Getters / Setters 
@@ -45,34 +45,26 @@ package otlib.utils
         
         public function get id():uint { return thing ? thing.id : 0; }
         
+        public function get bitmap():BitmapData
+        {
+            if (pixels && thing && !m_bitmap) {
+                pixels.position = 0;
+                m_bitmap = new BitmapData(Math.max(32, thing.width * 32), Math.max(32, thing.height * 32), true, 0);
+                if (thing.width != 0 &&
+                    thing.height != 0 &&
+                    pixels.length == (m_bitmap.width * m_bitmap.height * 4)) {
+                    m_bitmap.setPixels(m_bitmap.rect, pixels);
+                }
+            }
+            return m_bitmap;
+        }
+        
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
         public function ThingListItem()
         {
-        }
-        
-        //--------------------------------------------------------------------------
-        // METHODS
-        //--------------------------------------------------------------------------
-        
-        //--------------------------------------
-        // Public
-        //--------------------------------------
-        
-        public function getBitmap(backgroundColor:uint = 0x00000000):BitmapData
-        {
-            if (pixels && thing && !_bitmap) {
-                pixels.position = 0;
-                _bitmap = new BitmapData(Math.max(32, thing.width * 32), Math.max(32, thing.height * 32), true, backgroundColor);
-                if (thing.width != 0 &&
-                    thing.height != 0 &&
-                    pixels.length == (_bitmap.width * _bitmap.height * 4)) {
-                    _bitmap.setPixels(_bitmap.rect, pixels);
-                }
-            }
-            return _bitmap;
         }
     }
 }

@@ -76,6 +76,7 @@ THE SOFTWARE.
             import nail.logging.Log;
             import nail.logging.LogFileTarget;
             import nail.managers.PopUpWindowManager;
+            import nail.utils.BitmapUtil;
             import nail.utils.Descriptor;
             import nail.utils.DialogDetail;
             import nail.utils.FileData;
@@ -1085,7 +1086,7 @@ THE SOFTWARE.
                 
                 var data:SpriteData = spritesList.selectedSprite;
                 if (data) {
-                    var bitmap:BitmapData = data.getBitmap(0xFFFF00FF);
+                    var bitmap:BitmapData = BitmapUtil.to24bits(data.bitmap, 0xFF00FF);
                     Clipboard.generalClipboard.clear();
                     Clipboard.generalClipboard.setData(ClipboardFormats.BITMAP_FORMAT, bitmap);
                 }
@@ -1858,7 +1859,7 @@ THE SOFTWARE.
                         var length:uint = thing.spriteIDs.length;
                         var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(length, true);
                         for (var i:uint = 0; i < length; i++)
-                            sprites[i] = SpriteData.create(thing.spriteIDs[i]);
+                            sprites[i] = SpriteData.createEmpty(thing.spriteIDs[i]);
                         
                         var data:ThingData = ThingData.create(OBDVersions.OBD_VERSION_2, m_version.value, thing, sprites);
                         data.setSpriteSheet(bitmap);
