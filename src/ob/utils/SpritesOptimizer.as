@@ -168,7 +168,7 @@ package ob.utils
                     }
                     
                     var sprite:Sprite = m_oldIDs[index];
-                    sprite.id = i;
+                    sprite.m_id = i;
                     m_newIDs[i] = sprite;
                     
                     if (index == m_spr.spritesCount) break;

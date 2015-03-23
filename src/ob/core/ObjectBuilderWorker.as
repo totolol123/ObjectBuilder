@@ -1318,7 +1318,7 @@ package ob.core
                 var format:String = file.extension;
                 
                 if (ImageFormat.hasImageFormat(format) && pathHelper.id != 0) {
-                    var bitmap:BitmapData = _sprites.getBitmap(pathHelper.id, transparentBackground);
+                    var bitmap:BitmapData = _sprites.getBitmap(pathHelper.id);
                     if (bitmap) {
                         var bytes:ByteArray = ImageCodec.encode(bitmap, format, jpegQuality);
                         helper.addFile(bytes, name, format, file);
@@ -1658,7 +1658,7 @@ package ob.core
                 var pixels:ByteArray = _sprites.getPixels(spriteId);
                 if (!pixels) {
                     Log.error(Resources.getString("spriteNotFound", spriteId));
-                    pixels = _sprites.alertSprite.getPixels();
+                    pixels = _sprites.alertSprite.pixels;
                 }
                 
                 var spriteData:SpriteData = new SpriteData();

@@ -47,7 +47,6 @@ package otlib.sprites
     import otlib.events.StorageEvent;
     import otlib.resources.Resources;
     import otlib.utils.ChangeResult;
-    import otlib.utils.SpriteUtils;
     
     use namespace otlib_internal;
     
@@ -279,10 +278,10 @@ package otlib.sprites
                     var pixels:ByteArray;
                     try
                     {
-                        pixels =  sprite.getPixels();
+                        pixels =  sprite.pixels;
                     } catch (error:Error) {
                         Log.error(Resources.getString("failedToGetSprite", id), error.getStackTrace());
-                        return _alertSprite.getPixels();
+                        return _alertSprite.pixels;
                     }
                     return pixels;
                 }
@@ -306,7 +305,7 @@ package otlib.sprites
             
             try
             {
-                var sprite:BitmapData = getBitmap(id, true);
+                var sprite:BitmapData = getBitmap(id);
                 if (!sprite) return;
                 
                 _point.x = x;
@@ -321,23 +320,17 @@ package otlib.sprites
             }
         }
         
-        /**
-         * @param backgroundColor A 32-bit ARGB color value.
-         */
-        public function getBitmap(id:uint, transparent:Boolean):BitmapData
+        public function getBitmap(id:uint):BitmapData
         {
-            if (!this.loaded || id == 0)
-                return null;
-            
-            var sprite:Sprite = getSprite(id);
-            if (!sprite)
-                return null;
-            
-            var bitmap:BitmapData = sprite.getBitmap();
-            if (!transparent)
-                bitmap = SpriteUtils.fillBackground(bitmap);
-            
-            return bitmap;
+            if (_loaded) {
+                var sprite:Sprite = getSprite(id);
+                if (!sprite) return null;
+                
+                var bitmap:BitmapData = Sprite.BITMAP.clone();
+                bitmap.setPixels(Sprite.RECTANGLE, sprite.pixels);
+                return bitmap;
+            }
+            return null;
         }
         
         public function hasSpriteId(id:uint):Boolean
@@ -610,13 +603,7 @@ package otlib.sprites
             
             var id:uint = ++_spritesCount;
             var sprite:Sprite = new Sprite(id, _transparency);
-            if (!sprite.setPixels(pixels)) {
-                var message:String = Resources.getString(
-                    "failedToAdd",
-                    Resources.getString("sprite"),
-                    id);
-                return result.update(null, false, message);
-            }
+            sprite.pixels = pixels;
             
             // Add sprite to list.
             _sprites[id] = sprite;
@@ -625,7 +612,7 @@ package otlib.sprites
             // Returns the pixels buffer position.
             pixels.position = 0;
             
-            var data:SpriteData = SpriteData.createSpriteData(id, sprite.getPixels());
+            var data:SpriteData = SpriteData.createSpriteData(id, sprite.pixels);
             return result.update([data], true);
         }
         
@@ -653,13 +640,7 @@ package otlib.sprites
                 return result.update(null, true);
             
             var sprite:Sprite = new Sprite(id, _transparency);
-            if (!sprite.setPixels(pixels)) {
-                var message:String = Resources.getString(
-                    "failedToReplace",
-                    Resources.getString("sprite"),
-                    id);
-                return result.update(null, false, message);
-            }
+            sprite.pixels = pixels;
             
             // Get the removed sprite.
             var removed:Sprite = getSprite(id);
@@ -669,7 +650,7 @@ package otlib.sprites
             
             // Return the ByteArray position.
             pixels.position = 0;
-            var data:SpriteData = SpriteData.createSpriteData(id, removed.getPixels());
+            var data:SpriteData = SpriteData.createSpriteData(id, removed.pixels);
             return result.update([data], true);
         }
         
@@ -709,7 +690,7 @@ package otlib.sprites
                 _sprites[id] = new Sprite(id, _transparency);
             }
             
-            var data:SpriteData = SpriteData.createSpriteData(id, removed.getPixels());
+            var data:SpriteData = SpriteData.createSpriteData(id, removed.pixels);
             return result.update([data], true);
         }
         
@@ -779,7 +760,7 @@ package otlib.sprites
         {
             var bitmap:BitmapData = (new Assets.ALERT_IMAGE).bitmapData;
             var sprite:Sprite = new Sprite(uint.MAX_VALUE, transparent);
-            sprite.setPixels( bitmap.getPixels(bitmap.rect) );
+            sprite.pixels = bitmap.getPixels(bitmap.rect);
             return sprite;
         }
         

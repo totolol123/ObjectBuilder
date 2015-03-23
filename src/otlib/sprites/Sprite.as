@@ -29,6 +29,10 @@ package otlib.sprites
     
     import nail.errors.NullArgumentError;
     
+    import otlib.core.otlib_internal;
+    
+    use namespace otlib_internal;
+    
     /**
      * The Sprite class represents an image with 32x32 pixels.
      */
@@ -38,35 +42,47 @@ package otlib.sprites
         // PROPERTIES
         //--------------------------------------------------------------------------
         
-        private var _id:uint;
-        private var _transparent:Boolean;
-        private var _compressedPixels:ByteArray;
-        private var _bitmap:BitmapData;
+        otlib_internal var m_id:uint;
+        
+        private var m_transparent:Boolean;
+        private var m_compressedPixels:ByteArray;
         
         //--------------------------------------
         // Getters / Setters
         //--------------------------------------
         
         /** The id of the sprite. This value specifies the index in the spr file. **/
-        public function get id():uint { return _id; }
-        public function set id(value:uint):void { _id = value; }
+        public function get id():uint { return m_id; }
+        
+        /** Indicates if the sprite does not have colored pixels. **/
+        public function get isEmpty():Boolean { return (m_compressedPixels.length == 0); }
         
         /** Specifies whether the sprite supports per-pixel transparency. **/
-        public function get transparent():Boolean { return _transparent; }
-        public function set transparent(value:Boolean):void {
-            if (_transparent != value) {
-                
-                var pixels:ByteArray = getPixels();
-                _transparent = value;
-                setPixels( pixels );
+        public function get transparent():Boolean { return m_transparent; }
+        public function set transparent(value:Boolean):void
+        {
+            if (m_transparent != value) {
+                var pixels:ByteArray = uncompressPixels(m_compressedPixels, m_transparent);
+                m_transparent = value;
+                m_compressedPixels = compressPixels(pixels, m_transparent);
             }
         }
         
-        /** Indicates if the sprite does not have colored pixels. **/
-        public function get isEmpty():Boolean { return (_compressedPixels.length == 0); }
+        public function get pixels():ByteArray
+        {
+            return uncompressPixels(m_compressedPixels, m_transparent);
+        }
         
-        internal function get length():uint { return _compressedPixels.length;}
-        internal function get compressedPixels():ByteArray { return _compressedPixels; }
+        public function set pixels(value:ByteArray):void
+        {
+            if (!value)
+                throw new NullArgumentError("pixels");
+            
+            m_compressedPixels = compressPixels(value, m_transparent);
+        }
+        
+        internal function get length():uint { return m_compressedPixels.length;}
+        internal function get compressedPixels():ByteArray { return m_compressedPixels; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -74,10 +90,10 @@ package otlib.sprites
         
         public function Sprite(id:uint, transparent:Boolean)
         {
-            _id = id;
-            _transparent = transparent;
-            _compressedPixels = new ByteArray();
-            _compressedPixels.endian = Endian.LITTLE_ENDIAN;
+            m_id = id;
+            m_transparent = transparent;
+            m_compressedPixels = new ByteArray();
+            m_compressedPixels.endian = Endian.LITTLE_ENDIAN;
         }
         
         //--------------------------------------------------------------------------
@@ -93,15 +109,43 @@ package otlib.sprites
          */
         public function toString():String
         {
-            return _id.toString();
+            return m_id.toString();
         }
         
-        public function getPixels():ByteArray
+        public function clone():Sprite
         {
-            return uncompressPixels();
+            var sprite:Sprite = new Sprite(m_id, m_transparent);
+            m_compressedPixels.position = 0;
+            m_compressedPixels.readBytes(sprite.m_compressedPixels);
+            return sprite;
         }
         
-        public function setPixels(pixels:ByteArray):Boolean
+        public function clear():void
+        {
+            if (m_compressedPixels)
+                m_compressedPixels.clear();
+        }
+        
+        public function dispose():void
+        {
+            if (m_compressedPixels)
+                m_compressedPixels.clear();
+        }
+        
+        //--------------------------------------------------------------------------
+        // STATIC
+        //--------------------------------------------------------------------------
+        
+        public static const DEFAULT_SIZE:uint = 32;
+        public static const SPRITE_DATA_SIZE:uint = 4096; // DEFAULT_WIDTH * DEFAULT_HEIGHT * 4 channels;
+        public static const RECTANGLE:Rectangle = new Rectangle(0, 0, DEFAULT_SIZE, DEFAULT_SIZE);
+        public static const BITMAP:BitmapData = new BitmapData(DEFAULT_SIZE, DEFAULT_SIZE, true, 0);
+        
+        //--------------------------------------------------------------------------
+        // STATIC
+        //--------------------------------------------------------------------------
+        
+        public static function compressPixels(pixels:ByteArray, transparent:Boolean):ByteArray
         {
             if (!pixels)
                 throw new NullArgumentError("pixels");
@@ -109,158 +153,87 @@ package otlib.sprites
             if (pixels.length != SPRITE_DATA_SIZE)
                 throw new Error("Invalid sprite pixels length");
             
-            return compressPixels(pixels);
-        }
-        
-        public function getBitmap():BitmapData
-        {
-            if (_bitmap)
-                return _bitmap;
+            var compressedPixels:ByteArray = new ByteArray();
+            compressedPixels.endian = Endian.LITTLE_ENDIAN;
             
-            var pixels:ByteArray = getPixels();
-            if (!pixels)
-                return null;
-            
-            _bitmap = new BitmapData(DEFAULT_SIZE, DEFAULT_SIZE, true);
-            _bitmap.setPixels(RECTANGLE, pixels);
-            return _bitmap;
-        }
-        
-        public function setBitmap(bitmap:BitmapData):Boolean
-        {
-            if (!bitmap)
-                throw new NullArgumentError("bitmap");
-            
-            if (bitmap.width != DEFAULT_SIZE || bitmap.height != DEFAULT_SIZE)
-                throw new Error("Invalid sprite bitmap size");
-            
-            if (!compressPixels( bitmap.getPixels(RECTANGLE) ))
-                return false;
-            
-            _bitmap = bitmap.clone();
-            return true;
-        }
-        
-        public function clone():Sprite
-        {
-            var sprite:Sprite = new Sprite(_id, _transparent);
-            
-            _compressedPixels.position = 0;
-            _compressedPixels.readBytes(sprite._compressedPixels);
-            
-            sprite._bitmap = _bitmap;
-            return sprite;
-        }
-        
-        public function clear():void
-        {
-            if (_compressedPixels)
-                _compressedPixels.clear();
-            
-            if (_bitmap)
-                _bitmap.fillRect(RECTANGLE, 0x00FF00FF);
-        }
-        
-        public function dispose():void
-        {
-            if (_compressedPixels)
-                _compressedPixels.clear();
-            
-            if (_bitmap) {
-                _bitmap.dispose();
-                _bitmap = null;
-            }
-            
-            _id = 0;
-        }
-        
-        //--------------------------------------
-        // Private
-        //--------------------------------------
-        
-        private function compressPixels(pixels:ByteArray):Boolean
-        {
-            _compressedPixels.clear();
             pixels.position = 0;
             
-            var index:uint;
-            var color:uint;
-            var transparentPixel:Boolean = true;
-            var alphaCount:uint;
-            var chunkSize:uint;
-            var coloredPos:uint;
-            var finishOffset:uint;
+            var alphaCount:uint = 0;
+            var chunkSize:uint = 0;
+            var coloredPos:uint = 0;
+            var finishOffset:uint = 0;
             var length:uint = pixels.length / 4;
+            var i:uint = 0;
             
-            while (index < length) {
-                
+            while (i < length) {
                 chunkSize = 0;
-                while (index < length) {
-                    pixels.position = index * 4;
-                    color = pixels.readUnsignedInt();
-                    transparentPixel = (color == 0);
-                    if (!transparentPixel) break;
+                
+                // Reads transparent pixels
+                for (; i < length; i++) {
+                    pixels.position = i * 4;
+                    
+                    // Checks if the pixel is not transparent
+                    if (pixels.readUnsignedInt() != 0)
+                        break;
+                    
                     alphaCount++;
                     chunkSize++;
-                    index++;
                 }
                 
-                // Entire image is transparent
-                if (alphaCount < length) {
-                    // Already at the end
-                    if(index < length) {
-                        _compressedPixels.writeShort(chunkSize); // Write transparent pixels
-                        coloredPos = _compressedPixels.position; // Save colored position 
-                        _compressedPixels.position += 2; // Skip colored short
-                        chunkSize = 0;
+                // Reads colored pixels
+                if (alphaCount < length && i < length) {
+                    compressedPixels.writeShort(chunkSize); // Writes the length of the transparent pixels
+                    coloredPos = compressedPixels.position; // Save colored position 
+                    compressedPixels.position += 2;         // Skip colored short
+                    chunkSize = 0;
+                    
+                    for (; i < length; i++) {
+                        pixels.position = i * 4;
                         
-                        while(index < length) {
-                            pixels.position = index * 4;
-                            color = pixels.readUnsignedInt();
-                            transparentPixel = (color == 0);
-                            if (transparentPixel) break;
-                            
-                            _compressedPixels.writeByte(color >> 16 & 0xFF); // Write red
-                            _compressedPixels.writeByte(color >> 8 & 0xFF); // Write green
-                            _compressedPixels.writeByte(color & 0xFF); // Write blue
-                            if (_transparent) _compressedPixels.writeByte(color >> 24 & 0xFF); // Write Alpha
-                            
-                            chunkSize++;
-                            index++; 
-                        }
+                        var color:uint = pixels.readUnsignedInt();
                         
-                        finishOffset = _compressedPixels.position;
-                        _compressedPixels.position = coloredPos; // Go back to chunksize indicator
-                        _compressedPixels.writeShort(chunkSize); // Write colored pixels
-                        _compressedPixels.position = finishOffset;
+                        // Checks if the pixel is transparent
+                        if (color == 0)
+                            break;
+                        
+                        compressedPixels.writeByte(color >> 16 & 0xFF); // Red
+                        compressedPixels.writeByte(color >> 8 & 0xFF);  // Green
+                        compressedPixels.writeByte(color & 0xFF);       // Blue
+                        
+                        if (transparent)
+                            compressedPixels.writeByte(color >> 24 & 0xFF); // Alpha
+                        
+                        chunkSize++;
                     }
+                    
+                    finishOffset = compressedPixels.position;
+                    compressedPixels.position = coloredPos; // Go back to chunksize indicator
+                    compressedPixels.writeShort(chunkSize); // Writes the length of he colored pixels
+                    compressedPixels.position = finishOffset;
                 }
             }
-            
-            return true;
+            return compressedPixels;
         }
         
-        private function uncompressPixels():ByteArray
+        public static function uncompressPixels(compressedPixels:ByteArray, transparent:Boolean):ByteArray
         {
-            var read:uint;
-            var write:uint;
-            var transparentPixels:uint;
-            var coloredPixels:uint;
-            var alpha:uint;
-            var red:uint;
-            var green:uint;
-            var blue:uint;
-            var channels:uint = _transparent ? 4 : 3;
-            var length:uint = _compressedPixels.length;
-            var i:int;
+            if (!compressedPixels)
+                throw new NullArgumentError("compressedPixels");
             
-            _compressedPixels.position = 0;
             var pixels:ByteArray = new ByteArray();
+            var read:uint = 0;
+            var write:uint = 0;
+            var transparentPixels:uint = 0;
+            var coloredPixels:uint = 0;
+            var bitPerPixel:uint = transparent ? 4 : 3;
+            var length:uint = compressedPixels.length;
+            var i:int = 0;
             
-            for (read = 0; read < length; read += 4 + (channels * coloredPixels)) {
-                
-                transparentPixels = _compressedPixels.readUnsignedShort();
-                coloredPixels = _compressedPixels.readUnsignedShort();
+            compressedPixels.position = 0;
+            
+            for (read = 0; read < length; read += 4 + (bitPerPixel * coloredPixels)) {
+                transparentPixels = compressedPixels.readUnsignedShort();
+                coloredPixels = compressedPixels.readUnsignedShort();
                 
                 for (i = 0; i < transparentPixels; i++) {
                     pixels[write++] = 0x00; // Alpha
@@ -270,15 +243,15 @@ package otlib.sprites
                 }
                 
                 for (i = 0; i < coloredPixels; i++) {
-                    red = _compressedPixels.readUnsignedByte(); // Red
-                    green = _compressedPixels.readUnsignedByte(); // Green
-                    blue = _compressedPixels.readUnsignedByte(); // Blue
-                    alpha = _transparent ? _compressedPixels.readUnsignedByte() : 0xFF; // Alpha
+                    var red:uint = compressedPixels.readUnsignedByte();                         // Red
+                    var green:uint = compressedPixels.readUnsignedByte();                       // Green
+                    var blue:uint = compressedPixels.readUnsignedByte();                        // Blue
+                    var alpha:uint = transparent ? compressedPixels.readUnsignedByte() : 0xFF;  // Alpha
                     
-                    pixels[write++] = alpha; // Alpha
-                    pixels[write++] = red; // Red
-                    pixels[write++] = green; // Green
-                    pixels[write++] = blue; // Blue
+                    pixels[write++] = alpha;    // Alpha
+                    pixels[write++] = red;      // Red
+                    pixels[write++] = green;    // Green
+                    pixels[write++] = blue;     // Blue
                 }
             }
             
@@ -288,17 +261,34 @@ package otlib.sprites
                 pixels[write++] = 0x00; // Green
                 pixels[write++] = 0x00; // Blue	
             }
-            
             return pixels;
         }
         
-        //--------------------------------------------------------------------------
-        // STATIC
-        //--------------------------------------------------------------------------
-        
-        public static const DEFAULT_SIZE:uint = 32;
-        public static const SPRITE_DATA_SIZE:uint = 4096; // DEFAULT_WIDTH * DEFAULT_HEIGHT * 4 channels;
-        
-        private static const RECTANGLE:Rectangle = new Rectangle(0, 0, DEFAULT_SIZE, DEFAULT_SIZE);
+        public static function createFromBitmap(bitmap:BitmapData, transparent:Boolean):Vector.<Sprite>
+        {
+            if (!bitmap)
+                throw new NullArgumentError("bitmap");
+            
+            if ((bitmap.width % DEFAULT_SIZE) != 0 || (bitmap.height % DEFAULT_SIZE) != 0)
+                throw new ArgumentError("Invalid bitmap size.");
+            
+            var columns:uint = uint(bitmap.width / DEFAULT_SIZE);
+            var rows:uint = uint(bitmap.height / DEFAULT_SIZE);
+            var rect:Rectangle = new Rectangle(0, 0, DEFAULT_SIZE, DEFAULT_SIZE);
+            var sprites:Vector.<Sprite> = new Vector.<Sprite>(columns * rows, true);
+            var index:uint = 0;
+            
+            for (var y:uint = 0; y < rows; y++) {
+                for (var x:uint = 0; x < columns; x++) {
+                    var sprite:Sprite = new Sprite(index, transparent);
+                    rect.x = x * DEFAULT_SIZE;
+                    rect.y = y * DEFAULT_SIZE;
+                    sprite.pixels = bitmap.getPixels(rect);
+                    sprites[index] = sprite;
+                    index++;
+                }
+            }
+            return sprites;
+        }
     }
 }
