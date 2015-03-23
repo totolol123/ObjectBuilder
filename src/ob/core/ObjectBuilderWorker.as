@@ -131,44 +131,44 @@ package ob.core
         // PROPERTIES
         //--------------------------------------------------------------------------
         
-        private var _communicator:ICommunicator;
-        private var _versions:IVersionStorage;
-        private var _things:ThingTypeStorage;
-        private var _sprites:SpriteStorage;
-        private var _datFile:File;
-        private var _sprFile:File;
-        private var _version:Version;
-        private var _extended:Boolean;
-        private var _transparency:Boolean;
-        private var _improvedAnimations:Boolean;
-        private var _errorMessage:String;
-        private var _compiled:Boolean;
-        private var _isTemporary:Boolean;
-        private var _thingListAmount:uint;
-        private var _spriteListAmount:uint;
+        private var m_communicator:ICommunicator;
+        private var m_versions:IVersionStorage;
+        private var m_things:ThingTypeStorage;
+        private var m_sprites:SpriteStorage;
+        private var m_datFile:File;
+        private var m_sprFile:File;
+        private var m_version:Version;
+        private var m_extended:Boolean;
+        private var m_transparency:Boolean;
+        private var m_improvedAnimations:Boolean;
+        private var m_errorMessage:String;
+        private var m_compiled:Boolean;
+        private var m_isTemporary:Boolean;
+        private var m_thingListAmount:uint;
+        private var m_spriteListAmount:uint;
         
         //--------------------------------------
         // Getters / Setters
         //--------------------------------------
         
-        public function get worker():Worker { return _communicator.worker; }
-        public function get running():Boolean { return _communicator.running; }
-        public function get background():Boolean { return _communicator.background; }
-        public function get applicationDescriptor():XML { return _communicator.applicationDescriptor; }
+        public function get worker():Worker { return m_communicator.worker; }
+        public function get running():Boolean { return m_communicator.running; }
+        public function get background():Boolean { return m_communicator.background; }
+        public function get applicationDescriptor():XML { return m_communicator.applicationDescriptor; }
         
         public function get clientChanged():Boolean
         {
-            return ((_things && _things.changed) || (_sprites && _sprites.changed));
+            return ((m_things && m_things.changed) || (m_sprites && m_sprites.changed));
         }
         
         public function get clientIsTemporary():Boolean
         {
-            return (_things && _things.isTemporary && _sprites && _sprites.isTemporary);
+            return (m_things && m_things.isTemporary && m_sprites && m_sprites.isTemporary);
         }
         
         public function get clientLoaded():Boolean
         {
-            return (_things && _things.loaded && _sprites && _sprites.loaded);
+            return (m_things && m_things.loaded && m_sprites && m_sprites.loaded);
         }
         
         //--------------------------------------------------------------------------
@@ -181,10 +181,10 @@ package ob.core
             
             Resources.manager = ResourceManager.getInstance();
             
-            _communicator = new Communicator();
-            _versions = VersionStorage.getInstance();
-            _thingListAmount = 100;
-            _spriteListAmount = 100;
+            m_communicator = new Communicator();
+            m_versions = VersionStorage.getInstance();
+            m_thingListAmount = 100;
+            m_spriteListAmount = 100;
             
             register();
         }
@@ -199,18 +199,18 @@ package ob.core
         
         public function registerCallback(commandClass:Class, callback:Function):void
         {
-            _communicator.registerCallback(commandClass, callback);
+            m_communicator.registerCallback(commandClass, callback);
         }
         
         public function unregisterCallback(commandClass:Class, callback:Function):void
         {
-            _communicator.unregisterCallback(commandClass, callback);
+            m_communicator.unregisterCallback(commandClass, callback);
         }
         
         public function sendCommand(command:Command):void
         {
-            if (_communicator)
-                _communicator.sendCommand(command);
+            if (m_communicator)
+                m_communicator.sendCommand(command);
         }
         
         public function start():void
@@ -225,20 +225,20 @@ package ob.core
         
         public function onCompile():void
         {
-            this.onCompileAs(_datFile.nativePath,
-                            _sprFile.nativePath,
-                            _version.datSignature,
-                            _version.sprSignature,
-                            _extended,
-                            _transparency,
-                            _improvedAnimations);
+            this.onCompileAs(m_datFile.nativePath,
+                            m_sprFile.nativePath,
+                            m_version.datSignature,
+                            m_version.sprSignature,
+                            m_extended,
+                            m_transparency,
+                            m_improvedAnimations);
         }
         
         public function setSelectedThingIds(value:Vector.<uint>, category:String):void
         {
             if (value && value.length > 0) {
                 if (value.length > 1) value.sort(Array.NUMERIC | Array.DESCENDING);
-                var max:uint = _things.getMaxId(category);
+                var max:uint = m_things.getMaxId(category);
                 if (value[0] > max) {
                     value = Vector.<uint>([max]);
                 }
@@ -251,8 +251,8 @@ package ob.core
         {
             if (value && value.length > 0) {
                 if (value.length > 1) value.sort(Array.NUMERIC | Array.DESCENDING);
-                if (value[0] > _sprites.spritesCount) {
-                    value = Vector.<uint>([_sprites.spritesCount]);
+                if (value[0] > m_sprites.spritesCount) {
+                    value = Vector.<uint>([m_sprites.spritesCount]);
                 }
                 this.sendSpriteList(value);
             }
@@ -327,8 +327,8 @@ package ob.core
             if (isNullOrEmpty(path))
                 throw new NullOrEmptyArgumentError("path");
             
-            _versions.unload();
-            _versions.load(new File(path));
+            m_versions.unload();
+            m_versions.load(new File(path));
         }
         
         private function onSettings(settings:ObjectBuilderSettings):void
@@ -337,8 +337,8 @@ package ob.core
                 throw new NullOrEmptyArgumentError("settings");
             
             Resources.locale = settings.getLanguage()[0];
-            _thingListAmount = settings.objectsListAmount;
-            _spriteListAmount = settings.spritesListAmount;
+            m_thingListAmount = settings.objectsListAmount;
+            m_spriteListAmount = settings.spritesListAmount;
         }
         
         private function onCreateNewFiles(datSignature:uint,
@@ -347,27 +347,27 @@ package ob.core
                                           transparency:Boolean,
                                           improvedAninations:Boolean):void
         {
-            var clientVersion:Version = _versions.getBySignatures(datSignature, sprSignature);
+            var clientVersion:Version = m_versions.getBySignatures(datSignature, sprSignature);
             if (!clientVersion)
                 throw new ArgumentError(StringUtil.format("Invalid client signatures. Dat=0x{0}, Spr=0x{1}", datSignature.toString(16), sprSignature.toString(16)));
             
             this.onUnloadFiles();
             
-            _version = clientVersion;
-            _extended = (extended || _version.value >= 960);
-            _transparency = transparency;
-            _improvedAnimations = (improvedAninations || _version.value >= 1050);
+            m_version = clientVersion;
+            m_extended = (extended || m_version.value >= 960);
+            m_transparency = transparency;
+            m_improvedAnimations = (improvedAninations || m_version.value >= 1050);
             
             this.createStorage();
             
             // Create things.
-            _things.createNew(_version, _extended, _improvedAnimations);
+            m_things.createNew(m_version, m_extended, m_improvedAnimations);
             
             // Create sprites.
-            _sprites.createNew(_version, _extended, _transparency)
+            m_sprites.createNew(m_version, m_extended, m_transparency)
             
             // Update preview.
-            var thing:ThingType = _things.getItemType(ThingTypeStorage.MIN_ITEM_ID);
+            var thing:ThingType = m_things.getItemType(ThingTypeStorage.MIN_ITEM_ID);
             this.onGetThing(thing.id, thing.category);
             
             // Send sprites.
@@ -376,17 +376,17 @@ package ob.core
         
         private function createStorage():void
         {
-            _things = new ThingTypeStorage();
-            _things.addEventListener(StorageEvent.LOAD, storageLoadHandler);
-            _things.addEventListener(StorageEvent.CHANGE, storageChangeHandler);
-            _things.addEventListener(ProgressEvent.PROGRESS, thingsProgressHandler);
-            _things.addEventListener(ErrorEvent.ERROR, thingsErrorHandler);
+            m_things = new ThingTypeStorage();
+            m_things.addEventListener(StorageEvent.LOAD, storageLoadHandler);
+            m_things.addEventListener(StorageEvent.CHANGE, storageChangeHandler);
+            m_things.addEventListener(ProgressEvent.PROGRESS, thingsProgressHandler);
+            m_things.addEventListener(ErrorEvent.ERROR, thingsErrorHandler);
             
-            _sprites = new SpriteStorage();
-            _sprites.addEventListener(StorageEvent.LOAD, storageLoadHandler);
-            _sprites.addEventListener(StorageEvent.CHANGE, storageChangeHandler);
-            _sprites.addEventListener(ProgressEvent.PROGRESS, spritesProgressHandler);
-            _sprites.addEventListener(ErrorEvent.ERROR, spritesErrorHandler);
+            m_sprites = new SpriteStorage();
+            m_sprites.addEventListener(StorageEvent.LOAD, storageLoadHandler);
+            m_sprites.addEventListener(StorageEvent.CHANGE, storageChangeHandler);
+            m_sprites.addEventListener(ProgressEvent.PROGRESS, spritesProgressHandler);
+            m_sprites.addEventListener(ErrorEvent.ERROR, spritesErrorHandler);
         }
         
         private function onLoadFiles(datPath:String,
@@ -403,26 +403,26 @@ package ob.core
             if (isNullOrEmpty(sprPath))
                 throw new NullOrEmptyArgumentError("sprPath");
             
-            var clientVersion:Version = _versions.getBySignatures(datSignature, sprSignature);
+            var clientVersion:Version = m_versions.getBySignatures(datSignature, sprSignature);
             if (!clientVersion)
                 throw new ArgumentError(StringUtil.format("Invalid client signatures. Dat=0x{0}, Spr=0x{1}", datSignature.toString(16), sprSignature.toString(16)));
             
             this.onUnloadFiles();
             
-            _datFile = new File(datPath);
-            _sprFile = new File(sprPath);
-            _version = clientVersion;
-            _extended = (extended || _version.value >= 960);
-            _transparency = transparency;
-            _improvedAnimations = (improvedAnimations || _version.value >= 1050);
+            m_datFile = new File(datPath);
+            m_sprFile = new File(sprPath);
+            m_version = clientVersion;
+            m_extended = (extended || m_version.value >= 960);
+            m_transparency = transparency;
+            m_improvedAnimations = (improvedAnimations || m_version.value >= 1050);
             
             var title:String = Resources.getString("loading");
             sendCommand(new ShowProgressBarCommand(ProgressBarID.DAT_SPR, title));
             
             createStorage();
             
-            _things.load(_datFile, _version, _extended, _improvedAnimations);
-            _sprites.load(_sprFile, _version, _extended, _transparency);
+            m_things.load(m_datFile, m_version, m_extended, m_improvedAnimations);
+            m_sprites.load(m_sprFile, m_version, m_extended, m_transparency);
         }
         
         private function onCompileAs(datPath:String,
@@ -439,27 +439,27 @@ package ob.core
             if (isNullOrEmpty(sprPath))
                 throw new NullOrEmptyArgumentError("sprPath");
             
-            var clientVersion:Version = _versions.getBySignatures(datSignature, sprSignature);
+            var clientVersion:Version = m_versions.getBySignatures(datSignature, sprSignature);
             if (!clientVersion)
                 throw new ArgumentError(StringUtil.format("Invalid client signatures. Dat=0x{0}, Spr=0x{1}", datSignature.toString(16), sprSignature.toString(16)));
             
-            if (!_things || !_things.loaded)
+            if (!m_things || !m_things.loaded)
                 throw new Error(Resources.getString("metadataNotLoaded"));
             
-            if (!_sprites || !_sprites.loaded)
+            if (!m_sprites || !m_sprites.loaded)
                 throw new Error(Resources.getString("spritesNotLoaded"));
             
             var dat:File = new File(datPath);
             var spr:File = new File(sprPath);
-            var structureChanged:Boolean = (_extended != extended ||
-                                            _transparency != transparency ||
-                                            _improvedAnimations != improvedAnimations);
+            var structureChanged:Boolean = (m_extended != extended ||
+                                            m_transparency != transparency ||
+                                            m_improvedAnimations != improvedAnimations);
             var title:String = Resources.getString("compiling");
             
             sendCommand(new ShowProgressBarCommand(ProgressBarID.DAT_SPR, title));
             
-            if (!_things.compile(dat, clientVersion, extended, improvedAnimations) ||
-                !_sprites.compile(spr, clientVersion, extended, transparency)) {
+            if (!m_things.compile(dat, clientVersion, extended, improvedAnimations) ||
+                !m_sprites.compile(spr, clientVersion, extended, transparency)) {
                 return;
             }
             
@@ -471,13 +471,13 @@ package ob.core
             
             clientCompileComplete();
             
-            if (!_datFile || !_sprFile) {
-                _datFile = dat;
-                _sprFile = spr;
+            if (!m_datFile || !m_sprFile) {
+                m_datFile = dat;
+                m_sprFile = spr;
             }
             
             // If extended or alpha channel was changed need to reload.
-            if (FileUtil.equals(dat, _datFile) && FileUtil.equals(spr, _sprFile)) {
+            if (FileUtil.equals(dat, m_datFile) && FileUtil.equals(spr, m_sprFile)) {
                 if (structureChanged)
                     sendCommand(new NeedToReloadCommand(extended, transparency, improvedAnimations));
                 else
@@ -487,30 +487,30 @@ package ob.core
         
         private function onUnloadFiles():void
         {
-            if (_things) {
-                _things.unload();
-                _things.removeEventListener(StorageEvent.LOAD, storageLoadHandler);
-                _things.removeEventListener(StorageEvent.CHANGE, storageChangeHandler);
-                _things.removeEventListener(ProgressEvent.PROGRESS, thingsProgressHandler);
-                _things.removeEventListener(ErrorEvent.ERROR, thingsErrorHandler);
-                _things = null;
+            if (m_things) {
+                m_things.unload();
+                m_things.removeEventListener(StorageEvent.LOAD, storageLoadHandler);
+                m_things.removeEventListener(StorageEvent.CHANGE, storageChangeHandler);
+                m_things.removeEventListener(ProgressEvent.PROGRESS, thingsProgressHandler);
+                m_things.removeEventListener(ErrorEvent.ERROR, thingsErrorHandler);
+                m_things = null;
             }
             
-            if (_sprites) {
-                _sprites.unload();
-                _sprites.removeEventListener(StorageEvent.LOAD, storageLoadHandler);
-                _sprites.removeEventListener(StorageEvent.CHANGE, storageChangeHandler);
-                _sprites.removeEventListener(ProgressEvent.PROGRESS, spritesProgressHandler);
-                _sprites.removeEventListener(ErrorEvent.ERROR, spritesErrorHandler);
-                _sprites = null;
+            if (m_sprites) {
+                m_sprites.unload();
+                m_sprites.removeEventListener(StorageEvent.LOAD, storageLoadHandler);
+                m_sprites.removeEventListener(StorageEvent.CHANGE, storageChangeHandler);
+                m_sprites.removeEventListener(ProgressEvent.PROGRESS, spritesProgressHandler);
+                m_sprites.removeEventListener(ErrorEvent.ERROR, spritesErrorHandler);
+                m_sprites = null;
             }
             
-            _datFile = null;
-            _sprFile = null;
-            _version = null;
-            _extended = false;
-            _transparency = false;
-            _errorMessage = null;
+            m_datFile = null;
+            m_sprFile = null;
+            m_version = null;
+            m_extended = false;
+            m_transparency = false;
+            m_errorMessage = null;
         }
         
         private function onNewThing(category:String):void
@@ -523,7 +523,7 @@ package ob.core
             // Add thing
             
             var thing:ThingType = ThingType.create(0, category);
-            var result:ChangeResult = _things.addThing(thing, category);
+            var result:ChangeResult = m_things.addThing(thing, category);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -553,7 +553,7 @@ package ob.core
             var result:ChangeResult;
             var thing:ThingType = thingData.thing;
             
-            if (!_things.hasThingType(thing.category, thing.id)) {
+            if (!m_things.hasThingType(thing.category, thing.id)) {
                 throw new Error(Resources.getString(
                     "thingNotFound",
                     toLocale(thing.category),
@@ -567,7 +567,7 @@ package ob.core
             var length:uint = sprites.length;
             var spritesIds:Vector.<uint> = new Vector.<uint>();
             var addedSpriteList:Array = [];
-            var currentThing:ThingType = _things.getThingType(thing.id, thing.category);
+            var currentThing:ThingType = m_things.getThingType(thing.id, thing.category);
             
             for (var i:uint = 0; i < length; i++) {
                 var spriteData:SpriteData = sprites[i];
@@ -579,9 +579,9 @@ package ob.core
                     } else {
                         
                         if (replaceSprites) {
-                            result = _sprites.replaceSprite(currentThing.spriteIDs[i], spriteData.pixels);
+                            result = m_sprites.replaceSprite(currentThing.spriteIDs[i], spriteData.pixels);
                         } else {
-                            result = _sprites.addSprite(spriteData.pixels);
+                            result = m_sprites.addSprite(spriteData.pixels);
                         }
                         
                         if (!result.done) {
@@ -595,7 +595,7 @@ package ob.core
                         addedSpriteList[addedSpriteList.length] = spriteData;
                     }
                 } else {
-                    if (!_sprites.hasSpriteId(id)) {
+                    if (!m_sprites.hasSpriteId(id)) {
                         Log.error(Resources.getString("spriteNotFound", id));
                         return;
                     }
@@ -605,7 +605,7 @@ package ob.core
             //============================================================================
             // Update thing
             
-            result = _things.replaceThing(thing, thing.category, thing.id);
+            result = m_things.replaceThing(thing, thing.category, thing.id);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -656,7 +656,7 @@ package ob.core
             if (!ThingCategory.getCategory(category))
                 throw new ArgumentError(Resources.getString("invalidCategory"));
             
-            var clientVersion:Version = _versions.getBySignatures(datSignature, sprSignature);
+            var clientVersion:Version = m_versions.getBySignatures(datSignature, sprSignature);
             if (!clientVersion)
                 throw new ArgumentError(StringUtil.format("Invalid client signatures. Dat=0x{0}, Spr=0x{1}", datSignature.toString(16), sprSignature.toString(16)));
             
@@ -670,7 +670,7 @@ package ob.core
             
             var encoder:OBDEncoder = new OBDEncoder();
             var helper:SaveHelper = new SaveHelper();
-            var backgoundColor:uint = (_transparency || transparentBackground) ? 0x00FF00FF : 0xFFFF00FF;
+            var backgoundColor:uint = (m_transparency || transparentBackground) ? 0x00FF00FF : 0xFFFF00FF;
             var bytes:ByteArray;
             var spriteSheet:SpriteSheet;
             
@@ -737,13 +737,13 @@ package ob.core
                     var id:uint = spriteData.id;
                     if (spriteData.isEmpty()) {
                         id = 0;
-                    } else if (!_sprites.hasSpriteId(id) || !_sprites.compare(id, spriteData.pixels)) {
-                        result = _sprites.addSprite(spriteData.pixels);
+                    } else if (!m_sprites.hasSpriteId(id) || !m_sprites.compare(id, spriteData.pixels)) {
+                        result = m_sprites.addSprite(spriteData.pixels);
                         if (!result.done) {
                             Log.error(result.message);
                             return;
                         }
-                        id = _sprites.spritesCount;
+                        id = m_sprites.spritesCount;
                         spritesIds[spritesIds.length] = id;
                     }
                     thing.spriteIDs[k] = id;
@@ -759,7 +759,7 @@ package ob.core
                 thingsToReplace[i] = list[i].thing;
                 thingsIds[i] = list[i].id;
             }
-            result = _things.replaceThings(thingsToReplace);
+            result = m_things.replaceThings(thingsToReplace);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -773,7 +773,7 @@ package ob.core
             // Added sprites message
             if (spritesIds.length > 0)
             {
-                this.sendSpriteList(Vector.<uint>([_sprites.spritesCount]));
+                this.sendSpriteList(Vector.<uint>([m_sprites.spritesCount]));
                 
                 message = Resources.getString(
                     "logAdded",
@@ -856,13 +856,13 @@ package ob.core
                     var id:uint = spriteData.id;
                     if (spriteData.isEmpty()) {
                         id = 0;
-                    } else if (!_sprites.hasSpriteId(id) || !_sprites.compare(id, spriteData.pixels)) {
-                        result = _sprites.addSprite(spriteData.pixels);
+                    } else if (!m_sprites.hasSpriteId(id) || !m_sprites.compare(id, spriteData.pixels)) {
+                        result = m_sprites.addSprite(spriteData.pixels);
                         if (!result.done) {
                             Log.error(result.message);
                             return;
                         }
-                        id = _sprites.spritesCount;
+                        id = m_sprites.spritesCount;
                         spritesIds[spritesIds.length] = id;
                     }
                     thing.spriteIDs[k] = id;
@@ -876,7 +876,7 @@ package ob.core
             for (i = 0; i < length; i++) {
                 thingsToAdd[i] = list[i].thing;
             }
-            result = _things.addThings(thingsToAdd);
+            result = m_things.addThings(thingsToAdd);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -891,7 +891,7 @@ package ob.core
             
             if (spritesIds.length > 0)
             {
-                this.sendSpriteList(Vector.<uint>([_sprites.spritesCount]));
+                this.sendSpriteList(Vector.<uint>([m_sprites.spritesCount]));
                 
                 message = Resources.getString(
                     "logAdded",
@@ -976,7 +976,7 @@ package ob.core
             var thingsCopyList:Vector.<ThingType> = new Vector.<ThingType>();
             
             for (var i:uint = 0; i < length; i++) {
-                var thing:ThingType = _things.getThingType(list[i], category);
+                var thing:ThingType = m_things.getThingType(list[i], category);
                 if (!thing) {
                     throw new Error(Resources.getString(
                         "thingNotFound",
@@ -986,7 +986,7 @@ package ob.core
                 thingsCopyList[i] = thing.clone();
             }
             
-            var result:ChangeResult = _things.addThings(thingsCopyList);
+            var result:ChangeResult = m_things.addThings(thingsCopyList);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -1030,7 +1030,7 @@ package ob.core
             //============================================================================
             // Remove things
             
-            var result:ChangeResult = _things.removeThings(list, category);
+            var result:ChangeResult = m_things.removeThings(list, category);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -1064,7 +1064,7 @@ package ob.core
                     spriteIds[spriteIds.length] = id;
                 }
                 
-                result = _sprites.removeSprites(spriteIds);
+                result = m_sprites.removeSprites(spriteIds);
                 if (!result.done) {
                     Log.error(result.message);
                     return;
@@ -1128,7 +1128,7 @@ package ob.core
             }
             
             var list:Array = [];
-            var things:Array = _things.findThingTypeByProperties(category, properties);
+            var things:Array = m_things.findThingTypeByProperties(category, properties);
             var length:uint = things.length;
             
             for (var i:uint = 0; i < length; i++) {
@@ -1152,7 +1152,7 @@ package ob.core
             //============================================================================
             // Replace sprites
             
-            var result:ChangeResult = _sprites.replaceSprites(sprites);
+            var result:ChangeResult = m_sprites.replaceSprites(sprites);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -1217,7 +1217,7 @@ package ob.core
             //============================================================================
             // Add sprites
             
-            var result:ChangeResult = _sprites.addSprites(sprites);
+            var result:ChangeResult = m_sprites.addSprites(sprites);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -1318,7 +1318,7 @@ package ob.core
                 var format:String = file.extension;
                 
                 if (ImageFormat.hasImageFormat(format) && pathHelper.id != 0) {
-                    var bitmap:BitmapData = _sprites.getBitmap(pathHelper.id);
+                    var bitmap:BitmapData = m_sprites.getBitmap(pathHelper.id);
                     if (bitmap) {
                         var bytes:ByteArray = ImageCodec.encode(bitmap, format, jpegQuality);
                         helper.addFile(bytes, name, format, file);
@@ -1342,7 +1342,7 @@ package ob.core
         
         private function onNewSprite():void
         {
-            if (_sprites.isFull) {
+            if (m_sprites.isFull) {
                 Log.error(Resources.getString("spritesLimitReached"));
                 return;
             }
@@ -1352,7 +1352,7 @@ package ob.core
             
             var rect:Rectangle = new Rectangle(0, 0, otlib.sprites.Sprite.DEFAULT_SIZE, otlib.sprites.Sprite.DEFAULT_SIZE);
             var pixels:ByteArray = new BitmapData(rect.width, rect.height, true, 0).getPixels(rect);
-            var result:ChangeResult = _sprites.addSprite(pixels);
+            var result:ChangeResult = m_sprites.addSprite(pixels);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -1361,12 +1361,12 @@ package ob.core
             //============================================================================
             // Send changes
             
-            sendSpriteList(Vector.<uint>([ _sprites.spritesCount ]));
+            sendSpriteList(Vector.<uint>([ m_sprites.spritesCount ]));
             
             var message:String = Resources.getString(
                 "logAdded",
                 Resources.getString("sprite"),
-                _sprites.spritesCount);
+                m_sprites.spritesCount);
             Log.info(message);
         }
         
@@ -1379,7 +1379,7 @@ package ob.core
             //============================================================================
             // Removes sprites
             
-            var result:ChangeResult = _sprites.removeSprites(list);
+            var result:ChangeResult = m_sprites.removeSprites(list);
             if (!result.done) {
                 Log.error(result.message);
                 return;
@@ -1409,10 +1409,10 @@ package ob.core
                                         transparency:Boolean,
                                         improvedAnimations:Boolean):void
         {
-            onLoadFiles(_datFile.nativePath,
-                        _sprFile.nativePath,
-                        _version.datSignature,
-                        _version.sprSignature,
+            onLoadFiles(m_datFile.nativePath,
+                        m_sprFile.nativePath,
+                        m_version.datSignature,
+                        m_version.sprSignature,
                         extended,
                         transparency,
                         improvedAnimations);
@@ -1420,7 +1420,7 @@ package ob.core
         
         private function onFindSprites(unusedSprites:Boolean, emptySprites:Boolean):void
         {
-            var finder:SpritesFinder = new SpritesFinder(_things, _sprites);
+            var finder:SpritesFinder = new SpritesFinder(m_things, m_sprites);
             finder.addEventListener(ProgressEvent.PROGRESS, progressHandler);
             finder.addEventListener(Event.COMPLETE, completeHandler);
             finder.start(unusedSprites, emptySprites);
@@ -1442,7 +1442,7 @@ package ob.core
         
         private function onOptimizeSprites(unusedSprites:Boolean, emptySprites:Boolean):void
         {
-            var optimizer:SpritesOptimizer = new SpritesOptimizer(_things, _sprites);
+            var optimizer:SpritesOptimizer = new SpritesOptimizer(m_things, m_sprites);
             optimizer.addEventListener(ProgressEvent.PROGRESS, progressHandler);
             optimizer.addEventListener(Event.COMPLETE, completeHandler);
             optimizer.start(unusedSprites, emptySprites);
@@ -1496,23 +1496,23 @@ package ob.core
             
             if (info.loaded)
             {
-                info.clientVersion = _version.value;
-                info.clientVersionStr = _version.description;
-                info.datSignature = _things.signature;
+                info.clientVersion = m_version.value;
+                info.clientVersionStr = m_version.description;
+                info.datSignature = m_things.signature;
                 info.minItemId = ThingTypeStorage.MIN_ITEM_ID;
-                info.maxItemId = _things.itemsCount;
+                info.maxItemId = m_things.itemsCount;
                 info.minOutfitId = ThingTypeStorage.MIN_OUTFIT_ID;
-                info.maxOutfitId = _things.outfitsCount;
+                info.maxOutfitId = m_things.outfitsCount;
                 info.minEffectId = ThingTypeStorage.MIN_EFFECT_ID;
-                info.maxEffectId = _things.effectsCount;
+                info.maxEffectId = m_things.effectsCount;
                 info.minMissileId = ThingTypeStorage.MIN_MISSILE_ID;
-                info.maxMissileId = _things.missilesCount;
-                info.sprSignature = _sprites.signature;
+                info.maxMissileId = m_things.missilesCount;
+                info.sprSignature = m_sprites.signature;
                 info.minSpriteId = 0;
-                info.maxSpriteId = _sprites.spritesCount;
-                info.extended = _extended;
-                info.transparency = _transparency;
-                info.improvedAnimations = _improvedAnimations;
+                info.maxSpriteId = m_sprites.spritesCount;
+                info.extended = m_extended;
+                info.transparency = m_transparency;
+                info.improvedAnimations = m_improvedAnimations;
                 info.changed = clientChanged;
                 info.isTemporary = clientIsTemporary;
             }
@@ -1522,12 +1522,12 @@ package ob.core
         
         private function sendThingList(selectedIds:Vector.<uint>, category:String):void
         {
-            if (!_things || !_things.loaded) {
+            if (!m_things || !m_things.loaded) {
                 throw new Error(Resources.getString("metadataNotLoaded"));
             }
             
-            var first:uint = _things.getMinId(category);
-            var last:uint = _things.getMaxId(category);
+            var first:uint = m_things.getMinId(category);
+            var last:uint = m_things.getMaxId(category);
             var length:uint = selectedIds.length;
             
             if (length > 1) {
@@ -1540,11 +1540,11 @@ package ob.core
             var target:uint = length == 0 ? 0 : selectedIds[0];
             var min:uint = Math.max(first, ObUtils.hundredFloor(target));
             var diff:uint = (category != ThingCategory.ITEM && min == first) ? 1 : 0;
-            var max:uint = Math.min((min - diff) + (_thingListAmount - 1), last);
+            var max:uint = Math.min((min - diff) + (m_thingListAmount - 1), last);
             var list:Vector.<ThingListItem> = new Vector.<ThingListItem>();
             
             for (var i:uint = min; i <= max; i++) {
-                var thing:ThingType = _things.getThingType(i, category);
+                var thing:ThingType = m_things.getThingType(i, category);
                 if (!thing) {
                     throw new Error(Resources.getString(
                         "thingNotFound",
@@ -1563,7 +1563,7 @@ package ob.core
         
         private function sendThingData(id:uint, category:String):void
         {
-            var thingData:ThingData = getThingData(id, category, OBDVersions.OBD_VERSION_2, _version.value);
+            var thingData:ThingData = getThingData(id, category, OBDVersions.OBD_VERSION_2, m_version.value);
             if (thingData)
                 sendCommand(new SetThingDataCommand(thingData));
         }
@@ -1574,27 +1574,27 @@ package ob.core
                 throw new NullArgumentError("selectedIds");
             }
             
-            if (!_sprites || !_sprites.loaded) {
+            if (!m_sprites || !m_sprites.loaded) {
                 throw new Error(Resources.getString("spritesNotLoaded"));
             }
             
             var length:uint = selectedIds.length;
             if (length > 1) {
                 selectedIds.sort(Array.NUMERIC | Array.DESCENDING);
-                if (selectedIds[length - 1] > _sprites.spritesCount) {
-                    selectedIds = Vector.<uint>([_sprites.spritesCount]);
+                if (selectedIds[length - 1] > m_sprites.spritesCount) {
+                    selectedIds = Vector.<uint>([m_sprites.spritesCount]);
                 }
             }
             
             var target:uint = length == 0 ? 0 : selectedIds[0];
             var first:uint = 0;
-            var last:uint = _sprites.spritesCount;
+            var last:uint = m_sprites.spritesCount;
             var min:uint = Math.max(first, ObUtils.hundredFloor(target));
-            var max:uint = Math.min(min + (_spriteListAmount - 1), last);
+            var max:uint = Math.min(min + (m_spriteListAmount - 1), last);
             var list:Vector.<SpriteData> = new Vector.<SpriteData>();
             
             for (var i:uint = min; i <= max; i++) {
-                var pixels:ByteArray = _sprites.getPixels(i);
+                var pixels:ByteArray = m_sprites.getPixels(i);
                 if (!pixels) {
                     throw new Error(Resources.getString("spriteNotFound", i));
                 }
@@ -1628,7 +1628,7 @@ package ob.core
                         var index:uint = thing.getSpriteIndex(w, h, l, x, 0, 0, 0);
                         var px:int = (width - w - 1) * size;
                         var py:int = (height - h - 1) * size;
-                        _sprites.copyPixels(thing.spriteIDs[index], bitmap, px, py);
+                        m_sprites.copyPixels(thing.spriteIDs[index], bitmap, px, py);
                     }
                 }
             }
@@ -1641,7 +1641,7 @@ package ob.core
                 throw new Error(Resources.getString("invalidCategory"));
             }
             
-            var thing:ThingType = _things.getThingType(id,  category);
+            var thing:ThingType = m_things.getThingType(id,  category);
             if (!thing) {
                 throw new Error(Resources.getString(
                     "thingNotFound",
@@ -1655,10 +1655,10 @@ package ob.core
             
             for (var i:uint = 0; i < length; i++) {
                 var spriteId:uint = spriteIDs[i];
-                var pixels:ByteArray = _sprites.getPixels(spriteId);
+                var pixels:ByteArray = m_sprites.getPixels(spriteId);
                 if (!pixels) {
                     Log.error(Resources.getString("spriteNotFound", spriteId));
-                    pixels = _sprites.alertSprite.pixels;
+                    pixels = m_sprites.alertSprite.pixels;
                 }
                 
                 var spriteData:SpriteData = new SpriteData();
@@ -1680,9 +1680,9 @@ package ob.core
         
         protected function storageLoadHandler(event:StorageEvent):void
         {
-            if (event.target == _things || event.target == _sprites)
+            if (event.target == m_things || event.target == m_sprites)
             {
-                if (_things.loaded && _sprites.loaded)
+                if (m_things.loaded && m_sprites.loaded)
                     this.clientLoadComplete();
             }
         }
@@ -1700,23 +1700,23 @@ package ob.core
         protected function thingsErrorHandler(event:ErrorEvent):void
         {
             // Try load as extended.
-            if (!_things.loaded && !_extended)
+            if (!m_things.loaded && !m_extended)
             {
-                _errorMessage = event.text;
-                onLoadFiles(_datFile.nativePath,
-                            _sprFile.nativePath,
-                            _version.datSignature,
-                            _version.sprSignature,
+                m_errorMessage = event.text;
+                onLoadFiles(m_datFile.nativePath,
+                            m_sprFile.nativePath,
+                            m_version.datSignature,
+                            m_version.sprSignature,
                             true,
-                            _transparency,
-                            _improvedAnimations);
+                            m_transparency,
+                            m_improvedAnimations);
             }
             else
             {
-                if (_errorMessage)
+                if (m_errorMessage)
                 {
-                    Log.error(_errorMessage);
-                    _errorMessage = null;
+                    Log.error(m_errorMessage);
+                    m_errorMessage = null;
                 }
                 else
                     Log.error(event.text);
