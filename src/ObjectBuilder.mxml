@@ -643,19 +643,6 @@ THE SOFTWARE.
                 sendCommand(new ExportThingCommand(list, category, obdVersion, clientVersion.datSignature, clientVersion.sprSignature, exportObjectProperties, transparentBackground, jpegQuality));
             }
             
-            public function exportSprites(fileDataList:Vector.<FileData>,
-                                          transparentBackground:Boolean,
-                                          jpegQuality:uint):void
-            {
-                if (!this.clientLoaded || !fileDataList || fileDataList.length == 0) return;
-                var length:uint = fileDataList.length;
-                var list:Vector.<PathHelper> = new Vector.<PathHelper>(length, true);
-                for (var i:uint = 0; i < length; i++) {
-                    list[i] = new PathHelper(fileDataList[i].nativePath, fileDataList[i].data as uint);
-                }
-                sendCommand(new ExportSpritesCommand(list, transparentBackground, jpegQuality));
-            }
-            
             public function replaceSprite(id:uint, bitmap:BitmapData):void
             {
                 if (!this.clientLoaded || id == 0 || !bitmap) return;
@@ -740,6 +727,7 @@ THE SOFTWARE.
                 registerClassAlias("Animator", Animator);
                 registerClassAlias("ByteArray", ByteArray);
                 registerClassAlias("ClientInfo", ClientInfo);
+                registerClassAlias("File", File);
                 registerClassAlias("FrameDuration", FrameDuration);
                 registerClassAlias("ObjectBuilderSettings", ObjectBuilderSettings);
                 registerClassAlias("PathHelper", PathHelper);
@@ -1041,27 +1029,37 @@ THE SOFTWARE.
             private function onExportSprites(prefix:String,
                                              format:String,
                                              directory:File,
-                                             sprites:Vector.<SpriteData>,
-                                             transparentBackground:Boolean,
+                                             sprites:Vector.<uint>,
+                                             backgroundColor:uint,
                                              jpegQuality:uint):void
             {
                 var queue:FileQueueHelper = new FileQueueHelper();
                 queue.parent = this;
                 queue.addEventListener(Event.COMPLETE, completeHandler);
                 var changeName:Boolean = (prefix.indexOf("_") == -1);
-                
                 var length:uint = sprites.length;
                 for (var i:uint = 0; i < length; i++) {
-                    var id:uint = sprites[i].id;
-                    var name:String = !changeName ? prefix : (name = prefix + "_" + id);
-                    queue.addFile(id, name, format, directory);
+                    var id:uint = sprites[i];
+                    if (id != 0) {
+                        var name:String = !changeName ? prefix : (name = prefix + "_" + id);
+                        queue.addFile(id, name, format, directory);
+                    }
                 }
                 queue.start();
                 
                 function completeHandler(event:Event):void
                 {
-                    if (queue.result && queue.result.length > 0)
-                        exportSprites(queue.result, transparentBackground, jpegQuality);
+                    var result:Vector.<FileData> = queue.result;
+                    var length:uint = result ? result.length : 0;
+                    if (length > 0) {
+                        var files:Vector.<File> = new Vector.<File>(length, true);
+                        var ids:Vector.<uint> = new Vector.<uint>(length, true);
+                        for (var i:uint = 0; i < length; i++) {
+                            files[i] = result[i].file;
+                            ids[i] = uint(result[i].data);
+                        }
+                        sendCommand(new ExportSpritesCommand(files, ids, backgroundColor, jpegQuality));
+                    }
                 }
             }
             
@@ -1945,7 +1943,7 @@ THE SOFTWARE.
             {
                 if (!this.clientLoaded) return;
                 
-                var sprites:Vector.<SpriteData> = spritesList.selectedSprites;
+                var sprites:Vector.<uint> = spritesList.selectedIds;
                 if (sprites.length == 0) return;
                 
                 var window:ExportWindow = new ExportWindow();
@@ -1968,12 +1966,14 @@ THE SOFTWARE.
                         m_settings.exportWithTransparentBackground = window.transparentBackground;
                         m_settings.jpegQuality = window.jpegQuality;
                         
+                        var color:uint = window.transparentBackground ? 0x00FF00FF : 0xFFFF00FF;
+                        
                         onExportSprites(window.prefix,
                                         window.format,
                                         window.directory,
                                         sprites,
-                                        m_settings.exportWithTransparentBackground,
-                                        m_settings.jpegQuality);
+                                        color,
+                                        window.jpegQuality);
                     }
                 }
             }

@@ -22,9 +22,9 @@
 
 package ob.commands.sprites
 {
-    import nail.commands.Command;
+    import flash.filesystem.File;
     
-    import otlib.loaders.PathHelper;
+    import nail.commands.Command;
     
     public class ExportSpritesCommand extends Command
     {
@@ -32,11 +32,12 @@ package ob.commands.sprites
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function ExportSpritesCommand(list:Vector.<PathHelper>,
-                                             transparentBackground:Boolean,
+        public function ExportSpritesCommand(files:Vector.<File>,
+                                             ids:Vector.<uint>,
+                                             backgroundColor:uint,
                                              jpegQuality:uint)
         {
-            super(list, transparentBackground, jpegQuality);
+            super(files, ids, backgroundColor, jpegQuality);
         }
     }
 }

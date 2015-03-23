@@ -267,6 +267,7 @@ package ob.core
             registerClassAlias("Animator", Animator);
             registerClassAlias("ByteArray", ByteArray);
             registerClassAlias("ClientInfo", ClientInfo);
+            registerClassAlias("File", File);
             registerClassAlias("FrameDuration", FrameDuration);
             registerClassAlias("ObjectBuilderSettings", ObjectBuilderSettings);
             registerClassAlias("PathHelper", PathHelper);
@@ -1292,16 +1293,19 @@ package ob.core
             }
         }
         
-        private function onExportSprites(list:Vector.<PathHelper>,
-                                         transparentBackground:Boolean,
+        private function onExportSprites(files:Vector.<File>,
+                                         ids:Vector.<uint>,
+                                         backgroundColor:uint,
                                          jpegQuality:uint):void
         {
-            if (!list) {
-                throw new NullArgumentError("list");
-            }
+            if (isNullOrEmpty(files))
+                throw new NullOrEmptyArgumentError("files");
             
-            var length:uint = list.length;
-            if (length == 0) return;
+            if (isNullOrEmpty(ids))
+                throw new NullOrEmptyArgumentError("ids");
+            
+            if (files.length != ids.length)
+                throw new ArgumentError("Length of files list differs from length of ids list.");
             
             //============================================================================
             // Save sprites
@@ -1309,15 +1313,14 @@ package ob.core
             sendCommand(new ShowProgressBarCommand(ProgressBarID.DEFAULT, Resources.getString("exportingSprites")));
             
             var helper:SaveHelper = new SaveHelper();
-            
+            var length:uint = files.length;
             for (var i:uint = 0; i < length; i++) {
-                var pathHelper:PathHelper = list[i];
-                var file:File = new File(pathHelper.nativePath);
+                var file:File = files[i];
+                var id:uint = ids[i];
                 var name:String = FileUtil.getName(file);
                 var format:String = file.extension;
-                
-                if (ImageFormat.hasImageFormat(format) && pathHelper.id != 0) {
-                    var bitmap:BitmapData = m_sprites.getBitmap(pathHelper.id);
+                if (ImageFormat.hasImageFormat(format) && id != 0) {
+                    var bitmap:BitmapData = m_sprites.getBitmap(id);
                     if (bitmap) {
                         var bytes:ByteArray = ImageCodec.encode(bitmap, format, jpegQuality);
                         helper.addFile(bytes, name, format, file);
