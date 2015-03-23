@@ -264,8 +264,7 @@ package otlib.things
             thing.patternZ = 1;
             thing.exactSize = 32;
             
-            if (category == ThingCategory.OUTFIT)
-            {
+            if (category == ThingCategory.OUTFIT) {
                 thing.patternX = 4; // Directions
                 thing.frames = 3;   // Animations
                 thing.isAnimation = true;
@@ -281,9 +280,7 @@ package otlib.things
                                                  0,
                                                  AnimationMode.SYNCHRONOUS,
                                                  frameDurations);
-            }
-            else if (category == ThingCategory.MISSILE)
-            {
+            } else if (category == ThingCategory.MISSILE) {
                 thing.patternX = 3;
                 thing.patternY = 3;
             }

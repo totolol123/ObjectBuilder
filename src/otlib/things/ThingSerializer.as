@@ -475,7 +475,7 @@ package otlib.things
                     case ThingTypeFlags4.BLOCK_MISSILE:
                         thing.blockMissile = true;
                         break;
-                    case ThingTypeFlags4.BLOCK_PATHFIND:
+                    case ThingTypeFlags4.BLOCK_PATHFINDER:
                         thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags4.PICKUPABLE:
@@ -607,7 +607,7 @@ package otlib.things
                     case ThingTypeFlags5.BLOCK_MISSILE:
                         thing.blockMissile = true;
                         break;
-                    case ThingTypeFlags5.BLOCK_PATHFIND:
+                    case ThingTypeFlags5.BLOCK_PATHFINDER:
                         thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags5.PICKUPABLE:
@@ -753,7 +753,7 @@ package otlib.things
                     case ThingTypeFlags6.BLOCK_MISSILE:
                         thing.blockMissile = true;
                         break;
-                    case ThingTypeFlags6.BLOCK_PATHFIND:
+                    case ThingTypeFlags6.BLOCK_PATHFINDER:
                         thing.blockPathfinder = true;
                         break;
                     case ThingTypeFlags6.NO_MOVE_ANIMATION:
@@ -850,11 +850,11 @@ package otlib.things
         /**
          * Read sprites.
          */
-        public static function readSprites(thing:ThingType,
-                                           input:IDataInput,
-                                           extended:Boolean,
-                                           readPatternZ:Boolean,
-                                           readFrameDuration:Boolean):Boolean
+        public static function readTexturePatterns(thing:ThingType,
+                                                   input:IDataInput,
+                                                   extended:Boolean,
+                                                   readPatternZ:Boolean,
+                                                   readFrameDuration:Boolean):Boolean
         {
             var i:uint;
             
@@ -884,17 +884,13 @@ package otlib.things
                     loopCount = input.readInt();
                     startFrame = input.readByte();
                     
-                    for (i = 0; i < thing.frames; i++)
-                    {
+                    for (i = 0; i < thing.frames; i++) {
                         var minimum:uint = input.readUnsignedInt();
                         var maximum:uint = input.readUnsignedInt();
                         frameDurations[i] = new FrameDuration(minimum, maximum);
                     }
-                        
                 } else {
-                    
                     var duration:uint = FrameDuration.getDefaultDuration(thing.category);
-                    
                     for (i = 0; i < thing.frames; i++)
                         frameDurations[i] = new FrameDuration(duration, duration);
                 }
@@ -1150,7 +1146,7 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags4.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags4.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags4.BLOCK_MISSILE);
-            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags4.BLOCK_PATHFIND);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags4.BLOCK_PATHFINDER);
             if (thing.pickupable) output.writeByte(ThingTypeFlags4.PICKUPABLE);
             if (thing.hangable) output.writeByte(ThingTypeFlags4.HANGABLE);
             if (thing.hookSouth) output.writeByte(ThingTypeFlags4.HOOK_SOUTH);
@@ -1221,7 +1217,7 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags5.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags5.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags5.BLOCK_MISSILE);
-            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags5.BLOCK_PATHFIND);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags5.BLOCK_PATHFINDER);
             if (thing.pickupable) output.writeByte(ThingTypeFlags5.PICKUPABLE);
             if (thing.hangable) output.writeByte(ThingTypeFlags5.HANGABLE);
             if (thing.hookSouth) output.writeByte(ThingTypeFlags5.HOOK_SOUTH);
@@ -1306,7 +1302,7 @@ package otlib.things
             if (thing.isUnpassable) output.writeByte(ThingTypeFlags6.UNPASSABLE);
             if (thing.isUnmoveable) output.writeByte(ThingTypeFlags6.UNMOVEABLE);
             if (thing.blockMissile) output.writeByte(ThingTypeFlags6.BLOCK_MISSILE);
-            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags6.BLOCK_PATHFIND);
+            if (thing.blockPathfinder) output.writeByte(ThingTypeFlags6.BLOCK_PATHFINDER);
             if (thing.noMoveAnimation) output.writeByte(ThingTypeFlags6.NO_MOVE_ANIMATION);
             if (thing.pickupable) output.writeByte(ThingTypeFlags6.PICKUPABLE);
             if (thing.hangable) output.writeByte(ThingTypeFlags6.HANGABLE);
@@ -1369,20 +1365,19 @@ package otlib.things
         /**
          * Write sprites.
          */
-        public static function writeSprites(thing:ThingType,
-                                            output:IDataOutput,
-                                            extended:Boolean,
-                                            writePatternZ:Boolean,
-                                            writeFrameDuration:Boolean):Boolean
+        public static function writeTexturePatterns(thing:ThingType,
+                                                    output:IDataOutput,
+                                                    extended:Boolean,
+                                                    writePatternZ:Boolean,
+                                                    writeFrameDuration:Boolean):Boolean
         {
             var i:uint;
             
-            output.writeByte(thing.width);  // Write width	
-            output.writeByte(thing.height); // Write height	
+            output.writeByte(thing.width);  // Write width
+            output.writeByte(thing.height); // Write height
             
-            if (thing.width > 1 || thing.height > 1) {
+            if (thing.width > 1 || thing.height > 1)
                 output.writeByte(thing.exactSize); // Write exact size
-            }
             
             output.writeByte(thing.layers);   // Write layers
             output.writeByte(thing.patternX); // Write pattern X
@@ -1409,7 +1404,7 @@ package otlib.things
             for (i = 0; i < length; i++) {
                 // Write sprite index
                 if (extended)
-                    output.writeUnsignedInt(spriteIDs[i]); 
+                    output.writeUnsignedInt(spriteIDs[i]);
                 else
                     output.writeShort(spriteIDs[i]);
             }

@@ -94,8 +94,7 @@ package ob.utils
         {
             if (m_finished) return;
             
-            if (unusedSprites || emptySprites)
-            {
+            if (unusedSprites || emptySprites) {
                 dispatchProgress(0, 5, Resources.getString("startingTheOptimization"));
                 
                 var length:uint = m_spr.spritesCount + 1;
@@ -105,8 +104,7 @@ package ob.utils
                 
                 m_oldIDs = new Vector.<Sprite>(length, true);
                 
-                if (unusedSprites)
-                {
+                if (unusedSprites) {
                     dispatchProgress(1, 5, Resources.getString("searchingForUnusedSprites"));
                     
                     // scan items
@@ -126,23 +124,19 @@ package ob.utils
                     
                     dispatchProgress(2, 5, Resources.getString("gettingFreeIds"));
                     
-                    for (i = 1; i < length; i++)
-                    {
+                    for (i = 1; i < length; i++) {
                         m_oldIDs[i] = m_spr.getSprite(i);
                         
                         if (!usedList[i] && (!m_oldIDs[i].isEmpty || emptySprites))
                             freeIDs[i] = true;
                     }
-                }
-                else
-                {
+                } else {
                     // =====================================================================
                     // gets all empty ids.
                     
                     dispatchProgress(2, 5, Resources.getString("gettingFreeIds"));
                     
-                    for (i = 1; i < length; i++)
-                    {
+                    for (i = 1; i < length; i++) {
                         m_oldIDs[i] = m_spr.getSprite(i);
                         
                         if (m_spr.isEmptySprite(i))
@@ -159,10 +153,8 @@ package ob.utils
                 var index:int = 1;
                 var count:uint = 0;
                 
-                for (i = 1; i < length; i++, index++)
-                {
-                    while ((index + 1) < length && freeIDs[index])
-                    {
+                for (i = 1; i < length; i++, index++) {
+                    while ((index + 1) < length && freeIDs[index]) {
                         index++;
                         count++;
                     }
@@ -179,8 +171,7 @@ package ob.utils
                 
                 dispatchProgress(4, 5, Resources.getString("updatingObjects"));
                 
-                if (count > 0)
-                {
+                if (count > 0) {
                     // set items
                     setNewIDs(m_dat.items);
                     
@@ -212,17 +203,14 @@ package ob.utils
             }
             
             m_finished = true;
-            
             dispatchEvent(new Event(Event.COMPLETE));
         }
         
         private function scanList(list:Dictionary, usedList:Vector.<Boolean>):void
         {
-            for each (var thing:ThingType in list)
-            {
+            for each (var thing:ThingType in list) {
                 var spriteIDs:Vector.<uint> = thing.spriteIDs;
                 var length:uint = spriteIDs.length;
-                
                 for (var i:int = 0; i < length; i++)
                     usedList[ spriteIDs[i] ] = true;
             }
@@ -230,13 +218,10 @@ package ob.utils
         
         private function setNewIDs(list:Dictionary):void
         {
-            for each (var thing:ThingType in list)
-            {
+            for each (var thing:ThingType in list) {
                 var spriteIDs:Vector.<uint> = thing.spriteIDs;
                 var length:uint = spriteIDs.length;
-                
-                for (var i:int = 0; i < length; i++)
-                {
+                for (var i:int = 0; i < length; i++) {
                     if (spriteIDs[i] != 0)
                         spriteIDs[i] = m_oldIDs[ spriteIDs[i] ].id;
                 }

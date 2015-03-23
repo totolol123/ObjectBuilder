@@ -95,34 +95,32 @@ package otlib.utils
         // STATIC
         //--------------------------------------------------------------------------
         
-        public static const ALPHA:uint = 0x00000000;
-        public static const WHITE:uint = 0xFFFFFFFF;
-        public static const BLACK:uint = 0xFF000000;
-        public static const RED:uint = 0xFF0000FF;
-        public static const DARK_RED:uint = 0xFF000080;
-        public static const GREEN:uint = 0xFF00FF00;
-        public static const DARK_GREEN:uint = 0xFF008000;
-        public static const BLUE:uint = 0xFFFF0000;
-        public static const DARK_BLUE:uint = 0xFF800000;
-        public static const PINK:uint = 0xFFFF00FF;
-        public static const DARK_PINK:uint = 0xFF800080;
-        public static const YELLOW:uint = 0xFF00FFFF;
-        public static const DARK_YELLOW:uint = 0xFF008080;
-        public static const TEAL:uint = 0xFFFFFF00;
-        public static const DARK_TEAL:uint = 0xFF808000;
-        public static const GRAY:uint = 0xFFA0A0A0;
-        public static const DARK_GRAY:uint = 0xFF808080;
-        public static const LIGHT_GRAY:uint = 0xFFC0C0C0;
-        public static const ORANGE:uint = 0xFF008CFF;
+        public static const ALPHA:uint          = 0x00000000;
+        public static const WHITE:uint          = 0xFFFFFFFF;
+        public static const BLACK:uint          = 0xFF000000;
+        public static const RED:uint            = 0xFF0000FF;
+        public static const DARK_RED:uint       = 0xFF000080;
+        public static const GREEN:uint          = 0xFF00FF00;
+        public static const DARK_GREEN:uint     = 0xFF008000;
+        public static const BLUE:uint           = 0xFFFF0000;
+        public static const DARK_BLUE:uint      = 0xFF800000;
+        public static const PINK:uint           = 0xFFFF00FF;
+        public static const DARK_PINK:uint      = 0xFF800080;
+        public static const YELLOW:uint         = 0xFF00FFFF;
+        public static const DARK_YELLOW:uint    = 0xFF008080;
+        public static const TEAL:uint           = 0xFFFFFF00;
+        public static const DARK_TEAL:uint      = 0xFF808000;
+        public static const GRAY:uint           = 0xFFA0A0A0;
+        public static const DARK_GRAY:uint      = 0xFF808080;
+        public static const LIGHT_GRAY:uint     = 0xFFC0C0C0;
+        public static const ORANGE:uint         = 0xFF008CFF;
         
         public static function toColor(value:String):Color
         {
             var color:Color = new Color();
             
-            if (value.indexOf("#") == 0)
-            {
-                if (value.length == 7 || value.length == 9)
-                {
+            if (value.indexOf("#") == 0) {
+                if (value.length == 7 || value.length == 9) {
                     color.m_red = uint(value.substr(1, 2));
                     color.m_green = uint(value.substr(3, 2));
                     color.m_blue = uint(value.substr(5, 2));
@@ -130,9 +128,7 @@ package otlib.utils
                     if (value.length == 9)
                         color.m_alpha = uint(value.substr(7, 2));
                 }
-            }
-            else
-            {
+            } else {
                 value = value.toLowerCase();
                 if(value == "alpha")
                     color = new Color(ALPHA);
@@ -173,7 +169,6 @@ package otlib.utils
                 else if(value == "orange")
                     color = new Color(ORANGE);
             }
-            
             return color;
         }
     }

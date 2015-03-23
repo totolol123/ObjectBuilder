@@ -930,7 +930,7 @@ package otlib.things
                         return false;
                 }
                 
-                if (!ThingSerializer.readSprites(thing, stream, _extended, _version.value >= 755, _improvedAnimations))
+                if (!ThingSerializer.readTexturePatterns(thing, stream, _extended, _version.value >= 755, _improvedAnimations))
                     return false;
                 
                 list[id] = thing;
@@ -997,7 +997,7 @@ package otlib.things
                             return false;
                     }
                     
-                    if (!ThingSerializer.writeSprites(thing, stream, extended, version.value >= 755, improvedAnimations))
+                    if (!ThingSerializer.writeTexturePatterns(thing, stream, extended, version.value >= 755, improvedAnimations))
                         return false;
                     
                 } else {

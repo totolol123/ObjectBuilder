@@ -41,11 +41,11 @@ package otlib.utils
         
         public static function toARGB(color:uint, alpha:uint = 0xFF):uint
         {
-            const R:uint = color >> 16 & 0xFF;
-            const G:uint = color >> 8 & 0xFF;
-            const B:uint = color & 0xFF;
+            var red:uint = color >> 16 & 0xFF;
+            var green:uint = color >> 8 & 0xFF;
+            var blue:uint = color & 0xFF;
             alpha = alpha > 0xFF ? 0xFF : alpha;
-            return (alpha << 24 | R << 16 | G << 8 | B);
+            return (alpha << 24 | red << 16 | green << 8 | blue);
         }
         
         public static function HSItoRGB(color:uint):uint
@@ -59,9 +59,8 @@ package otlib.utils
             var G:Number = 0;
             var B:Number = 0;
             
-            if (color >= steps * values) {
+            if (color >= steps * values)
                 color = 0;
-            }
             
             if (color % steps == 0) {
                 H = 0;
@@ -72,7 +71,8 @@ package otlib.utils
                 S = 1;
                 I = 1;
                 
-                switch (int(color / steps)) {
+                switch (int(color / steps))
+                {
                     case 0:
                         S = 0.25;
                         I = 1;
@@ -104,13 +104,11 @@ package otlib.utils
                 }
             }
             
-            if (I == 0) {
+            if (I == 0)
                 return 0x000000;
-            }
             
-            if (S == 0) {
+            if (S == 0)
                 return (int(I * 0xFF) << 16 | int(I * 0xFF) << 8 | int(I * 0xFF));
-            }
             
             if (H < 1 / 6) {
                 R = I;
@@ -124,7 +122,6 @@ package otlib.utils
                 G = I;
                 R = I * (1 - S);
                 B = R + (I - R) * (6 * H - 2);
-                
             } else if (H < 4 / 6) {
                 B = I;
                 R = I * (1 - S);
@@ -150,10 +147,10 @@ package otlib.utils
         public static function from8Bit(color:uint):uint
         {
             if (color >= 216) return 0;
-            const R:Number = int(color / 36) % 6 * 51;
-            const G:Number = int(color / 6) % 6 * 51;
-            const B:Number = color % 6 * 51;
-            return (R << 16 | G << 8 | B);
+            var red:Number = int(color / 36) % 6 * 51;
+            var green:Number = int(color / 6) % 6 * 51;
+            var blue:Number = color % 6 * 51;
+            return (red << 16 | green << 8 | blue);
         }
     }
 }

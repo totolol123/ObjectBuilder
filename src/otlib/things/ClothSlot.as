@@ -39,16 +39,16 @@ package otlib.things
         // STATIC
         //--------------------------------------------------------------------------
         
-        public static const TWO_HAND_WEAPON:uint = 1;
-        public static const HELMET:uint = 2;
-        public static const AMULET:uint = 3;
-        public static const BACKPACK:uint = 4;
-        public static const ARMOR:uint = 5;
-        public static const SHIELD:uint = 6;
-        public static const ONE_HAND_WEAPON:uint = 7;
-        public static const LEGS:uint = 8;
-        public static const BOOTS:uint = 9;
-        public static const RING:uint = 10;
-        public static const ARROW:uint = 11;
+        public static const TWO_HAND_WEAPON:uint    = 1;
+        public static const HELMET:uint             = 2;
+        public static const AMULET:uint             = 3;
+        public static const BACKPACK:uint           = 4;
+        public static const ARMOR:uint              = 5;
+        public static const SHIELD:uint             = 6;
+        public static const ONE_HAND_WEAPON:uint    = 7;
+        public static const LEGS:uint               = 8;
+        public static const BOOTS:uint              = 9;
+        public static const RING:uint               = 10;
+        public static const ARROW:uint              = 11;
     }
 }

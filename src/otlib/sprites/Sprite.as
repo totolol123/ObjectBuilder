@@ -141,10 +141,6 @@ package otlib.sprites
         public static const RECTANGLE:Rectangle = new Rectangle(0, 0, DEFAULT_SIZE, DEFAULT_SIZE);
         public static const BITMAP:BitmapData = new BitmapData(DEFAULT_SIZE, DEFAULT_SIZE, true, 0);
         
-        //--------------------------------------------------------------------------
-        // STATIC
-        //--------------------------------------------------------------------------
-        
         public static function compressPixels(pixels:ByteArray, transparent:Boolean):ByteArray
         {
             if (!pixels)

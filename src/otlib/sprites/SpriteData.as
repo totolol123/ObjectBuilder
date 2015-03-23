@@ -36,17 +36,18 @@ package otlib.sprites
         // PROPERTIES
         //--------------------------------------------------------------------------
         
-        private var _id:uint;
-        private var _pixels:ByteArray;
+        private var m_id:uint;
+        private var m_pixels:ByteArray;
         
         //--------------------------------------
         // Getters / Setters
         //--------------------------------------
         
-        public function get id():uint { return _id; }
-        public function set id(value:uint):void { _id = value; }
-        public function get pixels():ByteArray { return _pixels; }
-        public function set pixels(value:ByteArray):void { _pixels = value; }
+        public function get id():uint { return m_id; }
+        public function set id(value:uint):void { m_id = value; }
+        
+        public function get pixels():ByteArray { return m_pixels; }
+        public function set pixels(value:ByteArray):void { m_pixels = value; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -104,14 +105,14 @@ package otlib.sprites
         {
             var pixelsCopy:ByteArray;
             
-            if (_pixels) {
+            if (m_pixels) {
                 pixelsCopy = new ByteArray();
-                _pixels.position = 0;
-                _pixels.readBytes(pixelsCopy, 0, _pixels.bytesAvailable);
+                m_pixels.position = 0;
+                m_pixels.readBytes(pixelsCopy, 0, m_pixels.bytesAvailable);
             }
             
             var sd:SpriteData = new SpriteData();
-            sd.id = _id;
+            sd.id = m_id;
             sd.pixels = pixelsCopy;
             return sd;
         }
@@ -124,7 +125,7 @@ package otlib.sprites
         private static const POINT:Point = new Point();
         private static const BITMAP:BitmapData = new BitmapData(Sprite.DEFAULT_SIZE, Sprite.DEFAULT_SIZE, true, 0xFFFF00FF);
         
-        public static function createSpriteData(id:uint = 0, pixels:ByteArray = null):SpriteData
+        public static function create(id:uint = 0, pixels:ByteArray = null):SpriteData
         {
             var data:SpriteData = new SpriteData();
             data.id = id;

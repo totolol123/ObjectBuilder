@@ -165,8 +165,7 @@ package otlib.obd
             var spriteList:Vector.<uint> = thing.spriteIDs;
             var length:uint = spriteList.length;
             
-            for (var i:uint = 0; i < length; i++)
-            {
+            for (var i:uint = 0; i < length; i++) {
                 var spriteId:uint = spriteList[i];
                 var spriteData:SpriteData = sprites[i];
                 
@@ -220,8 +219,7 @@ package otlib.obd
             var length:uint;
             var i:uint;
             
-            if (thing.isAnimation)
-            {
+            if (thing.isAnimation) {
                 var animator:Animator = thing.animator;
                 bytes.writeByte(animator.animationMode); // Write animation type
                 bytes.writeInt(animator.loopCount);      // Write loop count
@@ -229,8 +227,7 @@ package otlib.obd
                 
                 var frameDuration:Vector.<FrameDuration> = animator.frameDurations;
                 length = frameDuration.length;
-                for (i = 0; i < length; i++)
-                {
+                for (i = 0; i < length; i++) {
                     bytes.writeUnsignedInt(frameDuration[i].minimum); // Write minimum duration
                     bytes.writeUnsignedInt(frameDuration[i].maximum); // Write maximum duration
                 }
@@ -240,8 +237,7 @@ package otlib.obd
             var spriteList:Vector.<uint> = thing.spriteIDs;
             length = spriteList.length;
             
-            for (i = 0; i < length; i++)
-            {
+            for (i = 0; i < length; i++) {
                 var spriteId:uint = spriteList[i];
                 var spriteData:SpriteData = sprites[i];
                 
@@ -312,8 +308,7 @@ package otlib.obd
             
             var i:uint = 0;
             
-            if (thing.frames > 1)
-            {
+            if (thing.frames > 1) {
                 thing.isAnimation = true;
                 
                 var animationMode:uint = AnimationMode.ASYNCHRONOUS;
@@ -339,8 +334,7 @@ package otlib.obd
             thing.spriteIDs = new Vector.<uint>(totalSprites, true);
             var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(totalSprites, true);
             
-            for (i = 0; i < totalSprites; i++)
-            {
+            for (i = 0; i < totalSprites; i++) {
                 var spriteId:uint = bytes.readUnsignedInt();
                 thing.spriteIDs[i] = spriteId;
                 
@@ -358,7 +352,6 @@ package otlib.obd
                 spriteData.pixels = pixels;
                 sprites[i] = spriteData;
             }
-            
             return ThingData.create(OBDVersions.OBD_VERSION_1, clientVersion, thing, sprites);
         }
         
@@ -401,12 +394,11 @@ package otlib.obd
             
             var i:uint = 0;
             
-            if (thing.frames > 1)
-            {
+            if (thing.frames > 1) {
                 thing.isAnimation = true;
                 
                 var animationMode:uint = bytes.readUnsignedByte();
-                var frameStrategy:int = bytes.readInt();
+                var loopCount:int = bytes.readInt();
                 var startFrame:int = bytes.readByte();
                 var frameDurations:Vector.<FrameDuration> = new Vector.<FrameDuration>(thing.frames, true);
                 
@@ -419,7 +411,7 @@ package otlib.obd
                 
                 thing.animator = Animator.create(thing.frames,
                                                  startFrame,
-                                                 frameStrategy,
+                                                 loopCount,
                                                  animationMode,
                                                  frameDurations);
             }
@@ -431,8 +423,7 @@ package otlib.obd
             thing.spriteIDs = new Vector.<uint>(totalSprites, true);
             var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(totalSprites, true);
             
-            for (i = 0; i < totalSprites; i++)
-            {
+            for (i = 0; i < totalSprites; i++) {
                 var spriteId:uint = bytes.readUnsignedInt();
                 thing.spriteIDs[i] = spriteId;
                 
@@ -446,7 +437,6 @@ package otlib.obd
                 spriteData.pixels = pixels;
                 sprites[i] = spriteData;
             }
-            
             return ThingData.create(obdVersion, clientVersion, thing, sprites);
         }
         
@@ -644,7 +634,6 @@ package otlib.obd
                                                             thing.id));
                 }
             }
-            
             return true;
         }
         

@@ -71,7 +71,8 @@ package otlib.things
         
         public static function getCategoryByValue(value:uint):String
         {
-            switch (value) {
+            switch (value)
+            {
                 case 1:
                     return ITEM;
                 case 2:

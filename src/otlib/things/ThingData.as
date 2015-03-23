@@ -38,6 +38,7 @@ package otlib.things
     import nail.utils.StringUtil;
     import nail.utils.isNullOrEmpty;
     
+    import otlib.core.Version;
     import otlib.geom.Rect;
     import otlib.geom.Size;
     import otlib.obd.OBDEncoder;
@@ -83,7 +84,7 @@ package otlib.things
         public function get clientVersion():uint { return m_clientVersion; }
         public function set clientVersion(value:uint):void
         {
-            if (value < 710)
+            if (value < Version.MIN_VERSION)
                 throw new ArgumentError(StringUtil.format("Invalid client version {0}.", value));
             
             m_clientVersion = value;
@@ -105,8 +106,7 @@ package otlib.things
                 throw new NullOrEmptyArgumentError("sprites");
             
             var length:uint = value.length;
-            for (var i:uint = 0; i < length; i++)
-            {
+            for (var i:uint = 0; i < length; i++) {
                 if (value[i] == null)
                     throw new ArgumentError("Invalid sprite list");
             }
@@ -143,26 +143,19 @@ package otlib.things
             var textureRect:Vector.<Rect> = new Vector.<Rect>(m_thing.getTotalTextures(), true);
             var spriteSheet:SpriteSheet = new SpriteSheet(bitmapWidth, bitmapHeight, textureRect);
             
-            for (var f:uint = 0; f < m_thing.frames; f++)
-            {
-                for (var z:uint = 0; z < m_thing.patternZ; z++)
-                {
-                    for (var y:uint = 0; y < m_thing.patternY; y++)
-                    {
-                        for (var x:uint = 0; x < m_thing.patternX; x++)
-                        {
-                            for (var l:uint = 0; l < m_thing.layers; l++)
-                            {
+            for (var f:uint = 0; f < m_thing.frames; f++) {
+                for (var z:uint = 0; z < m_thing.patternZ; z++) {
+                    for (var y:uint = 0; y < m_thing.patternY; y++) {
+                        for (var x:uint = 0; x < m_thing.patternX; x++) {
+                            for (var l:uint = 0; l < m_thing.layers; l++) {
                                 var index:uint = thing.getTextureIndex(l, x, y, z, f);
                                 var fx:int = (index % totalX) * pixelsWidth;
                                 var fy:int = Math.floor(index / totalX) * pixelsHeight;
                                 
                                 textureRect[index] = new Rect(fx, fy, pixelsWidth, pixelsHeight);
                                 
-                                for (var w:uint = 0; w < m_thing.width; w++)
-                                {
-                                    for (var h:uint = 0; h < m_thing.height; h++)
-                                    {
+                                for (var w:uint = 0; w < m_thing.width; w++) {
+                                    for (var h:uint = 0; h < m_thing.height; h++) {
                                         index = thing.getSpriteIndex(w, h, l, x, y, z, f);
                                         var px:int = ((m_thing.width - w - 1) * size);
                                         var py:int = ((m_thing.height - h - 1) * size);
@@ -206,12 +199,9 @@ package otlib.things
             var y:uint;
             var z:uint;
             
-            for (f = 0; f < m_thing.frames; f++)
-            {
-                for (z = 0; z < m_thing.patternZ; z++)
-                {
-                    for (x = 0; x < m_thing.patternX; x++)
-                    {
+            for (f = 0; f < m_thing.frames; f++) {
+                for (z = 0; z < m_thing.patternZ; z++) {
+                    for (x = 0; x < m_thing.patternX; x++) {
                         index = (((f % m_thing.frames * m_thing.patternZ + z) * m_thing.patternY + y) * m_thing.patternX + x) * m_thing.layers;
                         rectList[index] = new Rect((z * m_thing.patternX + x) * pixelsWidth, f * pixelsHeight, pixelsWidth, pixelsHeight);
                     }
@@ -274,24 +264,17 @@ package otlib.things
             
             POINT.setTo(0, 0);
             
-            for (var f:uint = 0; f < m_thing.frames; f++)
-            {
-                for (var z:uint = 0; z < m_thing.patternZ; z++)
-                {
-                    for (var y:uint = 0; y < m_thing.patternY; y++)
-                    {
-                        for (var x:uint = 0; x < m_thing.patternX; x++)
-                        {
-                            for (var l:uint = 0; l < m_thing.layers; l++)
-                            {
+            for (var f:uint = 0; f < m_thing.frames; f++) {
+                for (var z:uint = 0; z < m_thing.patternZ; z++) {
+                    for (var y:uint = 0; y < m_thing.patternY; y++) {
+                        for (var x:uint = 0; x < m_thing.patternX; x++) {
+                            for (var l:uint = 0; l < m_thing.layers; l++) {
                                 var index:uint = m_thing.getTextureIndex(l, x, y, z, f);
                                 var fx:int = (index % totalX) * pixelsWidth;
                                 var fy:int = Math.floor(index / totalX) * pixelsHeight;
                                 
-                                for (var w:uint = 0; w < m_thing.width; w++)
-                                {
-                                    for (var h:uint = 0; h < m_thing.height; h++)
-                                    {
+                                for (var w:uint = 0; w < m_thing.width; w++) {
+                                    for (var h:uint = 0; h < m_thing.height; h++) {
                                         index = m_thing.getSpriteIndex(w, h, l, x, y, z, f);
                                         var px:int = ((m_thing.width - w - 1) * size);
                                         var py:int = ((m_thing.height - h - 1) * size);
@@ -376,14 +359,11 @@ package otlib.things
         
         private function copyPixels(index:uint, bitmap:BitmapData, x:uint, y:uint):void
         {
-            if (index < m_sprites.length)
-            {
+            if (index < m_sprites.length) {
                 var sd:SpriteData = m_sprites[index];
-                if (sd && sd.pixels)
-                {
+                if (sd && sd.pixels) {
                     var bmp:BitmapData = sd.getBitmap();
-                    if (bmp)
-                    {
+                    if (bmp) {
                         sd.pixels.position = 0;
                         RECTANGLE.setTo(0, 0, bmp.width, bmp.height);
                         POINT.setTo(x, y);

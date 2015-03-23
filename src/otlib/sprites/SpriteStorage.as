@@ -612,7 +612,7 @@ package otlib.sprites
             // Returns the pixels buffer position.
             pixels.position = 0;
             
-            var data:SpriteData = SpriteData.createSpriteData(id, sprite.pixels);
+            var data:SpriteData = SpriteData.create(id, sprite.pixels);
             return result.update([data], true);
         }
         
@@ -650,7 +650,7 @@ package otlib.sprites
             
             // Return the ByteArray position.
             pixels.position = 0;
-            var data:SpriteData = SpriteData.createSpriteData(id, removed.pixels);
+            var data:SpriteData = SpriteData.create(id, removed.pixels);
             return result.update([data], true);
         }
         
@@ -690,7 +690,7 @@ package otlib.sprites
                 _sprites[id] = new Sprite(id, _transparency);
             }
             
-            var data:SpriteData = SpriteData.createSpriteData(id, removed.pixels);
+            var data:SpriteData = SpriteData.create(id, removed.pixels);
             return result.update([data], true);
         }
         

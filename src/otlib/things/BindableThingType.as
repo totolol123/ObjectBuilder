@@ -330,7 +330,7 @@ package otlib.things
                 var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(length, true);
                 
                 for (var i:uint = 0; i < length; i++)
-                    sprites[i] = this.sprites[i] || SpriteData.createSpriteData();
+                    sprites[i] = this.sprites[i] || SpriteData.create();
                 
                 data.sprites = sprites;
             }
@@ -415,7 +415,7 @@ package otlib.things
             var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(length, true);
             
             for (var i:uint = 0; i < length; i++)
-                sprites[i] = this.sprites[i] || SpriteData.createSpriteData();
+                sprites[i] = this.sprites[i] || SpriteData.create();
             
             return ThingData.create(OBDVersions.OBD_VERSION_2, version, thing, sprites);
         }

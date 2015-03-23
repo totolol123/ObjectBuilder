@@ -209,8 +209,7 @@ package ob.core
         
         public function sendCommand(command:Command):void
         {
-            if (m_communicator)
-                m_communicator.sendCommand(command);
+            m_communicator.sendCommand(command);
         }
         
         public function start():void

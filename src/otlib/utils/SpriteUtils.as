@@ -59,9 +59,8 @@ package otlib.utils
         public static function removeMagenta(sprite:BitmapData):BitmapData
         {
             // Transform bitmap 24 to 32 bits
-            if (!sprite.transparent) {
+            if (!sprite.transparent)
                 sprite = BitmapUtil.to32bits(sprite);
-            }
             
             // Replace magenta to transparent.
             BitmapUtil.replaceColor(sprite, 0xFFFF00FF, 0x00FF00FF);
@@ -71,8 +70,7 @@ package otlib.utils
         public static function isEmpty(sprite:BitmapData):Boolean
         {
             var bounds:Rectangle = sprite.getColorBoundsRect(0xFF000000, 0x00000000, false);
-            if (bounds.width == 0 && bounds.height == 0) return true;
-            return false;
+            return (bounds.width == 0 && bounds.height == 0);
         }
     }
 }

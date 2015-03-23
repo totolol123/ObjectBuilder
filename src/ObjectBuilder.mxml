@@ -658,7 +658,7 @@ THE SOFTWARE.
             public function replaceSprite(id:uint, bitmap:BitmapData):void
             {
                 if (!this.clientLoaded || id == 0 || !bitmap) return;
-                var spriteData:SpriteData = SpriteData.createSpriteData(id, bitmap.getPixels(bitmap.rect));
+                var spriteData:SpriteData = SpriteData.create(id, bitmap.getPixels(bitmap.rect));
                 sendCommand(new ReplaceSpritesCommand(Vector.<SpriteData>([spriteData])));
             }
             
@@ -1101,7 +1101,7 @@ THE SOFTWARE.
                     if (bitmap.width == 32 && bitmap.height == 32) {
                         if (!spritesList.multipleSelected && spritesList.selectedId != 0) {
                             var pixels:ByteArray = bitmap.getPixels(bitmap.rect);
-                            var spriteData:SpriteData = SpriteData.createSpriteData(spritesList.selectedId, pixels);
+                            var spriteData:SpriteData = SpriteData.create(spritesList.selectedId, pixels);
                             sendCommand(new ReplaceSpritesCommand(Vector.<SpriteData>([spriteData])));
                         }
                     }
@@ -1858,7 +1858,7 @@ THE SOFTWARE.
                         var length:uint = thing.spriteIDs.length;
                         var sprites:Vector.<SpriteData> = new Vector.<SpriteData>(length, true);
                         for (var i:uint = 0; i < length; i++)
-                            sprites[i] = SpriteData.createSpriteData(thing.spriteIDs[i]);
+                            sprites[i] = SpriteData.create(thing.spriteIDs[i]);
                         
                         var data:ThingData = ThingData.create(OBDVersions.OBD_VERSION_2, m_version.value, thing, sprites);
                         data.setSpriteSheet(bitmap);
