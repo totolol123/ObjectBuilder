@@ -115,8 +115,3 @@ otlib|PatternSlider
 // ob components
 //--------------------------------------
 */
-
-ob|Toolbar
-{
-    skinClass: ClassReference("ob.components.skins.ToolbarSkin");
-}
