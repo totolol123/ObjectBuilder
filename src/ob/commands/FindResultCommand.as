@@ -24,13 +24,15 @@ package ob.commands
 {
     import nail.commands.Command;
     
+    import otlib.components.ListItem;
+    
     public class FindResultCommand extends Command
     {
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function FindResultCommand(type:uint, list:Array)
+        public function FindResultCommand(type:uint, list:Vector.<ListItem>)
         {
             super(type, list);
         }

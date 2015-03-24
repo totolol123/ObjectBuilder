@@ -22,49 +22,45 @@
 
 package otlib.utils
 {
-    import flash.display.BitmapData;
-    import flash.utils.ByteArray;
-    
-    import otlib.components.IListObject;
-    import otlib.things.ThingType;
-    
-    public class ThingListItem implements IListObject
+    public class MinMaxValues
     {
         //--------------------------------------------------------------------------
         // PROPERTIES
         //--------------------------------------------------------------------------
         
-        public var thing:ThingType;
-        public var pixels:ByteArray;
-        
-        private var m_bitmap:BitmapData;
-        
-        //--------------------------------------
-        // Getters / Setters 
-        //--------------------------------------
-        
-        public function get id():uint { return thing ? thing.id : 0; }
-        
-        public function get bitmap():BitmapData
-        {
-            if (pixels && thing && !m_bitmap) {
-                pixels.position = 0;
-                m_bitmap = new BitmapData(Math.max(32, thing.width * 32), Math.max(32, thing.height * 32), true, 0);
-                if (thing.width != 0 &&
-                    thing.height != 0 &&
-                    pixels.length == (m_bitmap.width * m_bitmap.height * 4)) {
-                    m_bitmap.setPixels(m_bitmap.rect, pixels);
-                }
-            }
-            return m_bitmap;
-        }
+        public var min:int;
+        public var max:int;
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
         //--------------------------------------------------------------------------
         
-        public function ThingListItem()
+        public function MinMaxValues(min:int = 0, max:int = 0)
         {
+            this.min = min;
+            this.max = max;
+        }
+        
+        //--------------------------------------------------------------------------
+        // METHODS
+        //--------------------------------------------------------------------------
+        
+        //--------------------------------------
+        // Public
+        //--------------------------------------
+        
+        public function setTo(min:int = 0, max:int = 0):MinMaxValues
+        {
+            this.min = min;
+            this.max = max;
+            return this;
+        }
+        
+        public function setZero():MinMaxValues
+        {
+            min = 0;
+            max = 0;
+            return this;
         }
     }
 }

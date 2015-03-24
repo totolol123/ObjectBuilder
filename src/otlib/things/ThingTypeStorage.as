@@ -505,39 +505,42 @@ package otlib.things
             return 0;
         }
         
-        public function findThingTypeByProperties(category:String, properties:Vector.<ThingProperty>):Array
+        public function findThingTypeByProperties(category:String, properties:Vector.<ThingProperty>):Vector.<ThingType>
         {
-            if (!ThingCategory.getCategory(category)) {
+            if (!ThingCategory.getCategory(category))
                 throw new ArgumentError(Resources.getString("invalidCategory"));
-            }
             
-            if (!properties) {
+            if (!properties)
                 throw new NullArgumentError("properties");
-            }
             
-            var result:Array = [];
-            if (!_loaded || properties.length == 0) return result;
+            var result:Vector.<ThingType> = new Vector.<ThingType>();
+            if (!_loaded || properties.length == 0)
+                return result;
             
             var list:Dictionary;
             var total:uint;
             var current:uint;
             
-            switch(category) {
+            switch(category)
+            {
                 case ThingCategory.ITEM:
                     list = _items;
                     total = _itemsCount;
                     current = MIN_ITEM_ID;
                     break;
+                
                 case ThingCategory.OUTFIT:
                     list = _outfits;
                     total = _outfitsCount;
                     current = MIN_OUTFIT_ID;
                     break;
+                
                 case ThingCategory.EFFECT:
                     list = _effects;
                     total = _effectsCount;
                     current = MIN_EFFECT_ID;
                     break;
+                
                 case ThingCategory.MISSILE:
                     list = _missiles;
                     total = _missilesCount;
@@ -556,15 +559,13 @@ package otlib.things
                     var property:String = thingProperty.property;
                     if (property != null && thing.hasOwnProperty(property)) {
                         
-                        if (property == "marketName" && thing[property] != null && thingProperty.value != null)
-                        {
+                        if (property == "marketName" && thing[property] != null && thingProperty.value != null) {
                             var name1:String = StringUtil.toKeyString( String(thingProperty.value) );
                             var name2:String = StringUtil.toKeyString(thing[property]);
                             if (name2.indexOf(name1) == -1) {
                                 equals = false;
                                 break;
                             }
-                            
                         } else if (thingProperty.value != thing[property]) {
                             equals = false;
                             break;
@@ -578,7 +579,7 @@ package otlib.things
                         thing = ThingUtils.createAlertThing(ThingCategory.EFFECT);
                         thing.id = id;
                     }
-                    result.push(thing);
+                    result[result.length] = thing;
                 }
                 
                 if (this.hasEventListener(ProgressEvent.PROGRESS)) {

@@ -95,25 +95,23 @@ package ob.animationeditor
         
         otlib_internal function onContextMenuSelect(index:int, type:String):void
         {
-            if (index != -1 && this.dataProvider)
-            {
+            if (index != -1 && this.dataProvider) {
                 var frame:Frame = this.dataProvider.getItemAt(index) as Frame;
-                
                 if (frame) {
                     var event:FrameListEvent;
-                    
-                    switch(type) {
+                    switch(type)
+                    {
                         case FrameListEvent.DUPLICATE:
                             event = new FrameListEvent(FrameListEvent.DUPLICATE);
                             break;
+                        
                         case FrameListEvent.REMOVE:
                             event = new FrameListEvent(FrameListEvent.REMOVE);
                             break;
                     }
                     
-                    if (event) {
+                    if (event)
                         dispatchEvent(event);
-                    }
                 }
             }
         }
@@ -123,9 +121,8 @@ package ob.animationeditor
             if (!this.multipleSelected)
                 this.setSelectedIndex(index, true);
                 
-            if (hasEventListener(FrameListEvent.DISPLAYING_CONTEXT_MENU)) {
+            if (hasEventListener(FrameListEvent.DISPLAYING_CONTEXT_MENU))
                 dispatchEvent(new FrameListEvent(FrameListEvent.DISPLAYING_CONTEXT_MENU));
-            }
         }
     }
 }

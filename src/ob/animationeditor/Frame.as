@@ -24,10 +24,10 @@ package ob.animationeditor
 {
     import flash.display.BitmapData;
     
-    import otlib.components.IListObject;
+    import otlib.components.ListItem;
     import otlib.things.FrameDuration;
     
-    public class Frame implements IListObject
+    public class Frame extends ListItem
     {
         //--------------------------------------------------------------------------
         // PROPERTIES
@@ -35,17 +35,6 @@ package ob.animationeditor
         
         public var opacity:Number;
         public var duration:FrameDuration;
-        
-        private var m_bitmap:BitmapData;
-        
-        //--------------------------------------
-        // Getters / Setters
-        //--------------------------------------
-        
-        public function get id():uint { return uint.MAX_VALUE; }
-        
-        public function get bitmap():BitmapData { return m_bitmap; }
-        public function set bitmap(value:BitmapData):void { m_bitmap = value; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -70,7 +59,7 @@ package ob.animationeditor
         {
             var clone:Frame = new Frame();
             clone.opacity = this.opacity;
-            clone.bitmap = this.bitmap ? this.bitmap.clone() : null;
+            clone.m_bitmap = this.bitmap ? this.bitmap.clone() : null;
             clone.duration = this.duration ? this.duration.clone() : null;
             return clone;
         }

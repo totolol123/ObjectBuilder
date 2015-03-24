@@ -1,5 +1,5 @@
 /*
-*  Copyright (c) 2015 Object Builder <https://github.com/Mignari/ObjectBuilder>
+*  Copyright (c) 2014 <nailsonnego@gmail.com>
 * 
 *  Permission is hereby granted, free of charge, to any person obtaining a copy
 *  of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,8 @@ package otlib.components
     import flash.ui.ContextMenu;
     import flash.ui.Keyboard;
     
-    import mx.core.ClassFactory;
-    
-    import otlib.components.renders.ThingListRenderer;
     import otlib.core.otlib_internal;
     import otlib.events.ThingListEvent;
-    import otlib.things.ThingType;
-    import otlib.utils.ThingListItem;
     
     [Event(name="replace", type="otlib.events.ThingListEvent")]
     [Event(name="export", type="otlib.events.ThingListEvent")]
@@ -50,7 +45,7 @@ package otlib.components
         
         public function ThingList()
         {
-            this.itemRenderer = new ClassFactory(ThingListRenderer);
+            super();
         }
         
         //--------------------------------------------------------------------------
@@ -63,35 +58,43 @@ package otlib.components
         
         otlib_internal function onContextMenuSelect(index:int, type:String):void
         {
-            if (index != -1 && this.dataProvider)
-            {
-                var listItem:ThingListItem = this.dataProvider.getItemAt(index) as ThingListItem;
+            if (index != -1 && dataProvider) {
+                var listItem:ListItem = ListItem( dataProvider.getItemAt(index) );
+                var event:Event;
                 
-                if (listItem && listItem.thing) {
-                    var event:ThingListEvent;
+                switch(type)
+                {
+                    case Event.COPY:
+                        event = new Event(Event.COPY);
+                        break;
                     
-                    switch(type) {
-                        case ThingListEvent.REPLACE:
-                            event = new ThingListEvent(ThingListEvent.REPLACE);
-                            break;
-                        case ThingListEvent.EXPORT:
-                            event = new ThingListEvent(ThingListEvent.EXPORT);
-                            break;
-                        case ThingListEvent.EDIT:
-                            event = new ThingListEvent(ThingListEvent.EDIT);
-                            break;
-                        case ThingListEvent.DUPLICATE:
-                            event = new ThingListEvent(ThingListEvent.DUPLICATE);
-                            break;
-                        case ThingListEvent.REMOVE:
-                            event = new ThingListEvent(ThingListEvent.REMOVE);
-                            break;
-                    }
+                    case Event.PASTE:
+                        event = new Event(Event.PASTE);
+                        break;
                     
-                    if (event) {
-                        dispatchEvent(event);
-                    }
+                    case ThingListEvent.REPLACE:
+                        event = new ThingListEvent(ThingListEvent.REPLACE);
+                        break;
+                    
+                    case ThingListEvent.EXPORT:
+                        event = new ThingListEvent(ThingListEvent.EXPORT);
+                        break;
+                    
+                    case ThingListEvent.EDIT:
+                        event = new ThingListEvent(ThingListEvent.EDIT);
+                        break;
+                    
+                    case ThingListEvent.DUPLICATE:
+                        event = new ThingListEvent(ThingListEvent.DUPLICATE);
+                        break;
+                    
+                    case ThingListEvent.REMOVE:
+                        event = new ThingListEvent(ThingListEvent.REMOVE);
+                        break;
                 }
+                
+                if (event)
+                    dispatchEvent(event);
             }
         }
         
@@ -102,9 +105,8 @@ package otlib.components
             else
                 this.setSelectedIndex(index, true);
             
-            if (hasEventListener(ThingListEvent.DISPLAYING_CONTEXT_MENU)) {
+            if (hasEventListener(ThingListEvent.DISPLAYING_CONTEXT_MENU))
                 dispatchEvent(new ThingListEvent(ThingListEvent.DISPLAYING_CONTEXT_MENU));
-            }
         }
         
         //--------------------------------------
@@ -115,56 +117,19 @@ package otlib.components
         {
             super.keyDownHandler(event);
             
-            switch(event.keyCode) {
+            switch(event.keyCode)
+            {
                 case Keyboard.C:
                     if (event.ctrlKey) dispatchEvent(new Event(Event.COPY));
                     break;
+                
                 case Keyboard.V:
                     if (event.ctrlKey) dispatchEvent(new Event(Event.PASTE));
                     break;
+                
                 case Keyboard.DELETE:
                     dispatchEvent(new ThingListEvent(ThingListEvent.REMOVE));
                     break;
-            }
-        }
-        
-        //--------------------------------------
-        // Getters / Setters
-        //--------------------------------------
-        
-        public function get selectedThing():ThingType
-        {
-            if (this.selectedItem) {
-                return this.selectedItem.thing;
-            }
-            return null;
-        }
-        
-        public function get selectedThings():Vector.<ThingType>
-        {
-            var result:Vector.<ThingType> = new Vector.<ThingType>();
-            if (this.selectedIndices) {
-                var length:uint = selectedIndices.length;
-                for (var i:uint = 0; i < length; i++) {
-                    result[i] = dataProvider.getItemAt(selectedIndices[i]).thing;
-                }
-            }
-            return result;
-        }
-        
-        public function set selectedThings(value:Vector.<ThingType>):void
-        {
-            if (value) {
-                var list:Vector.<int> = new Vector.<int>();
-                var length:uint = value.length;
-                for (var i:uint = 0; i < length; i++) {
-                    var index:int = getIndexById(value[i].id);
-                    if (index != -1)
-                    {
-                        list.push(index);
-                    }
-                }
-                this.selectedIndices = list;
             }
         }
     }

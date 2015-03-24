@@ -76,7 +76,6 @@ THE SOFTWARE.
             import otlib.things.StackOrder;
             import otlib.things.ThingCategory;
             import otlib.things.ThingProperty;
-            import otlib.utils.ThingListItem;
             
             //--------------------------------------------------------------------------
             // PROPERTIES
@@ -105,16 +104,13 @@ THE SOFTWARE.
                 progressBar.label = loaded + " / " + total;
             }
             
-            private function findResultCallback(type:uint, list:Array):void
+            private function findResultCallback(type:uint, list:Vector.<ListItem>):void
             {
-                if (type == FindResultCommand.THINGS)
-                {
-                    thingsList.setListObjects(list);
+                if (type == FindResultCommand.THINGS) {
+                    thingsList.setList(list);
                     thingsList.selectedIndex = 0;
-                }
-                else if (type == FindResultCommand.SPRITES)
-                {
-                    spritesList.setListObjects(list);
+                } else if (type == FindResultCommand.SPRITES) {
+                    spritesList.setList(list);
                     spritesList.selectedIndex = 0;
                 }
                 
@@ -178,10 +174,9 @@ THE SOFTWARE.
             
             private function selectThing():void
             {
-                var listItem:ThingListItem = thingsList.selectedItem as ThingListItem;
-                if (listItem && listItem.thing)
-                    m_application.sendCommand(new GetThingDataCommand(listItem.thing.id,
-                                                                  listItem.thing.category));
+                var listItem:ListItem = ListItem(thingsList.selectedItem);
+                if (listItem)
+                    m_application.sendCommand(new GetThingDataCommand(listItem.id, getCurrentCategory()));
             }
             
             private function removeThings():void
@@ -479,6 +474,7 @@ THE SOFTWARE.
                                  allowMultipleSelection="true"
                                  contextMenuEnabled="false"
                                  requireSelection="true"
+                                 itemRenderer="otlib.components.renders.ThingListRenderer"
                                  doubleClick="doubleClickHandler(event)"/>
             </nail:GroupBox>
         </s:NavigatorContent>
@@ -530,6 +526,7 @@ THE SOFTWARE.
                                   allowMultipleSelection="true"
                                   contextMenuEnabled="false"
                                   requireSelection="true"
+                                  itemRenderer="otlib.components.renders.SpriteListRenderer"
                                   doubleClick="doubleClickHandler(event)"/>
             </nail:GroupBox>
         </s:NavigatorContent>

@@ -289,6 +289,16 @@ package otlib.sprites
             return null;
         }
         
+        public function getPixelsVector(id:uint):Vector.<uint>
+        {
+            if (_loaded) {
+                var bitmap:BitmapData = getBitmap(id);
+                if (bitmap)
+                    return bitmap.getVector(Sprite.RECTANGLE);
+            }
+            return null;
+        }
+        
         /**
          * Copies the pixels of a sprite to a bitmap.
          * 

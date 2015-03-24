@@ -24,7 +24,7 @@ THE SOFTWARE.
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:mx="library://ns.adobe.com/flex/mx"
-                xmlns:nail="library://ns.nail.com/naillib"
+                xmlns:nail="nail.components.*"
                 height="41"
                 fontSize="11"
                 creationComplete="creationCompleteHandler(event)"
@@ -40,11 +40,11 @@ THE SOFTWARE.
             import mx.resources.IResourceManager;
             import mx.resources.ResourceManager;
             
+            import otlib.components.ListItem;
             import otlib.components.ListBase;
             import otlib.components.SpriteList;
             import otlib.core.otlib_internal;
             import otlib.events.SpriteListEvent;
-            import otlib.sprites.SpriteData;
             
             use namespace otlib_internal;
             
@@ -68,9 +68,8 @@ THE SOFTWARE.
             
             protected function contextMenuDisplayingHandler(event:Event):void
             {
-                if (owner is SpriteList) {
+                if (owner is SpriteList)
                     SpriteList(owner).onContextMenuDisplaying(this.itemIndex, ContextMenu(event.target));
-                }
             }
             
             protected function contextMenuSelectHandler(event:Event):void
@@ -83,10 +82,10 @@ THE SOFTWARE.
             
             protected function dataChangeHandler(event:FlexEvent):void
             {
-                var sprite:SpriteData = data as SpriteData;
-                if (sprite) {
-                    imageDisplay.source = sprite.bitmap;
-                    labelDisplay.text = sprite.id.toString();
+                var item:ListItem = ListItem(data);
+                if (item) {
+                    imageDisplay.source = item.bitmap;
+                    labelDisplay.text = item.toString();
                 }
             }
             
@@ -97,16 +96,26 @@ THE SOFTWARE.
             private static function createContextMenu():ContextMenu
             {
                 var resource:IResourceManager = ResourceManager.getInstance();
+                
                 var copyMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "copy"));
                 copyMenu.data = Event.COPY;
+                //copyMenu.enabled = false;
+                
                 var pasteMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "paste"));
                 pasteMenu.data = Event.PASTE;
+                //pasteMenu.enabled = false;
+                
                 var replaceMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "replace"), true);
                 replaceMenu.data = SpriteListEvent.REPLACE;
+                //replaceMenu.enabled = false;
+                
                 var exportMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "export"));
                 exportMenu.data = SpriteListEvent.EXPORT;
+                
                 var removeMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "remove"));
                 removeMenu.data = SpriteListEvent.REMOVE;
+                //removeMenu.enabled = false;
+                
                 var menu:ContextMenu = new ContextMenu();
                 menu.customItems = [copyMenu, pasteMenu, replaceMenu, exportMenu, removeMenu];
                 return menu;
@@ -136,28 +145,30 @@ THE SOFTWARE.
         </s:stroke>
     </s:Rect>
     
-    <!-- image and label -->
-    <s:HGroup width="100%"
-              height="100%"
-              paddingLeft="3"
-              paddingRight="3"
-              verticalAlign="middle"
-              gap="5">
-        <s:Group width="36"
-                 height="36">
-            <s:Rect left="0" right="0" top="0" bottom="0">
-                <s:fill>
-                    <s:SolidColor color="0x636363"/>
-                </s:fill>
-                <s:stroke>
-                    <s:SolidColorStroke color="0x272727"/>
-                </s:stroke>
-            </s:Rect>
-            <s:Image id="imageDisplay"
-                     horizontalCenter="0"
-                     verticalCenter="0"/>
-        </s:Group>
-        
-        <s:Label id="labelDisplay" />
-    </s:HGroup>
+    <!-- image background -->
+    <s:Rect left="5" verticalCenter="0" width="33" height="33">
+        <s:fill>
+            <s:SolidColor color="0x636363"/>
+        </s:fill>
+        <s:stroke>
+            <s:SolidColorStroke color="0x272727"/>
+        </s:stroke>
+    </s:Rect>
+    
+    <!-- image -->
+    <s:Image id="imageDisplay"
+             left="6"
+             width="32"
+             height="32"
+             mouseChildren="false"
+             mouseEnabled="false"
+             verticalCenter="0"/>
+    
+    <!-- text -->
+    <s:Label id="labelDisplay"
+             left="42"
+             right="5"
+             mouseChildren="false"
+             mouseEnabled="false"
+             verticalCenter="0"/>
 </s:ItemRenderer>

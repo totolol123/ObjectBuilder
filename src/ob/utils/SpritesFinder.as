@@ -30,9 +30,10 @@ package ob.utils
     
     import ob.commands.ProgressBarID;
     
+    import otlib.components.ListItem;
     import otlib.core.otlib_internal;
     import otlib.events.ProgressEvent;
-    import otlib.sprites.SpriteData;
+    import otlib.sprites.Sprite;
     import otlib.sprites.SpriteStorage;
     import otlib.things.ThingType;
     import otlib.things.ThingTypeStorage;
@@ -50,14 +51,14 @@ package ob.utils
         
         private var m_dat:ThingTypeStorage;
         private var m_spr:SpriteStorage;
-        private var m_foundList:Array;
+        private var m_foundList:Vector.<ListItem>;
         private var m_finished:Boolean;
         
         //--------------------------------------
         // Getters / Setters 
         //--------------------------------------
         
-        public function get foundList():Array { return m_foundList; }
+        public function get foundList():Vector.<ListItem> { return m_foundList; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -87,16 +88,14 @@ package ob.utils
         {
             if (m_finished) return;
             
-            if (unusedSprites || emptySprites)
-            {
+            if (unusedSprites || emptySprites) {
                 var length:uint = m_spr.spritesCount + 1;
                 var i:int = 0;
-                var spriteFoundList:Array = [];
+                var spriteFoundList:Vector.<ListItem> = new Vector.<ListItem>();
                 var usedList:Vector.<Boolean> = new Vector.<Boolean>(length, true);
-                var spriteData:SpriteData;
+                var listItem:ListItem;
                 
-                if (unusedSprites)
-                {
+                if (unusedSprites) {
                     // scan items
                     scanList(m_dat.items, usedList);
                     
@@ -112,33 +111,31 @@ package ob.utils
                     // =====================================================================
                     // gets all unused/empty sprites.
                     
-                    for (i = 1; i < length; i++)
-                    {
-                        if (!usedList[i] && (!m_spr.isEmptySprite(i) || emptySprites))
-                        {
-                            spriteData = new SpriteData();
-                            spriteData.id = i;
-                            spriteData.pixels = m_spr.getPixels(i);
-                            spriteFoundList[spriteFoundList.length] = spriteData;
+                    for (i = 1; i < length; i++) {
+                        if (!usedList[i] && (!m_spr.isEmptySprite(i) || emptySprites)) {
+                            listItem = new ListItem();
+                            listItem.width = Sprite.DEFAULT_SIZE;
+                            listItem.height = Sprite.DEFAULT_SIZE;
+                            listItem.id = i;
+                            listItem.pixels = m_spr.getPixelsVector(i);
+                            spriteFoundList[spriteFoundList.length] = listItem;
                             
                             if (i % 10 == 0)
                                 dispatchProgress(i, length);
                         }
                     }
-                }
-                else
-                {
+                } else {
                     // =====================================================================
                     // gets all empty sprites.
                     
-                    for (i = 1; i < length; i++)
-                    {
-                        if (m_spr.isEmptySprite(i))
-                        {
-                            spriteData = new SpriteData();
-                            spriteData.id = i;
-                            spriteData.pixels = m_spr.getPixels(i);
-                            spriteFoundList[spriteFoundList.length] = spriteData;
+                    for (i = 1; i < length; i++) {
+                        if (m_spr.isEmptySprite(i)) {
+                            listItem = new ListItem();
+                            listItem.width = Sprite.DEFAULT_SIZE;
+                            listItem.height = Sprite.DEFAULT_SIZE;
+                            listItem.id = i;
+                            listItem.pixels = m_spr.getPixelsVector(i);
+                            spriteFoundList[spriteFoundList.length] = listItem;
                             
                             if (i % 10 == 0)
                                 dispatchProgress(i, length);
@@ -150,14 +147,12 @@ package ob.utils
             }
             
             m_finished = true;
-            
             dispatchEvent(new Event(Event.COMPLETE));
         }
         
         private function scanList(list:Dictionary, usedList:Vector.<Boolean>):void
         {
-            for each (var thing:ThingType in list)
-            {
+            for each (var thing:ThingType in list) {
                 var spriteIDs:Vector.<uint> = thing.spriteIDs;
                 var length:uint = spriteIDs.length;
                 

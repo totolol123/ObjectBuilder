@@ -22,6 +22,8 @@
 
 package otlib.components
 {
+    import flash.utils.Dictionary;
+    
     import mx.collections.ArrayCollection;
     import mx.events.FlexEvent;
     
@@ -35,11 +37,12 @@ package otlib.components
         // PROPERTIES
         //--------------------------------------------------------------------------
         
-        private var _ensureIdIsVisible:uint = uint.MAX_VALUE;
-        private var _scrollSave:ScrollPosition;
-        private var _contextMenuEnabled:Boolean = true;
-        private var _minId:uint;
-        private var _maxId:uint;
+        private var m_collection:ArrayCollection;
+        private var m_ensureIdIsVisible:uint = uint.MAX_VALUE;
+        private var m_scrollSave:ScrollPosition;
+        private var m_contextMenuEnabled:Boolean = true;
+        private var m_minId:uint;
+        private var m_maxId:uint;
         
         //--------------------------------------
         // Getters / Setters
@@ -50,44 +53,41 @@ package otlib.components
         [Inspectable(category="General", defaultValue="0")]
         public function get selectedId():uint
         {
-            if (this.selectedItem) {
+            if (this.selectedItem)
                 return this.selectedItem.id;
-            }
+            
             return 0;
         }
         
         public function set selectedId(value:uint):void
         {
-            if (selectedId != value) {
+            if (selectedId != value)
                 this.selectedIndex = getIndexById(value);
-            }
         }
         
         public function get firstSelectedId():uint
         {
-            if (selectedIndices && selectedIndices.length > 0) {
-                return dataProvider.getItemAt(selectedIndices[0]).id;
-            }
+            if (selectedIndices && selectedIndices.length > 0)
+                return m_collection.getItemAt(selectedIndices[0]).id;
+            
             return 0;
         }
         
         public function get lastSelectedId():uint
         {
-            if (selectedIndices && selectedIndices.length > 0) {
-                return dataProvider.getItemAt(selectedIndices[selectedIndices.length - 1]).id;
-            }
+            if (selectedIndices && selectedIndices.length > 0)
+                return m_collection.getItemAt(selectedIndices[selectedIndices.length - 1]).id;
+            
             return 0;
         }
         
         public function get selectedIds():Vector.<uint>
         {
             var result:Vector.<uint> = new Vector.<uint>();
-            
             if (selectedIndices) {
                 var length:uint = selectedIndices.length;
-                for (var i:uint = 0; i < length; i++) {
-                    result[i] = dataProvider.getItemAt(selectedIndices[i]).id;
-                }
+                for (var i:uint = 0; i < length; i++)
+                    result[i] = m_collection.getItemAt(selectedIndices[i]).id;
             }
             return result;
         }
@@ -100,30 +100,29 @@ package otlib.components
                 if (length > 1) {
                     for (var i:uint = 0; i < length; i++) {
                         var index:uint = getIndexById(value[i]);
-                        if (index != -1) indices[indices.length] = index;
+                        if (index != -1)
+                            indices[indices.length] = index;
                     }
                     this.selectedIndices = indices;
-                } else if (length == 1) {
+                } else if (length == 1)
                     this.selectedIndex = getIndexById(value[0]);
-                }
             }
         }
         
-        public function get maxId():uint { return _maxId; }
-        public function get minId():uint { return _minId; }
+        public function get maxId():uint { return m_maxId; }
+        public function get minId():uint { return m_minId; }
         public function get multipleSelected():Boolean { return (this.selectedIndices.length > 1); }
-        public function get isEmpty():Boolean { return (dataProvider.length == 0); }
+        public function get isEmpty():Boolean { return (m_collection.length == 0); }
         
         [Inspectable(category="General", defaultValue="true")]
-        public function get contextMenuEnabled():Boolean { return _contextMenuEnabled; }
+        public function get contextMenuEnabled():Boolean { return m_contextMenuEnabled; }
         public function set contextMenuEnabled(value:Boolean):void
         {
-            if (_contextMenuEnabled != value) {
-                _contextMenuEnabled = value;
-            }
+            if (m_contextMenuEnabled != value)
+                m_contextMenuEnabled = value;
         }
         
-        public function get length():uint { return dataProvider.length; }
+        public function get length():uint { return m_collection.length; }
         
         //--------------------------------------------------------------------------
         // CONSTRUCTOR
@@ -131,7 +130,9 @@ package otlib.components
         
         public function ListBase()
         {
-            this.dataProvider = new ArrayCollection();
+            m_collection = new ArrayCollection();
+            
+            this.dataProvider = m_collection;
             this.addEventListener(FlexEvent.UPDATE_COMPLETE, updateCompleteHandler);
         }
         
@@ -143,20 +144,41 @@ package otlib.components
         // Public
         //--------------------------------------
         
-        public function setListObjects(list:*):void
+        public function setList(list:Vector.<ListItem>):void
         {
             this.removeAll();
             
             if (list) {
-                _minId = uint.MAX_VALUE;
-                _maxId = 0;
+                m_minId = uint.MAX_VALUE;
+                m_maxId = 0;
+                
                 var length:uint = list.length;
                 for (var i:uint = 0; i < length; i++) {
-                    var object:IListObject = list[i];
-                    var id:uint = object.id;
-                    _minId = id < _minId ? id : _minId;
-                    _maxId = id > _maxId ? id : _maxId;
-                    dataProvider.addItem(object);
+                    var item:ListItem = list[i];
+                    var id:uint = item.id;
+                    m_minId = id < m_minId ? id : m_minId;
+                    m_maxId = id > m_maxId ? id : m_maxId;
+                    m_collection.addItem(item);
+                }
+            }
+        }
+        
+        public function updateList(list:Vector.<ListItem>):void
+        {
+            if (list && list.length > 0) {
+                var length:uint = 0;
+                var i:uint = 0;
+                var dict:Dictionary = new Dictionary();
+                
+                length = list.length;
+                for (i = 0; i < length; i++)
+                    dict[list[i].id] = list[i];
+                
+                length = m_collection.length;
+                for (i = 0; i < length; i++) {
+                    var id:uint = m_collection.getItemAt(i).id;
+                    if (dict[id] != undefined)
+                        m_collection.setItemAt(dict[id], i);
                 }
             }
         }
@@ -165,58 +187,58 @@ package otlib.components
         {
             var selectedIndices:Vector.<int> = this.selectedIndices;
             if (selectedIndices) {
-                selectedIndices.sort(Array.NUMERIC);
                 var length:uint = selectedIndices.length;
-                for (var i:int = length - 1; i >= 0; i--) {
-                    dataProvider.removeItemAt(selectedIndices[i]);
-                }
+                if (length > 1)
+                    selectedIndices.sort(Array.NUMERIC);
+                
+                for (var i:int = length - 1; i >= 0; i--)
+                    m_collection.removeItemAt(selectedIndices[i]);
             }
         }
         
         public function removeAll():void
         {
-            _minId = 0;
-            _maxId = 0;
-            dataProvider.removeAll();
+            m_minId = 0;
+            m_maxId = 0;
+            m_collection.removeAll();
         }
         
         public function getIndexById(id:uint):int
         {
-            var length:uint = dataProvider.length;
+            var length:uint = m_collection.length;
             for (var i:uint = 0; i < length; i++) {
-                if (dataProvider.getItemAt(i).id == id) {
+                if (m_collection.getItemAt(i).id == id)
                     return i;
-                }
             }
             return -1;
         }
         
-        public function getIndexOf(object:IListObject):int
+        public function getIndexOf(item:ListItem):int
         {
-            if (object) {
-                return this.dataProvider.getItemIndex(object);
-            }
+            if (item)
+                return m_collection.getItemIndex(item);
+            
             return -1;
         }
         
-        public function getObjectAt(index:int):IListObject
+        public function getObjectAt(index:int):ListItem
         {
-            return this.dataProvider.getItemAt(index) as IListObject;
+            return ListItem( m_collection.getItemAt(index) );
         }
         
         public function rememberScroll():void
         {
-            if (dataGroup && dataProvider.length != 0) {
+            if (dataGroup && m_collection.length != 0) {
                 var indicesInView:Vector.<int> = dataGroup.getItemIndicesInView();
                 if (indicesInView && indicesInView.length != 0) {
                     var firstVisible:int = indicesInView[0];
                     var lastVisible:int = indicesInView[indicesInView.length - 1];
-                    if (firstVisible < dataProvider.length && lastVisible < dataProvider.length) {
-                        _scrollSave = new ScrollPosition();
-                        _scrollSave.horizontalPosition = dataGroup.horizontalScrollPosition;
-                        _scrollSave.verticalPosition = dataGroup.verticalScrollPosition;
-                        _scrollSave.firstVisible = dataProvider.getItemAt(firstVisible) as IListObject;
-                        _scrollSave.lastVisible = dataProvider.getItemAt(lastVisible) as IListObject;
+                    if (firstVisible < m_collection.length && lastVisible < m_collection.length) {
+                        m_scrollSave = new ScrollPosition();
+                        m_scrollSave.horizontalPosition = dataGroup.horizontalScrollPosition;
+                        m_scrollSave.verticalPosition = dataGroup.verticalScrollPosition;
+                        m_scrollSave.firstVisible = ListItem( m_collection.getItemAt(firstVisible) );
+                        m_scrollSave.lastVisible = ListItem( m_collection.getItemAt(lastVisible) );
                     }
                 } 
             }
@@ -224,12 +246,12 @@ package otlib.components
         
         public function ensureIdIsVisible(id:uint):void
         {
-            _ensureIdIsVisible = id;
+            m_ensureIdIsVisible = id;
         }
         
         public function refresh():void
         {
-            ArrayCollection(dataProvider).refresh();
+            ArrayCollection(m_collection).refresh();
         }
         
         //--------------------------------------
@@ -240,27 +262,30 @@ package otlib.components
         {
             if (this.isEmpty) return;
             
-            var firstVisible:IListObject;
-            var lastVisible:IListObject;
+            var firstVisible:ListItem;
+            var lastVisible:ListItem;
             
-            if (_scrollSave) {
-                firstVisible = _scrollSave.firstVisible;
-                lastVisible = _scrollSave.lastVisible;
+            if (m_scrollSave) {
+                firstVisible = m_scrollSave.firstVisible;
+                lastVisible = m_scrollSave.lastVisible;
             } else {
                 var indicesInView:Vector.<int> = dataGroup.getItemIndicesInView();
-                firstVisible = dataProvider.getItemAt(indicesInView[0]) as IListObject;
-                lastVisible = dataProvider.getItemAt(indicesInView[indicesInView.length - 1]) as IListObject;
+                if (indicesInView.length > 0) {
+                    firstVisible = ListItem( m_collection.getItemAt(indicesInView[0]) );
+                    lastVisible = ListItem( m_collection.getItemAt(indicesInView[indicesInView.length - 1]) );
+                }
             }
             
             if ((firstVisible && (id - 1) < firstVisible.id) || (lastVisible && (id + 1) > lastVisible.id)) {
                 var index:int = getIndexById(id);
-                if (index != -1) ensureIndexIsVisible(index);
-            } else if (_scrollSave)  {
-                dataGroup.horizontalScrollPosition = _scrollSave.horizontalPosition;
-                dataGroup.verticalScrollPosition = _scrollSave.verticalPosition;
+                if (index != -1)
+                    ensureIndexIsVisible(index);
+            } else if (m_scrollSave) {
+                dataGroup.horizontalScrollPosition = m_scrollSave.horizontalPosition;
+                dataGroup.verticalScrollPosition = m_scrollSave.verticalPosition;
             }
             
-            _scrollSave = null;
+            m_scrollSave = null;
         }
         
         //--------------------------------------
@@ -269,10 +294,33 @@ package otlib.components
         
         protected function updateCompleteHandler(event:FlexEvent):void
         {
-            if (_ensureIdIsVisible != uint.MAX_VALUE) {
-                onEnsureIdIsVisible(_ensureIdIsVisible);
-                _ensureIdIsVisible = uint.MAX_VALUE;
+            if (m_ensureIdIsVisible != uint.MAX_VALUE) {
+                onEnsureIdIsVisible(m_ensureIdIsVisible);
+                m_ensureIdIsVisible = uint.MAX_VALUE;
             }
         }
+    }
+}
+
+import otlib.components.ListItem;
+
+class ScrollPosition
+{
+    //--------------------------------------------------------------------------
+    // PROPERTIES
+    //--------------------------------------------------------------------------
+    
+    public var horizontalPosition:Number = 0;
+    public var verticalPosition:Number = 0;
+    public var firstVisible:ListItem;
+    public var lastVisible:ListItem;
+    
+    //--------------------------------------------------------------------------
+    // CONSTRUCTOR
+    //--------------------------------------------------------------------------
+    
+    public function ScrollPosition()
+    {
+        
     }
 }

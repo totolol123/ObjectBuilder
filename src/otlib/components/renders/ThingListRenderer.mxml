@@ -21,11 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:mx="library://ns.adobe.com/flex/mx"
-                xmlns:nail="library://ns.nail.com/naillib"
-                height="41"
+                xmlns:nail="nail.components.*"
+                minHeight="41"
                 fontSize="11"
                 creationComplete="creationCompleteHandler(event)"
                 dataChange="dataChangeHandler(event)">
@@ -36,14 +36,11 @@ THE SOFTWARE.
             import mx.resources.IResourceManager;
             import mx.resources.ResourceManager;
             
-            import nail.logging.Log;
+            import otlib.components.ListItem;
             import otlib.components.ListBase;
             import otlib.components.ThingList;
             import otlib.core.otlib_internal;
             import otlib.events.ThingListEvent;
-            import otlib.things.ThingType;
-            import otlib.utils.ThingListItem;
-            import nail.utils.isNullOrEmpty;
             
             use namespace otlib_internal;
             
@@ -67,9 +64,8 @@ THE SOFTWARE.
             
             protected function contextMenuDisplayingHandler(event:Event):void
             {
-                if (owner is ThingList) {
+                if (owner is ThingList)
                     ThingList(owner).onContextMenuDisplaying(this.itemIndex, ContextMenu(event.target));
-                }
             }
             
             protected function contextMenuSelectHandler(event:Event):void
@@ -82,20 +78,10 @@ THE SOFTWARE.
             
             protected function dataChangeHandler(event:FlexEvent):void
             {
-                var item:ThingListItem = this.data as ThingListItem;
+                var item:ListItem = ListItem(data);
                 if (item) {
-                    var thing:ThingType = item.thing;
-                    if (!isNullOrEmpty(thing.marketName))
-                        labelDisplay.text = thing.id + " - " + thing.marketName;
-                    else
-                        labelDisplay.text = thing.id.toString();
-                    
-                    try
-                    {
-                        imageDisplay.source = item.bitmap;
-                    } catch(error:Error) {
-                        Log.error(error.message, error.getStackTrace(), error.errorID);
-                    }
+                    imageDisplay.source = item.bitmap;
+                    labelDisplay.text = item.toString();
                 }
             }
             
@@ -106,18 +92,32 @@ THE SOFTWARE.
             private static function createContextMenu():ContextMenu
             {
                 var resource:IResourceManager = ResourceManager.getInstance();
-                var replaceMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "replace"));
+                
+                var copyMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "copy"));
+                copyMenu.data = Event.COPY;
+                //copyMenu.enabled = false;
+                
+                var pasteMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "paste"));
+                pasteMenu.data = Event.PASTE;
+                //pasteMenu.enabled = false;
+                
+                var replaceMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "replace"), true);
                 replaceMenu.data = ThingListEvent.REPLACE;
+                
                 var exportMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "export"));
                 exportMenu.data = ThingListEvent.EXPORT;
+                
                 var editMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "edit"));
                 editMenu.data = ThingListEvent.EDIT;
+                
                 var duplicateMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "duplicate"));
                 duplicateMenu.data = ThingListEvent.DUPLICATE;
+                
                 var removeMenu:ContextMenuItem = new ContextMenuItem(resource.getString("strings", "remove"));
                 removeMenu.data = ThingListEvent.REMOVE;
+                
                 var menu:ContextMenu = new ContextMenu();
-                menu.customItems = [replaceMenu, exportMenu, editMenu, duplicateMenu, removeMenu];
+                menu.customItems = [copyMenu, pasteMenu, replaceMenu, exportMenu, editMenu, duplicateMenu, removeMenu];
                 return menu;
             }
             
@@ -145,33 +145,30 @@ THE SOFTWARE.
         </s:stroke>
     </s:Rect>
     
-    <!-- image and label -->
-    <s:HGroup width="100%"
-              height="100%"
-              paddingLeft="5"
-              paddingRight="5"
-              paddingTop="5"
-              paddingBottom="4"
-              verticalAlign="middle"
-              mouseChildren="false"
-              mouseEnabled="false"
-              gap="5">
-        <s:Group>
-            <s:Rect left="-2" right="-2" top="-2" bottom="-2">
-                <s:fill>
-                    <s:SolidColor color="0x636363"/>
-                </s:fill>
-                <s:stroke>
-                    <s:SolidColorStroke color="0x272727"/>
-                </s:stroke>
-            </s:Rect>
-            <s:Image id="imageDisplay"
-                     width="32"
-                     height="32"
-                     horizontalCenter="0"
-                     verticalCenter="0"/>
-        </s:Group>
-        
-        <s:Label id="labelDisplay" />
-    </s:HGroup>
+    <!-- image background -->
+    <s:Rect left="5" verticalCenter="0" width="33" height="33">
+        <s:fill>
+            <s:SolidColor color="0x636363"/>
+        </s:fill>
+        <s:stroke>
+            <s:SolidColorStroke color="0x272727"/>
+        </s:stroke>
+    </s:Rect>
+    
+    <!-- image -->
+    <s:Image id="imageDisplay"
+             left="6"
+             width="32"
+             height="32"
+             mouseChildren="false"
+             mouseEnabled="false"
+             verticalCenter="0"/>
+    
+    <!-- text -->
+    <s:Label id="labelDisplay"
+             left="42"
+             right="5"
+             mouseChildren="false"
+             mouseEnabled="false"
+             verticalCenter="0"/>
 </s:ItemRenderer>

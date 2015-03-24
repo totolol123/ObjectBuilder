@@ -93,6 +93,7 @@ package ob.core
     import ob.utils.SpritesFinder;
     import ob.utils.SpritesOptimizer;
     
+    import otlib.components.ListItem;
     import otlib.core.IVersionStorage;
     import otlib.core.Version;
     import otlib.core.VersionStorage;
@@ -119,9 +120,9 @@ package ob.core
     import otlib.things.ThingTypeStorage;
     import otlib.utils.ChangeResult;
     import otlib.utils.ClientInfo;
+    import otlib.utils.MinMaxValues;
     import otlib.utils.OTFI;
     import otlib.utils.OTFormat;
-    import otlib.utils.ThingListItem;
     
     [ResourceBundle("strings")]
     
@@ -146,6 +147,9 @@ package ob.core
         private var m_isTemporary:Boolean;
         private var m_thingListAmount:uint;
         private var m_spriteListAmount:uint;
+        private var m_thingCategory:String;
+        private var m_thingListMinMax:MinMaxValues;
+        private var m_spriteListMinMax:MinMaxValues;
         
         //--------------------------------------
         // Getters / Setters
@@ -185,6 +189,8 @@ package ob.core
             m_versions = VersionStorage.getInstance();
             m_thingListAmount = 100;
             m_spriteListAmount = 100;
+            m_thingListMinMax = new MinMaxValues();
+            m_spriteListMinMax = new MinMaxValues();
             
             register();
         }
@@ -269,11 +275,11 @@ package ob.core
             registerClassAlias("ClientInfo", ClientInfo);
             registerClassAlias("File", File);
             registerClassAlias("FrameDuration", FrameDuration);
+            registerClassAlias("ListItem", ListItem);
             registerClassAlias("ObjectBuilderSettings", ObjectBuilderSettings);
             registerClassAlias("PathHelper", PathHelper);
             registerClassAlias("SpriteData", SpriteData);
             registerClassAlias("ThingData", ThingData);
-            registerClassAlias("ThingListItem", ThingListItem);
             registerClassAlias("ThingProperty", ThingProperty);
             registerClassAlias("ThingType", ThingType);
             
@@ -1119,22 +1125,30 @@ package ob.core
         
         private function onFindThing(category:String, properties:Vector.<ThingProperty>):void
         {
-            if (!ThingCategory.getCategory(category)) {
+            if (!ThingCategory.getCategory(category))
                 throw new ArgumentError(Resources.getString("invalidCategory"));
-            }
             
-            if (!properties) {
+            if (!properties)
                 throw new NullArgumentError("properties");
-            }
             
-            var list:Array = [];
-            var things:Array = m_things.findThingTypeByProperties(category, properties);
+            var list:Vector.<ListItem> = new Vector.<ListItem>();
+            var things:Vector.<ThingType> = m_things.findThingTypeByProperties(category, properties);
             var length:uint = things.length;
+            var rect:Rectangle = new Rectangle();
             
             for (var i:uint = 0; i < length; i++) {
-                var listItem : ThingListItem = new ThingListItem();
-                listItem.thing = things[i];
-                listItem.pixels = getBitmapPixels(listItem.thing);
+                var thing:ThingType = things[i];
+                var bitmap:BitmapData = getThingTypeBitmap(thing.id, thing.category);
+                
+                rect.width = bitmap.width;
+                rect.height = bitmap.height;
+                
+                var listItem:ListItem = new ListItem();
+                listItem.width = bitmap.width;
+                listItem.height = bitmap.height;
+                listItem.name = thing.marketName;
+                listItem.id = thing.id;
+                listItem.pixels = bitmap.getVector(rect);
                 list[i] = listItem;
             }
             sendCommand(new FindResultCommand(FindResultCommand.THINGS, list));
@@ -1436,8 +1450,7 @@ package ob.core
             
             function completeHandler(event:Event):void
             {
-                var command:Command = new FindResultCommand(FindResultCommand.SPRITES,
-                                                            finder.foundList);
+                var command:Command = new FindResultCommand(FindResultCommand.SPRITES, finder.foundList);
                 sendCommand(command);
             }
         }
@@ -1524,43 +1537,48 @@ package ob.core
         
         private function sendThingList(selectedIds:Vector.<uint>, category:String):void
         {
-            if (!m_things || !m_things.loaded) {
-                throw new Error(Resources.getString("metadataNotLoaded"));
-            }
+            if (!selectedIds)
+                throw new NullArgumentError("selectedIds");
+            
+            if (isNullOrEmpty(category))
+                throw new NullOrEmptyArgumentError("category");
             
             var first:uint = m_things.getMinId(category);
             var last:uint = m_things.getMaxId(category);
             var length:uint = selectedIds.length;
             
-            if (length > 1) {
-                selectedIds.sort(Array.NUMERIC | Array.DESCENDING);
-                if (selectedIds[length - 1] > last) {
-                    selectedIds = Vector.<uint>([last]);
-                }
-            }
+            if (length > 1)
+                selectedIds = selectedIds.sort(Array.NUMERIC | Array.DESCENDING);
+            
+            if (selectedIds[length - 1] > last)
+                selectedIds = Vector.<uint>([last]);
             
             var target:uint = length == 0 ? 0 : selectedIds[0];
             var min:uint = Math.max(first, ObUtils.hundredFloor(target));
             var diff:uint = (category != ThingCategory.ITEM && min == first) ? 1 : 0;
             var max:uint = Math.min((min - diff) + (m_thingListAmount - 1), last);
-            var list:Vector.<ThingListItem> = new Vector.<ThingListItem>();
+            var list:Vector.<ListItem> = new Vector.<ListItem>();
+            var rect:Rectangle = new Rectangle();
             
-            for (var i:uint = min; i <= max; i++) {
-                var thing:ThingType = m_things.getThingType(i, category);
-                if (!thing) {
-                    throw new Error(Resources.getString(
-                        "thingNotFound",
-                        Resources.getString(category),
-                        i));
-                }
+            for (var id:uint = min; id <= max; id++) {
+                var thing:ThingType = m_things.getThingType(id, category);
+                var image:BitmapData = getThingTypeBitmap(id, category);
                 
-                var listItem:ThingListItem = new ThingListItem();
-                listItem.thing = thing;
-                listItem.pixels = getBitmapPixels(thing);
-                list.push(listItem);
+                rect.width = image.width;
+                rect.height = image.height;
+                
+                var item:ListItem = new ListItem();
+                item.width = image.width;
+                item.height = image.height;
+                item.name = thing.marketName;
+                item.id = id;
+                item.pixels = image.getVector(rect);
+                list[list.length] = item;
             }
             
-            sendCommand(new SetThingListCommand(selectedIds, list));
+            m_thingListMinMax.setTo(min, max);
+            m_thingCategory = category;
+            sendCommand(new SetThingListCommand(category, list, selectedIds));
         }
         
         private function sendThingData(id:uint, category:String):void
@@ -1572,46 +1590,41 @@ package ob.core
         
         private function sendSpriteList(selectedIds:Vector.<uint>):void
         {
-            if (!selectedIds) {
+            if (!selectedIds)
                 throw new NullArgumentError("selectedIds");
-            }
             
-            if (!m_sprites || !m_sprites.loaded) {
-                throw new Error(Resources.getString("spritesNotLoaded"));
-            }
-            
-            var length:uint = selectedIds.length;
-            if (length > 1) {
-                selectedIds.sort(Array.NUMERIC | Array.DESCENDING);
-                if (selectedIds[length - 1] > m_sprites.spritesCount) {
-                    selectedIds = Vector.<uint>([m_sprites.spritesCount]);
-                }
-            }
-            
-            var target:uint = length == 0 ? 0 : selectedIds[0];
             var first:uint = 0;
             var last:uint = m_sprites.spritesCount;
+            var length:uint = selectedIds.length;
+            
+            if (length > 1)
+                selectedIds = selectedIds.sort(Array.NUMERIC | Array.DESCENDING);
+            
+            if (selectedIds[length - 1] > last)
+                selectedIds = Vector.<uint>([last]);
+            
+            var target:uint = length == 0 ? 0 : selectedIds[0];
             var min:uint = Math.max(first, ObUtils.hundredFloor(target));
             var max:uint = Math.min(min + (m_spriteListAmount - 1), last);
-            var list:Vector.<SpriteData> = new Vector.<SpriteData>();
+            var list:Vector.<ListItem> = new Vector.<ListItem>();
+            var size:uint = otlib.sprites.Sprite.DEFAULT_SIZE;
             
-            for (var i:uint = min; i <= max; i++) {
-                var pixels:ByteArray = m_sprites.getPixels(i);
-                if (!pixels) {
-                    throw new Error(Resources.getString("spriteNotFound", i));
-                }
-                
-                var spriteData:SpriteData = new SpriteData();
-                spriteData.id = i;
-                spriteData.pixels = pixels;
-                list.push(spriteData);
+            for (var id:uint = min; id <= max; id++) {
+                var item:ListItem = new ListItem();
+                item.width = size;
+                item.height = size;
+                item.id = id;
+                item.pixels = m_sprites.getPixelsVector(id);
+                list[list.length] = item;
             }
             
-            sendCommand(new SetSpriteListCommand(selectedIds, list));
+            m_spriteListMinMax.setTo(min, max);
+            sendCommand(new SetSpriteListCommand(list, selectedIds));
         }
         
-        private function getBitmapPixels(thing:ThingType):ByteArray
+        private function getThingTypeBitmap(id:uint, category:String):BitmapData
         {
+            var thing:ThingType = m_things.getThingType(id, category);
             var size:uint = otlib.sprites.Sprite.DEFAULT_SIZE;
             var width:uint = thing.width;
             var height:uint = thing.height;
@@ -1634,7 +1647,7 @@ package ob.core
                     }
                 }
             }
-            return bitmap.getPixels(bitmap.rect);
+            return bitmap;
         }
         
         private function getThingData(id:uint, category:String, obdVersion:uint, clientVersion:uint):ThingData

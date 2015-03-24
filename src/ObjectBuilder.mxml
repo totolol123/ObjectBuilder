@@ -71,6 +71,7 @@ THE SOFTWARE.
             import nail.components.controls.Alert;
             import nail.core.nail_internal;
             import nail.errors.NullArgumentError;
+            import nail.errors.NullOrEmptyArgumentError;
             import nail.events.MenuEvent;
             import nail.loaders.BitmapLoader;
             import nail.logging.Log;
@@ -137,6 +138,7 @@ THE SOFTWARE.
             import otlib.components.DatSprProgressBar;
             import otlib.components.DefaultProgressBar;
             import otlib.components.FindWindow;
+            import otlib.components.ListItem;
             import otlib.components.LogWindow;
             import otlib.components.LookGenerator;
             import otlib.components.renders.ThingListRenderer;
@@ -161,7 +163,6 @@ THE SOFTWARE.
             import otlib.utils.ClientInfo;
             import otlib.utils.OTFormat;
             import otlib.utils.SpriteUtils;
-            import otlib.utils.ThingListItem;
             
             import ov.ObjectViewer;
             
@@ -729,11 +730,11 @@ THE SOFTWARE.
                 registerClassAlias("ClientInfo", ClientInfo);
                 registerClassAlias("File", File);
                 registerClassAlias("FrameDuration", FrameDuration);
+                registerClassAlias("ListItem", ListItem);
                 registerClassAlias("ObjectBuilderSettings", ObjectBuilderSettings);
                 registerClassAlias("PathHelper", PathHelper);
                 registerClassAlias("SpriteData", SpriteData);
                 registerClassAlias("ThingData", ThingData);
-                registerClassAlias("ThingListItem", ThingListItem);
                 registerClassAlias("ThingProperty", ThingProperty);
                 registerClassAlias("ThingType", ThingType);
                 
@@ -745,7 +746,7 @@ THE SOFTWARE.
                 
                 registerCallback(SetThingDataCommand, onSetThingData);
                 registerCallback(SetThingListCommand, onSetThingList);
-                registerCallback(SetSpriteListCommand, onSetSpriteList);
+                registerCallback(SetSpriteListCommand, onSpriteList);
                 registerCallback(NeedToReloadCommand, onNeedToReload);
             }
             
@@ -952,31 +953,61 @@ THE SOFTWARE.
                 this.thingData = thingData;
             }
             
-            private function onSetThingList(selectedIds:Vector.<uint>, things:Vector.<ThingListItem>):void
+            private function onSetThingList(category:String, things:Vector.<ListItem>, selectedIds:Vector.<uint>):void
             {
-                if (!selectedIds)
-                    throw new NullArgumentError("selectedIds");
+                if (isNullOrEmpty(category))
+                    throw new NullOrEmptyArgumentError("category");
                 
                 if (!things)
-                    throw new NullArgumentError("things");
+                    throw new NullArgumentError("objects");
                 
-                thingList.rememberScroll();
-                thingList.setListObjects(things);
-                thingList.ensureIdIsVisible(selectedIds[0]);
-                thingList.selectedIds = selectedIds;
-            }
-            
-            private function onSetSpriteList(selectedIds:Vector.<uint>, sprites:Vector.<SpriteData>):void
-            {
                 if (!selectedIds)
                     throw new NullArgumentError("selectedIds");
                 
+                var list:ThingList;
+                switch (category)
+                {
+                    case ThingCategory.ITEM:
+                        list = thingList;
+                        break;
+                    
+                    case ThingCategory.OUTFIT:
+                        list = thingList;
+                        break;
+                    
+                    case ThingCategory.EFFECT:
+                        list = thingList;
+                        break;
+                    
+                    case ThingCategory.MISSILE:
+                        list = thingList;
+                        break;
+                }
+                
+                list.rememberScroll();
+                list.setList(things);
+                
+                if (selectedIds.length > 0)
+                    list.ensureIdIsVisible(selectedIds[0]);
+                
+                list.selectedIds = selectedIds;
+                this.currentCategory = category;
+            }
+            
+            private function onSpriteList(sprites:Vector.<ListItem>, selectedIds:Vector.<uint>):void
+            {
                 if (!sprites)
                     throw new NullArgumentError("sprites");
                 
+                if (!selectedIds)
+                    throw new NullArgumentError("selectedIds");
+                
                 spritesList.rememberScroll();
-                spritesList.setListObjects(sprites);
-                spritesList.ensureIdIsVisible(selectedIds[0]);
+                spritesList.setList(sprites);
+                
+                if (selectedIds.length > 0)
+                    spritesList.ensureIdIsVisible(selectedIds[0]);
+                
                 spritesList.selectedIds = selectedIds;
             }
             
@@ -1000,7 +1031,7 @@ THE SOFTWARE.
                                                directory:File,
                                                clientVersion:Version,
                                                obdVersion:uint,
-                                               things:Vector.<ThingType>,
+                                               things:Vector.<uint>,
                                                category:String,
                                                exportObjectProperties:Boolean,
                                                transparentBackground:Boolean,
@@ -1013,7 +1044,7 @@ THE SOFTWARE.
                 
                 var length:uint = things.length;
                 for (var i:uint = 0; i < length; i++) {
-                    var id:uint = things[i].id;
+                    var id:uint = things[i];
                     var name:String = !changeName ? prefix : (name = prefix + "_" + id);
                     queue.addFile(id, name, format, directory);
                 }
@@ -1082,9 +1113,9 @@ THE SOFTWARE.
             {
                 if (!this.clientLoaded) return;
                 
-                var data:SpriteData = spritesList.selectedSprite;
-                if (data) {
-                    var bitmap:BitmapData = BitmapUtil.to24bits(data.bitmap, 0xFF00FF);
+                var bitmap:BitmapData = ListItem(spritesList.selectedItem).bitmap;
+                if (bitmap) {
+                    bitmap = BitmapUtil.to24bits(bitmap, 0xFF00FF);
                     Clipboard.generalClipboard.clear();
                     Clipboard.generalClipboard.setData(ClipboardFormats.BITMAP_FORMAT, bitmap);
                 }
@@ -1674,7 +1705,7 @@ THE SOFTWARE.
             {
                 if (!this.clientLoaded) return;
                 
-                var things:Vector.<ThingType> = thingList.selectedThings;
+                var things:Vector.<uint> = thingList.selectedIds;
                 if (things.length == 0) return;
                 
                 var version:Version = m_settings.getExportThingVersion();
@@ -2247,23 +2278,23 @@ THE SOFTWARE.
                                       paddingBottom="0"/>
                 </nail:layout>
                 <otlib:ThingList id="thingList"
-                                      width="100%"
-                                      height="100%"
-                                      fontSize="11"
-                                      borderAlpha="0"
-                                      horizontalScrollPolicy="off"
-                                      doubleClickEnabled="true"
-                                      allowMultipleSelection="true"
-                                      requireSelection="true"
-                                      replace="replaceThingHandler(event)"
-                                      export="exportThingHandler(event)"
-                                      duplicate="duplicateThingHandler(event)"
-                                      edit="editThingHandler(event)"
-                                      remove="removeThingHandler(event)"
-                                      doubleClick="thingListDoubleClickHandler(event)"
-                                      change="thingListChangeHandler(event)"
-                                      nativeDragEnter="thingDataNativeDragEnterHandler(event)"
-                                      nativeDragDrop="thingDataNativeDragDropHandler(event)"/>
+                                 width="100%"
+                                 height="100%"
+                                 borderAlpha="0"
+                                 horizontalScrollPolicy="off"
+                                 doubleClickEnabled="true"
+                                 allowMultipleSelection="true"
+                                 requireSelection="true"
+                                 itemRenderer="otlib.components.renders.ThingListRenderer"
+                                 replace="replaceThingHandler(event)"
+                                 export="exportThingHandler(event)"
+                                 duplicate="duplicateThingHandler(event)"
+                                 edit="editThingHandler(event)"
+                                 remove="removeThingHandler(event)"
+                                 doubleClick="thingListDoubleClickHandler(event)"
+                                 change="thingListChangeHandler(event)"
+                                 nativeDragEnter="thingDataNativeDragEnterHandler(event)"
+                                 nativeDragDrop="thingDataNativeDragDropHandler(event)"/>
             </nail:GroupBox>
             
             <otlib:AmountNumericStepper id="thingStepper"
@@ -2394,21 +2425,21 @@ THE SOFTWARE.
                 </nail:layout>
                 
                 <otlib:SpriteList id="spritesList"
-                                       width="100%"
-                                       height="100%"
-                                       allowMultipleSelection="true"
-                                       dragEnabled="true"
-                                       fontSize="11"
-                                       borderAlpha="0"
-                                       requireSelection="true"
-                                       change="spritesListChangeHandler(event)"
-                                       copy="onCopySprite()"
-                                       paste="onPasteSprite()"
-                                       replace="replaceSpriteHandler(event)"
-                                       export="exportSpriteHandler(event)"
-                                       remove="removeSpriteHandler(event)"
-                                       nativeDragEnter="spritesListNativeDragEnterHandler(event)"
-                                       nativeDragDrop="spritesListNativeDragDropHandler(event)"/>
+                                  width="100%"
+                                  height="100%"
+                                  borderAlpha="0"
+                                  dragEnabled="true"
+                                  allowMultipleSelection="true"
+                                  requireSelection="true"
+                                  itemRenderer="otlib.components.renders.SpriteListRenderer"
+                                  change="spritesListChangeHandler(event)"
+                                  copy="onCopySprite()"
+                                  paste="onPasteSprite()"
+                                  replace="replaceSpriteHandler(event)"
+                                  export="exportSpriteHandler(event)"
+                                  remove="removeSpriteHandler(event)"
+                                  nativeDragEnter="spritesListNativeDragEnterHandler(event)"
+                                  nativeDragDrop="spritesListNativeDragDropHandler(event)"/>
             </nail:GroupBox>
             
             <otlib:AmountNumericStepper id="spriteStepper"

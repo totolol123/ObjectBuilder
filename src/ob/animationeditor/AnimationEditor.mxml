@@ -69,10 +69,11 @@ THE SOFTWARE.
             
             import ob.animationeditor.events.FrameListEvent;
             import ob.animationeditor.settings.AnimationEditorSettings;
+            import ob.components.ExportWindow;
             import ob.utils.ObUtils;
             
             import otlib.assets.Assets;
-            import ob.components.ExportWindow;
+            import otlib.components.ListItem;
             import otlib.components.SurfaceCells;
             import otlib.geom.Size;
             import otlib.obd.OBDEncoder;
@@ -780,7 +781,7 @@ THE SOFTWARE.
                 
                 _size.width = gifFrames[0].width;
                 _size.height = gifFrames[0].height;
-                framesList.setListObjects(frames);
+                framesList.setList(frames as Vector.<ListItem>);
                 createThingData();
             }
             
