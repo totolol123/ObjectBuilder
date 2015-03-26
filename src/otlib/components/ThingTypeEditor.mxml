@@ -287,6 +287,8 @@ THE SOFTWARE.
                 animateAlwaysCheckBox.includeInLayout = visible;
                 
                 var isItem:Boolean = (category == ThingCategory.ITEM);
+                stackOrderGroupBox.visible = isItem;
+                stackOrderGroupBox.includeInLayout = isItem;
                 stackableCheckBox.visible = isItem;
                 stackableCheckBox.includeInLayout = isItem;
                 automapGroupCheckBox.visible = isItem;
